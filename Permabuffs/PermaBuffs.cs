@@ -1,73 +1,85 @@
+using Microsoft.Xna.Framework;
+using OTAPI;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using TShockAPI;
 using Terraria;
+using TerrariaApi.Server;
+using TShockAPI;
 
 namespace Permabuffs
 {
+    [ApiVersion(2, 1)]
     public class PermaBuffs : TerrariaPlugin
     {
-        public override Version Version => new Version(1, 1);
-        public override string Name => "Permabuffs";
-        public override string Author => "Original by SyntaxVoid | Ported by MrMemeKnight";
-        public override string Description => "Provides permanent potion buffs when 30 are in piggy bank";
+        public override string Author => "SyntaxVoid";
+        public override string Description => "Permanent potion buffs!";
+        public override string Name => "PermaBuffs";
+        public override Version Version => new Version(1, 1, 1);
 
-        public static PermaBuffs Instance;
+        private CancellationTokenSource? tokenSource;
+        private Task? refreshTask;
 
-        private CancellationTokenSource cancelToken;
-
-        public PermaBuffs(Main game) : base(game)
-        {
-            Instance = this;
-        }
+        public PermaBuffs(Main game) : base(game) { }
 
         public override void Initialize()
         {
-            ServerApi.Hooks.GamePostInitialize.Register(this, OnPostInit);
+            ServerApi.Hooks.GamePostInitialize.Register(this, OnPostInitialize);
             ServerApi.Hooks.ServerLeave.Register(this, OnLeave);
-
-            cancelToken = new CancellationTokenSource();
-            _ = StartBuffLoopAsync(cancelToken.Token);
         }
 
-        public override void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            ServerApi.Hooks.GamePostInitialize.Deregister(this, OnPostInit);
-            ServerApi.Hooks.ServerLeave.Deregister(this, OnLeave);
-
-            cancelToken.Cancel();
-        }
-
-        private async Task StartBuffLoopAsync(CancellationToken token)
-        {
-            while (!token.IsCancellationRequested)
+            if (disposing)
             {
-                foreach (TSPlayer player in TShock.Players)
-                {
-                    if (player == null || !player.Active || !player.RealPlayer) continue;
-                    BuffManager.GiveBuffs(player);
-                }
-
-                try
-                {
-                    await Task.Delay(1500, token); // 1.5s delay
-                }
-                catch (TaskCanceledException)
-                {
-                    break;
-                }
+                ServerApi.Hooks.GamePostInitialize.Deregister(this, OnPostInitialize);
+                ServerApi.Hooks.ServerLeave.Deregister(this, OnLeave);
+                tokenSource?.Cancel();
             }
-        }
-
-        private void OnPostInit(EventArgs args)
-        {
-            DB.Connect();
+            base.Dispose(disposing);
         }
 
         private void OnLeave(LeaveEventArgs args)
         {
-            DB.RemoveOfflinePlayerBuffs(args.Who);
+            PermabuffManager.Remove(args.Who);
+        }
+
+        private void OnPostInitialize(EventArgs args)
+        {
+            Potions.Initialize();
+            DB.Load();
+            tokenSource = new CancellationTokenSource();
+            refreshTask = RunPeriodicBuffsAsync(tokenSource.Token);
+        }
+
+        private async Task RunPeriodicBuffsAsync(CancellationToken token)
+        {
+            try
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    foreach (TSPlayer player in TShock.Players)
+                    {
+                        if (player == null || !player.Active)
+                            continue;
+
+                        BuffManager.GiveBuffs(player);
+                    }
+
+                    await Task.Delay(1500, token);
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                // Graceful cancellation
+            }
+            catch (Exception ex)
+            {
+                TShock.Log.ConsoleError($"[PermaBuffs] Error in buff loop: {ex}");
+            }
         }
     }
 }
