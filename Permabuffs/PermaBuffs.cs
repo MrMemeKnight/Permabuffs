@@ -1,5 +1,6 @@
+using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+using System.Reflection;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
@@ -9,80 +10,54 @@ namespace Permabuffs
     [ApiVersion(2, 1)]
     public class Permabuffs : TerrariaPlugin
     {
+        public override Version Version => Assembly.GetExecutingAssembly().GetName().Version;
         public override string Name => "Permabuffs";
-        public override Version Version => new Version(1, 0);
-        public override string Author => "Myoni (SyntaxVoid), modified";
-        public override string Description => "Automatically grants permanent buffs from potions in piggy bank.";
+        public override string Author => "SyntaxVoid (Myoni)";
+        public override string Description => "Permanent buffs from items in your piggy bank.";
 
-        private static readonly Dictionary<int, bool> playerToggles = new();
+        private readonly Dictionary<int, bool> toggles = new();
 
         public Permabuffs(Main game) : base(game) { }
 
         public override void Initialize()
         {
+            Commands.ChatCommands.Add(new Command("permabuffs.toggle", Toggle, "pbenable", "pbdisable"));
+            ServerApi.Hooks.ServerJoin.Register(this, OnJoin);
+            ServerApi.Hooks.ServerLeave.Register(this, OnLeave);
             ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
-            Commands.ChatCommands.Add(new Command("permabuffs.enable", EnableCommand, "pbenable"));
-            Commands.ChatCommands.Add(new Command("permabuffs.disable", DisableCommand, "pbdisable"));
         }
 
-        protected override void Dispose(bool disposing)
+        private void Toggle(CommandArgs args)
         {
-            if (disposing)
+            int idx = args.Player.Index;
+            bool enabled = toggles.ContainsKey(idx) && toggles[idx];
+            toggles[idx] = !enabled;
+            args.Player.SendSuccessMessage(enabled ? "Permabuffs disabled." : "Permabuffs enabled.");
+        }
+
+        private void OnJoin(JoinEventArgs args) => toggles[args.Who] = true;
+        private void OnLeave(LeaveEventArgs args) => toggles.Remove(args.Who);
+
+        private void OnUpdate(EventArgs _)
+        {
+            foreach (var player in TShock.Players)
             {
-                ServerApi.Hooks.GameUpdate.Deregister(this, OnUpdate);
-            }
-            base.Dispose(disposing);
-        }
+                if (player == null || !player.Active) continue;
+                if (!toggles.TryGetValue(player.Index, out bool on) || !on) continue;
 
-        private void EnableCommand(CommandArgs args)
-        {
-            playerToggles[args.Player.Index] = true;
-            args.Player.SendSuccessMessage("Permabuffs enabled.");
-        }
+                var items = player.TPlayer.bank?.item;
+                if (items == null) continue;
 
-        private void DisableCommand(CommandArgs args)
-        {
-            playerToggles[args.Player.Index] = false;
-            args.Player.SendSuccessMessage("Permabuffs disabled.");
-        }
-
-        private void OnUpdate(EventArgs args)
-        {
-            TShock.Log.ConsoleInfo("[Permabuffs] OnUpdate triggered.");
-
-            foreach (TSPlayer player in TShock.Players)
-            {
-                if (player == null || !player.Active)
-                    continue;
-
-                if (!playerToggles.TryGetValue(player.Index, out bool enabled) || !enabled)
+                var granted = new HashSet<int>();
+                foreach (var item in items)
                 {
-                    TShock.Log.ConsoleInfo($"[Permabuffs] {player.Name} not enabled.");
-                    continue;
-                }
-
-                var piggyBank = player.TPlayer.bank?.item;
-                if (piggyBank == null)
-                {
-                    TShock.Log.ConsoleInfo($"[Permabuffs] {player.Name}'s piggy bank is null.");
-                    continue;
-                }
-
-                TShock.Log.ConsoleInfo($"[Permabuffs] Piggy item count: {piggyBank.Length}");
-
-                foreach (var item in piggyBank)
-                {
-                    if (item == null || item.stack < 30)
-                        continue;
-
-                    string lowerName = item.Name.ToLower();
-                    TShock.Log.ConsoleInfo($"[Permabuffs] Scanning item: {item.Name} x{item.stack}");
-                    TShock.Log.ConsoleInfo($"[Permabuffs] Checking {lowerName}");
-
-                    if (Potions.BuffMap.TryGetValue(lowerName, out int buffId))
+                    if (item?.stack < 30) continue;
+                    if (Potions.BuffMap.TryGetValue(item.Name.ToLowerInvariant(), out int buff)
+                        && !granted.Contains(buff))
                     {
-                        TShock.Log.ConsoleInfo($"[Permabuffs] Applying buff {buffId} to {player.Name}");
-                        player.SetBuff(buffId, 3600);
+                        player.SetBuff(buff, 3600);
+                        granted.Add(buff);
+                        TShock.Log.ConsoleInfo($"[Permabuffs] {player.Name} got buff #{buff}");
                     }
                 }
             }
