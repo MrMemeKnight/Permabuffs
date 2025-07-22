@@ -2,14 +2,13 @@ using System.Collections.Generic;
 
 namespace Permabuffs
 {
-    /// <Summary>
-    /// I'm sure there's a better way to do this... but this is used to create
-    /// a dictionary mapping all of the potion names to their respective buff IDs.
-    /// </Summary>
+    /// <summary>
+    /// Creates a dictionary mapping all potion, food, flask, and drink names
+    /// to their corresponding buff IDs for permabuff detection.
+    /// </summary>
     public class Potions
     {
-        public static Dictionary<string, int> BuffMap 
-            = new Dictionary<string, int>();
+        public static Dictionary<string, int> BuffMap = new Dictionary<string, int>();
 
         public static void PopulateBuffMap()
         {
@@ -23,7 +22,7 @@ namespace Permabuffs
             BuffMap.Add("Dangersense Potion", 111);
             BuffMap.Add("Endurance Potion", 114);
             BuffMap.Add("Featherfall Potion", 8);
-            BuffMap.Add("Fishing Potion",  121);
+            BuffMap.Add("Fishing Potion", 121);
             BuffMap.Add("Flipper Potion", 109);
             BuffMap.Add("Gills Potion", 4);
             BuffMap.Add("Gravitation Potion", 18);
@@ -48,12 +47,14 @@ namespace Permabuffs
             BuffMap.Add("Spelunker Potion", 9);
             BuffMap.Add("Stink Potion", 371);
             BuffMap.Add("Summoning Potion", 110);
-            BuffMap.Add("Swiftness Potion",  3);
+            BuffMap.Add("Swiftness Potion", 3);
             BuffMap.Add("Thorns Potion", 14);
             BuffMap.Add("Titan Potion", 108);
             BuffMap.Add("Warmth Potion", 124);
             BuffMap.Add("Water Walking Potion", 15);
             BuffMap.Add("Wrath Potion", 117);
+
+            // FLASKS
             BuffMap.Add("Flask of Cursed Flames", 73);
             BuffMap.Add("Flask of Fire", 74);
             BuffMap.Add("Flask of Gold", 75);
@@ -63,7 +64,7 @@ namespace Permabuffs
             BuffMap.Add("Flask of Poison", 79);
             BuffMap.Add("Flask of Venom", 71);
 
-            // WELL FED
+            // WELL FED (Buff ID 26)
             BuffMap.Add("Apple Juice", 26);
             BuffMap.Add("Bloody Moscato", 26);
             BuffMap.Add("Bunny Stew", 26);
@@ -74,7 +75,7 @@ namespace Permabuffs
             BuffMap.Add("Grilled Squirrel", 26);
             BuffMap.Add("Lemonade", 26);
             BuffMap.Add("Peach Sangria", 26);
-            // BuffMap.Add("Pi%C3%B1a Colada", 26); // Check actual in game name
+            // BuffMap.Add("Piña Colada", 26); // Uncomment if needed, confirm exact name
             BuffMap.Add("Roasted Bird", 26);
             BuffMap.Add("Smoothie of Darkness", 26);
             BuffMap.Add("Tropical Smoothie", 26);
@@ -99,7 +100,7 @@ namespace Permabuffs
             BuffMap.Add("Shucked Oyster", 26);
             BuffMap.Add("Marshmallow", 26);
 
-            // PLENTY SATISFIED
+            // PLENTY SATISFIED (Buff ID 206)
             BuffMap.Add("Grub Soup", 206);
             BuffMap.Add("Bowl of Soup", 206);
             BuffMap.Add("Cooked Shrimp", 206);
@@ -125,9 +126,9 @@ namespace Permabuffs
             BuffMap.Add("Hotdog", 206);
             BuffMap.Add("Ice Cream", 206);
             BuffMap.Add("Nachos", 206);
-            // BuffMap.Add("Shrimp Po%27 Boy", 206); // Check actual in game name
+            // BuffMap.Add("Shrimp Po' Boy", 206); // Uncomment if needed, confirm exact name
 
-            // EXQUISITELY STUFFED
+            // EXQUISITELY STUFFED (Buff ID 207)
             BuffMap.Add("Golden Delight", 207);
             BuffMap.Add("Grape Juice", 207);
             BuffMap.Add("Seafood Dinner", 207);
@@ -143,11 +144,9 @@ namespace Permabuffs
             BuffMap.Add("Spaghetti", 207);
             BuffMap.Add("Steak", 207);
 
-            // TIPSY
+            // TIPSY (Buff ID 25)
             BuffMap.Add("Sake", 25);
             BuffMap.Add("Ale", 25);
-
-            return;
         }
     }
 }
