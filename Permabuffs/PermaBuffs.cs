@@ -1,78 +1,80 @@
+using OTAPI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
-using OTAPI;
 
 namespace Permabuffs
 {
     [ApiVersion(2, 1)]
     public class Permabuffs : TerrariaPlugin
     {
-        public override string Author => "Original: SyntaxVoid | Restored by ChatGPT";
+        public override string Author => "Myoni (SyntaxVoid)";
         public override string Name => "Permabuffs";
         public override Version Version => new Version(1, 0);
-        public override string Description => "Grants potion buffs from piggy bank if 30+ potions are present.";
+        public override string Description => "Grants players buffs based on items in their piggy bank.";
+
+        private readonly Dictionary<int, bool> EnabledPlayers = new();
 
         public Permabuffs(Main game) : base(game) { }
-
-        public static Dictionary<int, bool> EnabledPlayers = new();
 
         public override void Initialize()
         {
             ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
-            Commands.ChatCommands.Add(new Command("permabuffs.toggle", ToggleBuffs, "pbenable", "pbdisable"));
+            ServerApi.Hooks.ServerJoin.Register(this, OnJoin);
+            ServerApi.Hooks.ServerLeave.Register(this, OnLeave);
+
+            Commands.ChatCommands.Add(new Command("permabuffs.toggle", TogglePermabuffs, "pbenable", "pbdisable"));
+
+            Potions.Initialize();
         }
 
-        protected override void Dispose(bool disposing)
+        private void OnJoin(JoinEventArgs args)
         {
-            if (disposing)
-            {
-                ServerApi.Hooks.GameUpdate.Deregister(this, OnUpdate);
-            }
-            base.Dispose(disposing);
+            EnabledPlayers[args.Who] = true;
         }
 
-        private void ToggleBuffs(CommandArgs args)
+        private void OnLeave(LeaveEventArgs args)
         {
-            var player = args.Player;
+            EnabledPlayers.Remove(args.Who);
+        }
 
-            if (args.Message.StartsWith("/pbenable"))
+        private void TogglePermabuffs(CommandArgs args)
+        {
+            if (!EnabledPlayers.ContainsKey(args.Player.Index))
+                EnabledPlayers[args.Player.Index] = true;
+
+            if (args.Message.ToLower().Contains("disable"))
             {
-                EnabledPlayers[player.Index] = true;
-                player.SendSuccessMessage("Permabuffs enabled.");
+                EnabledPlayers[args.Player.Index] = false;
+                args.Player.SendSuccessMessage("Permabuffs disabled.");
             }
-            else if (args.Message.StartsWith("/pbdisable"))
+            else
             {
-                EnabledPlayers[player.Index] = false;
-                player.SendSuccessMessage("Permabuffs disabled.");
+                EnabledPlayers[args.Player.Index] = true;
+                args.Player.SendSuccessMessage("Permabuffs enabled.");
             }
         }
 
         private void OnUpdate(EventArgs args)
         {
-            foreach (var tsPlayer in TShock.Players)
+            foreach (TSPlayer player in TShock.Players)
             {
-                if (tsPlayer == null || !tsPlayer.Active || tsPlayer.TPlayer == null || !EnabledPlayers.ContainsKey(tsPlayer.Index) || !EnabledPlayers[tsPlayer.Index])
+                if (player == null || !player.Active || !player.ConnectionAlive || !EnabledPlayers.TryGetValue(player.Index, out bool enabled) || !enabled)
                     continue;
 
-                var player = tsPlayer.TPlayer;
-                var piggyBank = player.bank.item;
-
-                foreach (var potion in PotionToBuff.Map)
+                var piggyBank = Main.player[player.Index].bank.item;
+                foreach (var item in piggyBank)
                 {
-                    int stackCount = 0;
+                    if (item == null || item.stack < 30)
+                        continue;
 
-                    foreach (var item in piggyBank)
+                    if (Potions.Map.TryGetValue(item.type, out int buffID))
                     {
-                        if (item != null && item.active && item.type == potion.Key)
-                            stackCount += item.stack;
-                    }
-
-                    if (stackCount >= 30 && !player.HasBuff(potion.Value))
-                    {
-                        player.AddBuff(potion.Value, 60);
+                        if (!player.TPlayer.HasBuff(buffID))
+                            player.SetBuff(buffID, 60 * 10, quiet: true);
                     }
                 }
             }
