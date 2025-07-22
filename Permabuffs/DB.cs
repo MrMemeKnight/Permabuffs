@@ -1,52 +1,35 @@
+using System;
 using System.Collections.Generic;
-using Mono.Data.Sqlite;
 using System.Data;
 using TShockAPI;
+using TShockAPI.DB;
 
 namespace Permabuffs
 {
-    public static class DB
+    public class DB
     {
-        public static Dictionary<int, bool> ToggleStatus = new Dictionary<int, bool>();
+        private static IDbConnection db;
 
-        public static bool GetStatus(int userID)
+        public static void Initialize()
         {
-            using (var db = new SqliteConnection($"uri=file={TShock.SavePath}/permabuffs.sqlite"))
+            db = TShock.DB;
+        }
+
+        public static void LoadPlayerBuffs(int playerID, List<int> buffs)
+        {
+            using var reader = db.QueryReader("SELECT BuffID FROM Permabuffs WHERE PlayerID=@0", playerID);
+            while (reader.Read())
             {
-                db.Open();
-                var cmd = db.CreateCommand();
-                cmd.CommandText = "CREATE TABLE IF NOT EXISTS PermabuffStatus (UserID INTEGER PRIMARY KEY, Enabled BOOLEAN);";
-                cmd.ExecuteNonQuery();
-
-                cmd.CommandText = "SELECT Enabled FROM PermabuffStatus WHERE UserID = @0;";
-                cmd.Parameters.AddWithValue("@0", userID);
-
-                using (var reader = cmd.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        return reader.GetBoolean(0);
-                    }
-                }
-
-                // Default disabled
-                return false;
+                buffs.Add(reader.Get<int>("BuffID"));
             }
         }
 
-        public static void SetStatus(int userID, bool enabled)
+        public static void SavePlayerBuffs(int playerID, List<int> buffs)
         {
-            using (var db = new SqliteConnection($"uri=file={TShock.SavePath}/permabuffs.sqlite"))
+            db.Query("DELETE FROM Permabuffs WHERE PlayerID=@0", playerID);
+            foreach (int buffID in buffs)
             {
-                db.Open();
-                var cmd = db.CreateCommand();
-                cmd.CommandText = "CREATE TABLE IF NOT EXISTS PermabuffStatus (UserID INTEGER PRIMARY KEY, Enabled BOOLEAN);";
-                cmd.ExecuteNonQuery();
-
-                cmd.CommandText = "INSERT OR REPLACE INTO PermabuffStatus (UserID, Enabled) VALUES (@0, @1);";
-                cmd.Parameters.AddWithValue("@0", userID);
-                cmd.Parameters.AddWithValue("@1", enabled);
-                cmd.ExecuteNonQuery();
+                db.Query("INSERT INTO Permabuffs (PlayerID, BuffID) VALUES (@0, @1)", playerID, buffID);
             }
         }
     }
