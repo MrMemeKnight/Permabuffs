@@ -1,77 +1,92 @@
-using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using OTAPI;
 using Terraria;
-using Terraria.ID;
 using TerrariaApi.Server;
 using TShockAPI;
+using System.Collections.Generic;
+using System.Linq;
 using Permabuffs;
 
 namespace Permabuffs
 {
-    [ApiVersion(2, 1)]
-    public class PermaBuffs : TerrariaPlugin
-    {
-        public override string Name => "PermaBuffs";
-        public override Version Version => new Version(1, 1, 0);
-        public override string Author => "Myoni";
-        public override string Description => "Permanent potion effects for TShock";
+	[ApiVersion(2, 1)]
+	public class PermaBuffs : TerrariaPlugin
+	{
+		public override string Name => "PermaBuffs";
+		public override Version Version => new Version(1, 0);
+		public override string Author => "SyntaxVoid (Modified)";
+		public override string Description => "Allows permanent buffs from potions stored in Piggy Bank";
 
-        public PermaBuffs(Main game) : base(game) { }
+		public PermaBuffs(Main game) : base(game) { }
 
-        public override void Initialize()
-        {
-            ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
-            ServerApi.Hooks.ServerJoin.Register(this, OnJoin);
-            ServerApi.Hooks.GamePostUpdate.Register(this, OnUpdate);
-        }
+		public override void Initialize()
+		{
+			DB.Connect();
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
-                ServerApi.Hooks.ServerJoin.Deregister(this, OnJoin);
-                ServerApi.Hooks.GamePostUpdate.Deregister(this, OnUpdate);
-            }
-            base.Dispose(disposing);
-        }
+			Commands.ChatCommands.Add(new Command("permabuffs.manage", PermaBuffCommand, "permabuff"));
+			ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
+		}
 
-        private void OnInitialize(EventArgs args)
-        {
-            DB.Connect();
-            NameToBuffIDs.PopulateBuffIDs();
-        }
+		private void PermaBuffCommand(CommandArgs args)
+		{
+			var player = args.Player;
 
-        private void OnJoin(JoinEventArgs args)
-        {
-            TSPlayer player = TShock.Players[args.Who];
-            if (player != null && player.Active)
-            {
-                DB.CreatePlayer(player);
-            }
-        }
+			if (args.Parameters.Count < 1)
+			{
+				player.SendInfoMessage("Usage: /permabuff <add/remove> <buffname>");
+				return;
+			}
 
-        private void OnUpdate(EventArgs args)
-        {
-            foreach (TSPlayer player in TShock.Players)
-            {
-                if (player == null || !player.Active || player.TPlayer.dead)
-                    continue;
+			int buffId;
+			switch (args.Parameters[0].ToLower())
+			{
+				case "add":
+					if (args.Parameters.Count < 2)
+					{
+						player.SendErrorMessage("Specify a buff name to add.");
+						return;
+					}
+					if (!Potions.buffIDs.TryGetValue(args.Parameters[1].ToLower(), out buffId))
+					{
+						player.SendErrorMessage("Invalid buff name.");
+						return;
+					}
+					DB.AddBuff(player.Account.ID, buffId);
+					player.SendSuccessMessage($"Added permanent buff: {args.Parameters[1]}");
+					break;
 
-                List<int> permBuffs = DB.GetBuffs(player.Name);
-                if (permBuffs == null)
-                    continue;
+				case "remove":
+					if (args.Parameters.Count < 2)
+					{
+						player.SendErrorMessage("Specify a buff name to remove.");
+						return;
+					}
+					if (!Potions.buffIDs.TryGetValue(args.Parameters[1].ToLower(), out buffId))
+					{
+						player.SendErrorMessage("Invalid buff name.");
+						return;
+					}
+					DB.RemoveBuff(player.Account.ID, buffId);
+					player.SendSuccessMessage($"Removed permanent buff: {args.Parameters[1]}");
+					break;
 
-                foreach (int buffID in permBuffs)
-                {
-                    if (buffID < Main.buffName.Length && !player.TPlayer.HasBuff(buffID))
-                    {
-                        player.TPlayer.AddBuff(buffID, 18010, true);
-                    }
-                }
-            }
-        }
-    }
+				default:
+					player.SendErrorMessage("Unknown subcommand.");
+					break;
+			}
+		}
+
+		private void OnUpdate(EventArgs args)
+		{
+			foreach (var player in TShock.Players.Where(p => p != null && p.Active && p.RealPlayer))
+			{
+				var buffs = DB.GetBuffs(player.Account.ID);
+				foreach (var buffId in buffs)
+				{
+					if (!player.TPlayer.buffType.Contains(buffId))
+					{
+						player.SetBuff(buffId, 60 * 2); // 2 seconds, refreshed constantly
+					}
+				}
+			}
+		}
+	}
 }
