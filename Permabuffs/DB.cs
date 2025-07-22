@@ -1,58 +1,58 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using Microsoft.Data.Sqlite;
+using Terraria;
 using TShockAPI;
 
 namespace Permabuffs
 {
     public class DB : IDisposable
     {
-        private readonly string connectionString;
-        private SqliteConnection db;
+        private readonly SqliteConnection db;
 
         public DB()
         {
             string path = Path.Combine(TShock.SavePath, "Permabuffs.sqlite");
-            connectionString = $"URI=file:{path}";
-            db = new SqliteConnection(connectionString);
+            db = new SqliteConnection($"Data Source={path}");
             db.Open();
             CreatePermabuffTable();
         }
 
         private void CreatePermabuffTable()
         {
-            using var cmd = new SqliteCommand("CREATE TABLE IF NOT EXISTS permabuffs (UserID INTEGER NOT NULL, BuffID INTEGER NOT NULL, PRIMARY KEY(UserID, BuffID));", db);
+            using var cmd = db.CreateCommand();
+            cmd.CommandText = "CREATE TABLE IF NOT EXISTS permabuffs (UserID INTEGER NOT NULL, BuffID INTEGER NOT NULL, PRIMARY KEY(UserID, BuffID));";
             cmd.ExecuteNonQuery();
         }
 
         public List<int> GetPermabuffs(int userId)
         {
             var list = new List<int>();
-            using var cmd = new SqliteCommand("SELECT BuffID FROM permabuffs WHERE UserID=@0", db);
-            cmd.Parameters.AddWithValue("@0", userId);
+            using var cmd = db.CreateCommand();
+            cmd.CommandText = "SELECT BuffID FROM permabuffs WHERE UserID=$uid;";
+            cmd.Parameters.AddWithValue("$uid", userId);
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
-            {
                 list.Add(reader.GetInt32(0));
-            }
             return list;
         }
 
         public void AddPermabuff(int userId, int buffId)
         {
-            using var cmd = new SqliteCommand("INSERT OR IGNORE INTO permabuffs (UserID, BuffID) VALUES (@0, @1);", db);
-            cmd.Parameters.AddWithValue("@0", userId);
-            cmd.Parameters.AddWithValue("@1", buffId);
+            using var cmd = db.CreateCommand();
+            cmd.CommandText = "INSERT OR IGNORE INTO permabuffs (UserID, BuffID) VALUES ($uid, $bid);";
+            cmd.Parameters.AddWithValue("$uid", userId);
+            cmd.Parameters.AddWithValue("$bid", buffId);
             cmd.ExecuteNonQuery();
         }
 
         public void RemovePermabuff(int userId, int buffId)
         {
-            using var cmd = new SqliteCommand("DELETE FROM permabuffs WHERE UserID=@0 AND BuffID=@1;", db);
-            cmd.Parameters.AddWithValue("@0", userId);
-            cmd.Parameters.AddWithValue("@1", buffId);
+            using var cmd = db.CreateCommand();
+            cmd.CommandText = "DELETE FROM permabuffs WHERE UserID=$uid AND BuffID=$bid;";
+            cmd.Parameters.AddWithValue("$uid", userId);
+            cmd.Parameters.AddWithValue("$bid", buffId);
             cmd.ExecuteNonQuery();
         }
 
