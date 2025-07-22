@@ -1,84 +1,66 @@
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using TShockAPI;
 using Mono.Data.Sqlite;
 
 namespace Permabuffs
 {
-	public class DB
-	{
-		private static string path = Path.Combine(TShock.SavePath, "permabuffs.sqlite");
+    public class DB
+    {
+        private static string dbPath = TShock.SavePath + "/permabuffs.sqlite";
+        private static SqliteConnection db;
 
-		private static SqliteConnection db;
+        public static void Connect()
+        {
+            db = new SqliteConnection($"URI=file:{dbPath}");
+            db.Open();
 
-		public static void Connect()
-		{
-			try
-			{
-				bool newdb = !File.Exists(path);
+            using var cmd = db.CreateCommand();
+            cmd.CommandText =
+                @"CREATE TABLE IF NOT EXISTS permabuffs (
+                    UserID INTEGER NOT NULL,
+                    BuffID INTEGER NOT NULL
+                );";
+            cmd.ExecuteNonQuery();
+        }
 
-				db = new SqliteConnection("URI=file:" + path + ",Version=3");
-				db.Open();
+        public static void CreatePlayer(int userId)
+        {
+            // No-op
+        }
 
-				if (newdb)
-				{
-					using (var cmd = new SqliteCommand(db))
-					{
-						cmd.CommandText = "CREATE TABLE IF NOT EXISTS permabuffs (UserID INTEGER NOT NULL, BuffID INTEGER NOT NULL);";
-						cmd.ExecuteNonQuery();
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				TShock.Log.ConsoleError($"[Permabuffs] DB Connection failed: {ex}");
-			}
-		}
+        public static List<int> GetBuffs(int userId)
+        {
+            var result = new List<int>();
 
-		public static void CreatePlayer(int userID)
-		{
-			// Intentionally left blank; this DB version does not store users by default
-		}
+            using var cmd = db.CreateCommand();
+            cmd.CommandText = "SELECT BuffID FROM permabuffs WHERE UserID=@0";
+            cmd.Parameters.AddWithValue("@0", userId);
 
-		public static List<int> GetBuffs(int userID)
-		{
-			List<int> buffs = new();
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                result.Add(reader.GetInt32(0));
+            }
+            return result;
+        }
 
-			using (var cmd = new SqliteCommand("SELECT BuffID FROM permabuffs WHERE UserID=@0", db))
-			{
-				cmd.Parameters.AddWithValue("@0", userID);
+        public static void AddBuff(int userId, int buffId)
+        {
+            using var cmd = db.CreateCommand();
+            cmd.CommandText = "INSERT INTO permabuffs (UserID, BuffID) VALUES (@0, @1)";
+            cmd.Parameters.AddWithValue("@0", userId);
+            cmd.Parameters.AddWithValue("@1", buffId);
+            cmd.ExecuteNonQuery();
+        }
 
-				using (var reader = cmd.ExecuteReader())
-				{
-					while (reader.Read())
-					{
-						buffs.Add(reader.GetInt32(0));
-					}
-				}
-			}
-			return buffs;
-		}
-
-		public static void AddBuff(int userID, int buffID)
-		{
-			using (var cmd = new SqliteCommand("INSERT INTO permabuffs (UserID, BuffID) VALUES (@0, @1)", db))
-			{
-				cmd.Parameters.AddWithValue("@0", userID);
-				cmd.Parameters.AddWithValue("@1", buffID);
-				cmd.ExecuteNonQuery();
-			}
-		}
-
-		public static void RemoveBuff(int userID, int buffID)
-		{
-			using (var cmd = new SqliteCommand("DELETE FROM permabuffs WHERE UserID=@0 AND BuffID=@1", db))
-			{
-				cmd.Parameters.AddWithValue("@0", userID);
-				cmd.Parameters.AddWithValue("@1", buffID);
-				cmd.ExecuteNonQuery();
-			}
-		}
-	}
+        public static void RemoveBuff(int userId, int buffId)
+        {
+            using var cmd = db.CreateCommand();
+            cmd.CommandText = "DELETE FROM permabuffs WHERE UserID=@0 AND BuffID=@1";
+            cmd.Parameters.AddWithValue("@0", userId);
+            cmd.Parameters.AddWithValue("@1", buffId);
+            cmd.ExecuteNonQuery();
+        }
+    }
 }
