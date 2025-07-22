@@ -40,7 +40,7 @@ namespace Permabuffs
             { "shine potion", BuffID.Shine },
             { "sonar potion", BuffID.Sonar },
             { "spelunker potion", BuffID.Spelunker },
-            { "stink potion", BuffID.StinkyToy }, // approximate (ID 371)
+            { "stink potion", BuffID.StinkyToy }, // approximate
             { "summoning potion", BuffID.Summoning },
             { "swiftness potion", BuffID.Swiftness },
             { "thorns potion", BuffID.Thorns },
@@ -48,6 +48,8 @@ namespace Permabuffs
             { "warmth potion", BuffID.Warmth },
             { "water walking potion", BuffID.WaterWalking },
             { "wrath potion", BuffID.Wrath },
+
+            // Weapon Flasks
             { "flask of cursed flames", BuffID.WeaponImbueCursedFlames },
             { "flask of fire", BuffID.WeaponImbueFire },
             { "flask of gold", BuffID.WeaponImbueGold },
@@ -79,7 +81,6 @@ namespace Permabuffs
             { "smoothie of darkness", BuffID.WellFed },
             { "teacup", BuffID.WellFed },
             { "tropical smoothie", BuffID.WellFed },
-            // plenty more single-food items if desired…
 
             // Plenty Satisfied (206)
             { "cooked shrimp", BuffID.WellFed2 },
@@ -91,7 +92,6 @@ namespace Permabuffs
             { "chicken nugget", BuffID.WellFed2 },
             { "nachos", BuffID.WellFed2 },
             { "hotdog", BuffID.WellFed2 },
-            // ...
 
             // Exquisitely Stuffed (207)
             { "apple pie", BuffID.WellFed3 },
@@ -99,7 +99,6 @@ namespace Permabuffs
             { "burger", BuffID.WellFed3 },
             { "pizza", BuffID.WellFed3 },
             { "steak", BuffID.WellFed3 },
-            // …
         };
     }
 }
