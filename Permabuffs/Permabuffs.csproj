@@ -2,26 +2,26 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <OutputPath>bin\</OutputPath>
     <Nullable>enable</Nullable>
+    <Platforms>AnyCPU</Platforms>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="TShockAPI">
-      <HintPath>..\lib\TShockAPI.dll</HintPath>
+      <HintPath>../lib/TShockAPI.dll</HintPath>
     </Reference>
     <Reference Include="OTAPI">
-      <HintPath>..\lib\OTAPI.dll</HintPath>
+      <HintPath>../lib/OTAPI.dll</HintPath>
     </Reference>
     <Reference Include="TerrariaServer">
-      <HintPath>..\lib\TerrariaServer.dll</HintPath>
+      <HintPath>../lib/TerrariaServer.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Data.Sqlite">
-      <HintPath>..\lib\Mono.Data.Sqlite.dll</HintPath>
+      <HintPath>../lib/Mono.Data.Sqlite.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data">
-      <HintPath>..\lib\MySql.Data.dll</HintPath>
+      <HintPath>../lib/MySql.Data.dll</HintPath>
     </Reference>
   </ItemGroup>
 
