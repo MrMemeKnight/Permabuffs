@@ -1,109 +1,161 @@
 using System.Collections.Generic;
+using Terraria.ID;
 
 namespace Permabuffs
 {
-    /// <summary>
-    /// Maps potion, flask, food, and drink names to their respective buff IDs
-    /// for permanent buff detection.
-    /// </summary>
-    public class Potions
+    public static class Potions
     {
-        public static Dictionary<string, int> BuffMap = new Dictionary<string, int>();
-
-        public static void PopulateBuffMap()
+        public static readonly Dictionary<string, int> BuffMap = new(StringComparer.OrdinalIgnoreCase)
         {
-            // Standard buff potions (IDs from 1–18, 112–123, 257 etc.)
-            BuffMap.Add("Ammo Reservation Potion", 112);
-            BuffMap.Add("Archery Potion", 16);
-            BuffMap.Add("Battle Potion", 13);
-            BuffMap.Add("Builder Potion", 107);
-            BuffMap.Add("Calming Potion", 106);
-            BuffMap.Add("Crate Potion", 123);
-            BuffMap.Add("Dangersense Potion", 111);
-            BuffMap.Add("Endurance Potion", 114);
-            BuffMap.Add("Featherfall Potion", 8);
-            BuffMap.Add("Fishing Potion", 121);
-            BuffMap.Add("Flipper Potion", 109);
-            BuffMap.Add("Gills Potion", 4);
-            BuffMap.Add("Gravitation Potion", 18);
-            BuffMap.Add("Hunter Potion", 17);
-            BuffMap.Add("Inferno Potion", 116);
-            BuffMap.Add("Invisibility Potion", 10);
-            BuffMap.Add("Ironskin Potion", 5);
-            BuffMap.Add("Lifeforce Potion", 113);
-            BuffMap.Add("Magic Power Potion", 7);
-            BuffMap.Add("Mana Regeneration Potion", 6);
-            BuffMap.Add("Mining Potion", 104);
-            BuffMap.Add("Night Owl Potion", 12);
-            BuffMap.Add("Obsidian Skin Potion", 1);
-            BuffMap.Add("Rage Potion", 115);
-            BuffMap.Add("Regeneration Potion", 2);
-            BuffMap.Add("Shine Potion", 11);
-            BuffMap.Add("Sonar Potion", 122);
-            BuffMap.Add("Spelunker Potion", 9);
-            BuffMap.Add("Stink Potion", 371);
-            BuffMap.Add("Summoning Potion", 110);
-            BuffMap.Add("Swiftness Potion", 3);
-            BuffMap.Add("Thorns Potion", 14);
-            BuffMap.Add("Titan Potion", 108);
-            BuffMap.Add("Warmth Potion", 124);
-            BuffMap.Add("Water Walking Potion", 15);
-            BuffMap.Add("Wrath Potion", 117);
-            BuffMap.Add("Greater Luck Potion", 257);
-            BuffMap.Add("Luck Potion", 257);
-            BuffMap.Add("Lesser Luck Potion", 257);
+            // Potions
+            { "ironskin potion", BuffID.Ironskin },
+            { "regeneration potion", BuffID.Regeneration },
+            { "swiftness potion", BuffID.Swiftness },
+            { "endurance potion", BuffID.Endurance },
+            { "obsidian skin potion", BuffID.ObsidianSkin },
+            { "mining potion", BuffID.Mining },
+            { "heartreach potion", BuffID.Heartreach },
+            { "spelunker potion", BuffID.Spelunker },
+            { "hunter potion", BuffID.Hunter },
+            { "night owl potion", BuffID.NightOwl },
+            { "shine potion", BuffID.Shine },
+            { "thorns potion", BuffID.Thorns },
+            { "mana regeneration potion", BuffID.ManaRegeneration },
+            { "magic power potion", BuffID.MagicPower },
+            { "featherfall potion", BuffID.Featherfall },
+            { "archery potion", BuffID.Archery },
+            { "gills potion", BuffID.Gills },
+            { "calming potion", BuffID.Calm },
+            { "wrath potion", BuffID.Wrath },
+            { "rage potion", BuffID.Rage },
+            { "inferno potion", BuffID.Inferno },
+            { "lifeforce potion", BuffID.Lifeforce },
+            { "titan potion", BuffID.Titan },
+            { "summoning potion", BuffID.Summoning },
+            { "builder potion", BuffID.Builder },
+            { "battle potion", BuffID.Battle },
+            { "dangersense potion", BuffID.Dangersense },
+            { "gravitation potion", BuffID.Gravitation },
+            { "ammo reservation potion", BuffID.AmmoReservation },
+            { "warmth potion", BuffID.Warmth },
+            { "fishing potion", BuffID.Fishing },
+            { "crate potion", BuffID.Crate },
+            { "sonar potion", BuffID.Sonar },
+            { "invisibility potion", BuffID.Invisibility },
+            { "teleportation potion", BuffID.Teleportation },
+            { "gender change potion", BuffID.GenderChange },
+            { "lifeforce potion", BuffID.Lifeforce },
+            { "greater luck potion", BuffID.Luck },
+            { "luck potion", BuffID.Luck },
+            { "lesser luck potion", BuffID.Luck },
 
-            // Flasks (IDs 71–79)
-            BuffMap.Add("Flask of Cursed Flames", 73);
-            BuffMap.Add("Flask of Fire", 74);
-            BuffMap.Add("Flask of Gold", 75);
-            BuffMap.Add("Flask of Ichor", 76);
-            BuffMap.Add("Flask of Nanites", 77);
-            BuffMap.Add("Flask of Party", 78);
-            BuffMap.Add("Flask of Poison", 79);
-            BuffMap.Add("Flask of Venom", 71);
+            // Flasks
+            { "flask of cursed flames", BuffID.WeaponImbueCursedFlames },
+            { "flask of fire", BuffID.WeaponImbueFire },
+            { "flask of gold", BuffID.WeaponImbueGold },
+            { "flask of ichor", BuffID.WeaponImbueIchor },
+            { "flask of nanites", BuffID.WeaponImbueNanites },
+            { "flask of party", BuffID.WeaponImbueConfetti },
+            { "flask of poison", BuffID.WeaponImbueVenom },
 
-            // Drinks (Tipsy buff, ID 25)
-            BuffMap.Add("Sake", 25);
-            BuffMap.Add("Ale", 25);
+            // Drinks (Tipsy)
+            { "ale", BuffID.Tipsy },
+            { "sake", BuffID.Tipsy },
 
-            // Well‑Fed (ID 26)
-            var wellFed = new[]
-            {
-                "Apple Juice","Bloody Moscato","Bunny Stew","Cooked Fish",
-                "Frozen Banana Daiquiri","Fruit Juice","Fruit Salad","Grilled Squirrel",
-                "Lemonade","Peach Sangria","Roasted Bird","Smoothie of Darkness",
-                "Tropical Smoothie","Teacup","Apple","Apricot","Banana",
-                "Blackcurrant","Blood Orange","Cherry","Coconut","Elderberry",
-                "Grapefruit","Lemon","Mango","Peach","Pineapple","Plum",
-                "Rambutan","Carton of Milk","Potato Chips","Shucked Oyster","Marshmallow"
-            };
-            foreach (var name in wellFed)
-                BuffMap.Add(name, 26);
+            // Well‑Fed (BuffID.WellFed)
+            { "apple", BuffID.WellFed },
+            { "apple juice", BuffID.WellFed },
+            { "bloody moscato", BuffID.WellFed },
+            { "bunny stew", BuffID.WellFed },
+            { "cooked fish", BuffID.WellFed },
+            { "frozen banana daiquiri", BuffID.WellFed },
+            { "fruit juice", BuffID.WellFed },
+            { "fruit salad", BuffID.WellFed },
+            { "grilled squirrel", BuffID.WellFed },
+            { "lemonade", BuffID.WellFed },
+            { "peach sangria", BuffID.WellFed },
+            { "roasted bird", BuffID.WellFed },
+            { "smoothie of darkness", BuffID.WellFed },
+            { "tropical smoothie", BuffID.WellFed },
+            { "teacup", BuffID.WellFed },
+            { "apricot", BuffID.WellFed },
+            { "banana", BuffID.WellFed },
+            { "blackcurrant", BuffID.WellFed },
+            { "blood orange", BuffID.WellFed },
+            { "cherry", BuffID.WellFed },
+            { "coconut", BuffID.WellFed },
+            { "elderberry", BuffID.WellFed },
+            { "grapefruit", BuffID.WellFed },
+            { "lemon", BuffID.WellFed },
+            { "mango", BuffID.WellFed },
+            { "peach", BuffID.WellFed },
+            { "pineapple", BuffID.WellFed },
+            { "plum", BuffID.WellFed },
+            { "rambutan", BuffID.WellFed },
+            { "carton of milk", BuffID.WellFed },
+            { "potato chips", BuffID.WellFed },
+            { "shucked oyster", BuffID.WellFed },
+            { "marshmallow", BuffID.WellFed },
 
-            // Plenty Satisfied (ID 206)
-            var plenty = new[]
-            {
-                "Grub Soup","Bowl of Soup","Cooked Shrimp","Pumpkin Pie",
-                "Sashimi","Escargot","Lobster Tail","Prismatic Punch",
-                "Roasted Duck","Sauteed Frog Legs","Pho","Pad Thai",
-                "Dragon Fruit","Star Fruit","Banana Split","Chicken Nugget",
-                "Chocolate Chip Cookie","Coffee","Cream Soda","Fried Egg",
-                "Fries","Grapes","Hotdog","Ice Cream","Nachos"
-            };
-            foreach (var name in plenty)
-                BuffMap.Add(name, 206);
+            // Plenty Satisfied (BuffID.WellFed2 or 206 if mapping to 206)
+            { "grub soup", BuffID.WellFed },
+            { "bowl of soup", BuffID.WellFed },
+            { "cooked shrimp", BuffID.WellFed2 },
+            { "pumpkin pie", BuffID.WellFed },
+            { "sashimi", BuffID.WellFed },
+            { "escargot", BuffID.WellFed },
+            { "lobster tail", BuffID.WellFed2 },
+            { "prismatic punch", BuffID.WellFed2 },
+            { "roasted duck", BuffID.WellFed2 },
+            { "sauteed frog legs", BuffID.WellFed },
+            { "pho", BuffID.WellFed2 },
+            { "pad thai", BuffID.WellFed },
+            { "dragon fruit", BuffID.WellFed },
+            { "star fruit", BuffID.WellFed },
+            { "banana split", BuffID.WellFed2 },
+            { "chicken nugget", BuffID.WellFed2 },
+            { "chocolate chip cookie", BuffID.WellFed },
+            { "coffee", BuffID.WellFed },
+            { "cream soda", BuffID.WellFed },
+            { "fried egg", BuffID.WellFed },
+            { "fries", BuffID.WellFed2 },
+            { "grapes", BuffID.WellFed },
+            { "hotdog", BuffID.WellFed2 },
+            { "ice cream", BuffID.WellFed2 },
+            { "nachos", BuffID.WellFed2 },
 
-            // Exquisitely Stuffed (ID 207)
-            var stuffed = new[]
-            {
-                "Golden Delight","Grape Juice","Seafood Dinner","Bacon",
-                "Christmas Pudding","Gingerbread Cookie","Sugar Cookie",
-                "Apple Pie","BBQ Ribs","Burger","Milkshake","Pizza",
-                "Spaghetti","Steak"
-            };
-            foreach (var name in stuffed)
-                BuffMap.Add(name, 207);
-        }
+            // Exquisitely Stuffed (BuffID.WellFed3)
+            { "golden delight", BuffID.WellFed3 },
+            { "grape juice", BuffID.WellFed3 },
+            { "seafood dinner", BuffID.WellFed3 },
+            { "bacon", BuffID.WellFed3 },
+            { "christmas pudding", BuffID.WellFed3 },
+            { "gingerbread cookie", BuffID.WellFed3 },
+            { "sugar cookie", BuffID.WellFed3 },
+            { "apple pie", BuffID.WellFed3 },
+            { "bbq ribs", BuffID.WellFed3 },
+            { "burger", BuffID.WellFed3 },
+            { "milkshake", BuffID.WellFed3 },
+            { "pizza", BuffID.WellFed3 },
+            { "spaghetti", BuffID.WellFed3 },
+            { "steak", BuffID.WellFed3 },
+            { "stuffing", BuffID.WellFed3 },
+            { "donut", BuffID.WellFed },
+            { "frosted donut", BuffID.WellFed },
+            { "frosted cake", BuffID.WellFed },
+            { "cheeseburger", BuffID.WellFed2 },
+            { "cheese pizza", BuffID.WellFed2 },
+            { "candy apple", BuffID.WellFed },
+            { "candy cane", BuffID.WellFed },
+            { "sundae", BuffID.WellFed2 },
+            { "mushroom stew", BuffID.WellFed },
+            { "meatball", BuffID.WellFed },
+            { "spicy pepper", BuffID.WellFed },
+            { "strange brew", BuffID.WellFed },
+            { "turkey dinner", BuffID.WellFed3 },
+            { "carrot", BuffID.WellFed },
+            { "cooked scorpion", BuffID.WellFed },
+            { "scorpion stew", BuffID.WellFed3 }
+        };
     }
 }
