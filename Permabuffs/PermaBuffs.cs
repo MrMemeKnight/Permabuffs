@@ -75,4 +75,30 @@ namespace Permabuffs
                 return;
             }
 
-            int buff
+            int buffID = Potions.NameToBuffIDs[potionName];
+            int itemType = Potions.PotionToItem[potionName];
+
+            var piggy = args.Player.TPlayer.bank.item;
+
+            int totalCount = 0;
+            foreach (var item in piggy)
+            {
+                if (item != null && item.type == itemType)
+                {
+                    totalCount += item.stack;
+                }
+            }
+
+            if (totalCount < 30)
+            {
+                args.Player.SendErrorMessage("You need at least 30 of that potion in your piggy bank.");
+                return;
+            }
+
+            DB.Add(args.Player.Index, buffID);
+            args.Player.SendSuccessMessage("Permanent buff added: " + potionName);
+
+            args.Player.SetBuff(buffID, 60 * 60 * 30);
+        }
+    }
+}
