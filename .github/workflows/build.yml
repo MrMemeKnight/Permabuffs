@@ -23,17 +23,10 @@ jobs:
         run: dotnet restore Permabuffs/Permabuffs.csproj
 
       - name: Build for ARM64
-        run: dotnet build Permabuffs/Permabuffs.csproj \
-          -c Release \
-          -r linux-arm64 \
-          --no-self-contained
+        run: dotnet build Permabuffs/Permabuffs.csproj -c Release -r linux-arm64 --no-self-contained
 
       - name: Publish plugin
-        run: dotnet publish Permabuffs/Permabuffs.csproj \
-          --configuration Release \
-          --runtime linux-arm64 \
-          --no-self-contained \
-          --output ./output
+        run: dotnet publish Permabuffs/Permabuffs.csproj --configuration Release --runtime linux-arm64 --no-self-contained --output ./output
 
       - name: Upload Permabuffs DLL
         uses: actions/upload-artifact@v4
