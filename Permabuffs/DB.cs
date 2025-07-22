@@ -1,53 +1,65 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using TShockAPI.DB;
+using System.IO;
+using Mono.Data.Sqlite;
+using TShockAPI;
 
 namespace Permabuffs
 {
-    public class DB
+    public class DB : IDisposable
     {
-        private IDbConnection _db;
+        private readonly string connectionString;
+        private SqliteConnection db;
 
-        public DB(IDbConnection db)
+        public DB()
         {
-            _db = db;
-
-            var table = new SqlTable("Permabuffs",
-                new SqlColumn("UserID", DbType.Int32) { Primary = true },
-                new SqlColumn("Enabled", DbType.Int32)
-            );
-
-            var creator = new SqlTableCreator(_db,
-                _db.GetSqlType() == SqlType.Sqlite
-                    ? new SqliteQueryCreator(_db)
-                    : new MysqlQueryCreator(_db));
-
-            creator.EnsureTableStructure(table);
+            string path = Path.Combine(TShock.SavePath, "Permabuffs.sqlite");
+            connectionString = $"URI=file:{path}";
+            db = new SqliteConnection(connectionString);
+            db.Open();
+            CreatePermabuffTable();
         }
 
-        public bool IsEnabled(int userId)
+        private void CreatePermabuffTable()
         {
-            using var reader = _db.QueryReader("SELECT Enabled FROM Permabuffs WHERE UserID = @0", userId);
-            if (reader.Read())
-                return reader.Get<int>("Enabled") == 1;
-
-            return false;
+            using var cmd = new SqliteCommand("CREATE TABLE IF NOT EXISTS permabuffs (UserID INTEGER NOT NULL, BuffID INTEGER NOT NULL, PRIMARY KEY(UserID, BuffID));", db);
+            cmd.ExecuteNonQuery();
         }
 
-        public void SetEnabled(int userId, bool enabled)
+        public List<int> GetPermabuffs(int userId)
         {
-            int val = enabled ? 1 : 0;
-            if (HasUser(userId))
-                _db.Query("UPDATE Permabuffs SET Enabled = @0 WHERE UserID = @1", val, userId);
-            else
-                _db.Query("INSERT INTO Permabuffs (UserID, Enabled) VALUES (@0, @1)", userId, val);
+            var list = new List<int>();
+            using var cmd = new SqliteCommand("SELECT BuffID FROM permabuffs WHERE UserID=@0", db);
+            cmd.Parameters.AddWithValue("@0", userId);
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                list.Add(reader.GetInt32(0));
+            }
+            return list;
         }
 
-        private bool HasUser(int userId)
+        public void AddPermabuff(int userId, int buffId)
         {
-            using var reader = _db.QueryReader("SELECT 1 FROM Permabuffs WHERE UserID = @0", userId);
-            return reader.Read();
+            using var cmd = new SqliteCommand("INSERT OR IGNORE INTO permabuffs (UserID, BuffID) VALUES (@0, @1);", db);
+            cmd.Parameters.AddWithValue("@0", userId);
+            cmd.Parameters.AddWithValue("@1", buffId);
+            cmd.ExecuteNonQuery();
+        }
+
+        public void RemovePermabuff(int userId, int buffId)
+        {
+            using var cmd = new SqliteCommand("DELETE FROM permabuffs WHERE UserID=@0 AND BuffID=@1;", db);
+            cmd.Parameters.AddWithValue("@0", userId);
+            cmd.Parameters.AddWithValue("@1", buffId);
+            cmd.ExecuteNonQuery();
+        }
+
+        public void Dispose()
+        {
+            db.Close();
+            db.Dispose();
         }
     }
 }
