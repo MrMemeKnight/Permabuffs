@@ -1,120 +1,129 @@
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Timers;
-using OTAPI;
+using System.Timers; // Keep for clarity
+using TShockAPI;
 using Terraria;
 using TerrariaApi.Server;
-using TShockAPI;
-using TShockAPI.Hooks;
 
 namespace Permabuffs
 {
     [ApiVersion(2, 1)]
-    public class PermaBuffs : TerrariaPlugin
+    public class PermabuffsPlugin : TerrariaPlugin
     {
-        public override string Name => "PermaBuffs";
-        public override string Author => "SyntaxVoid, updated for ARM64 by Gian";
-        public override string Description => "Auto-applies buffs based on items in Piggy Bank.";
+        public override string Author => "SyntaxVoid";
+        public override string Description => "Automatically grants buffs based on potions in the piggy bank.";
+        public override string Name => "Permabuffs";
         public override Version Version => new Version(1, 0, 0, 0);
 
-        private readonly Dictionary<int, bool> ActivePlayers = new();
-        private readonly Timer timer = new(3000);
+        private Dictionary<int, System.Timers.Timer> playerTimers = new();
 
-        public PermaBuffs(Main game) : base(game) { }
+        public PermabuffsPlugin(Main game) : base(game) { }
 
         public override void Initialize()
         {
-            Potions.PopulateBuffMap();
             ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
-            ServerApi.Hooks.ServerJoin.Register(this, OnJoin);
             ServerApi.Hooks.ServerLeave.Register(this, OnLeave);
-            timer.Elapsed += OnTimedEvent;
-            timer.Start();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
-                ServerApi.Hooks.ServerJoin.Deregister(this, OnJoin);
-                ServerApi.Hooks.ServerLeave.Deregister(this, OnLeave);
-                timer.Stop();
-                timer.Dispose();
-            }
-            base.Dispose(disposing);
         }
 
         private void OnInitialize(EventArgs args)
         {
-            Commands.ChatCommands.Add(new Command("permbuff.toggle", ToggleBuffs, "pbenable", "pbdisable"));
+            DB.Connect();
+            Commands.ChatCommands.Add(new Command("permabuffs.toggle", TogglePermabuffs, "pbenable", "pbdisable"));
+
+            foreach (var player in TShock.Players)
+            {
+                if (player != null && player.Active)
+                    StartTimer(player);
+            }
         }
 
-        private void OnJoin(JoinEventArgs args)
+        private void TogglePermabuffs(CommandArgs args)
         {
-            ActivePlayers[args.Who] = false;
+            if (args.Player == null || !args.Player.Active)
+                return;
+
+            var userId = args.Player.Account.ID;
+            var enabled = playerTimers.ContainsKey(args.Player.Index);
+
+            if (args.Message.StartsWith("/pbenable"))
+            {
+                if (!enabled)
+                {
+                    StartTimer(args.Player);
+                    args.Player.SendSuccessMessage("Permabuffs enabled.");
+                }
+                else
+                {
+                    args.Player.SendInfoMessage("Permabuffs are already enabled.");
+                }
+            }
+            else if (args.Message.StartsWith("/pbdisable"))
+            {
+                if (enabled)
+                {
+                    StopTimer(args.Player.Index);
+                    args.Player.SendSuccessMessage("Permabuffs disabled.");
+                }
+                else
+                {
+                    args.Player.SendInfoMessage("Permabuffs are already disabled.");
+                }
+            }
+        }
+
+        private void StartTimer(TSPlayer player)
+        {
+            if (playerTimers.ContainsKey(player.Index))
+                return;
+
+            var timer = new System.Timers.Timer(1000); // Disambiguated Timer
+            timer.Elapsed += (sender, args) => ApplyPermabuffs(player);
+            timer.AutoReset = true;
+            timer.Start();
+
+            playerTimers[player.Index] = timer;
+        }
+
+        private void StopTimer(int index)
+        {
+            if (playerTimers.TryGetValue(index, out var timer))
+            {
+                timer.Stop();
+                timer.Dispose();
+                playerTimers.Remove(index);
+            }
         }
 
         private void OnLeave(LeaveEventArgs args)
         {
-            ActivePlayers.Remove(args.Who);
+            StopTimer(args.Who);
         }
 
-        private void ToggleBuffs(CommandArgs args)
+        private void ApplyPermabuffs(TSPlayer player)
         {
-            if (!ActivePlayers.ContainsKey(args.Player.Index))
-                ActivePlayers[args.Player.Index] = false;
+            if (player?.TPlayer == null || !player.Active)
+                return;
 
-            string command = args.Message.Trim().ToLowerInvariant();
+            var inventory = player.TPlayer.bank.item;
+            var foundBuffs = new List<int>();
 
-            if (command.EndsWith("pbenable"))
+            foreach (var item in inventory)
             {
-                ActivePlayers[args.Player.Index] = true;
-                args.Player.SendSuccessMessage("Permabuffs enabled.");
-            }
-            else if (command.EndsWith("pbdisable"))
-            {
-                ActivePlayers[args.Player.Index] = false;
-                args.Player.SendInfoMessage("Permabuffs disabled.");
-            }
-            else
-            {
-                args.Player.SendErrorMessage("Unknown command. Use /pbenable or /pbdisable.");
-            }
-        }
-
-        private void OnTimedEvent(object sender, ElapsedEventArgs e)
-        {
-            foreach (var pair in ActivePlayers)
-            {
-                int index = pair.Key;
-                bool isActive = pair.Value;
-
-                if (!isActive || index < 0 || index >= TShock.Players.Length)
+                if (item == null || item.stack < 30 || item.netID <= 0)
                     continue;
 
-                TSPlayer tsPlayer = TShock.Players[index];
-                if (tsPlayer == null || !tsPlayer.Active || tsPlayer.TPlayer.dead)
-                    continue;
-
-                Player player = tsPlayer.TPlayer;
-                var piggyBank = player.bank.item;
-
-                foreach (var item in piggyBank)
+                if (Potions.BuffMap.TryGetValue(item.Name, out int buffId))
                 {
-                    if (item == null || item.stack < 30 || string.IsNullOrEmpty(item.Name))
-                        continue;
+                    foundBuffs.Add(buffId);
+                }
+            }
 
-                    if (Potions.BuffIDs.TryGetValue(item.Name.ToLowerInvariant(), out int buffId))
-                    {
-                        bool hasBuff = player.buffType.Any(b => b == buffId);
-
-                        if (!hasBuff)
-                        {
-                            player.AddBuff(buffId, 60 * 10); // 10 seconds
-                        }
-                    }
+            foreach (var buff in foundBuffs)
+            {
+                if (!player.TPlayer.HasBuff(buff))
+                {
+                    player.TPlayer.AddBuff(buff, 60 * 2); // Apply for 2 seconds, will refresh each tick
                 }
             }
         }
