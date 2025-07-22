@@ -44,7 +44,6 @@ namespace Permabuffs
             { "invisibility potion", BuffID.Invisibility },
             { "teleportation potion", BuffID.Teleportation },
             { "gender change potion", BuffID.GenderChange },
-            { "lifeforce potion", BuffID.Lifeforce },
             { "greater luck potion", BuffID.Luck },
             { "luck potion", BuffID.Luck },
             { "lesser luck potion", BuffID.Luck },
@@ -62,7 +61,7 @@ namespace Permabuffs
             { "ale", BuffID.Tipsy },
             { "sake", BuffID.Tipsy },
 
-            // Well‑Fed (BuffID.WellFed)
+            // Well‑Fed
             { "apple", BuffID.WellFed },
             { "apple juice", BuffID.WellFed },
             { "bloody moscato", BuffID.WellFed },
@@ -97,34 +96,21 @@ namespace Permabuffs
             { "shucked oyster", BuffID.WellFed },
             { "marshmallow", BuffID.WellFed },
 
-            // Plenty Satisfied (BuffID.WellFed2 or 206 if mapping to 206)
-            { "grub soup", BuffID.WellFed },
-            { "bowl of soup", BuffID.WellFed },
+            // Plenty Satisfied
             { "cooked shrimp", BuffID.WellFed2 },
-            { "pumpkin pie", BuffID.WellFed },
-            { "sashimi", BuffID.WellFed },
-            { "escargot", BuffID.WellFed },
             { "lobster tail", BuffID.WellFed2 },
             { "prismatic punch", BuffID.WellFed2 },
             { "roasted duck", BuffID.WellFed2 },
-            { "sauteed frog legs", BuffID.WellFed },
             { "pho", BuffID.WellFed2 },
-            { "pad thai", BuffID.WellFed },
-            { "dragon fruit", BuffID.WellFed },
-            { "star fruit", BuffID.WellFed },
             { "banana split", BuffID.WellFed2 },
             { "chicken nugget", BuffID.WellFed2 },
-            { "chocolate chip cookie", BuffID.WellFed },
-            { "coffee", BuffID.WellFed },
-            { "cream soda", BuffID.WellFed },
-            { "fried egg", BuffID.WellFed },
             { "fries", BuffID.WellFed2 },
-            { "grapes", BuffID.WellFed },
             { "hotdog", BuffID.WellFed2 },
             { "ice cream", BuffID.WellFed2 },
             { "nachos", BuffID.WellFed2 },
+            // Others default to WellFed
 
-            // Exquisitely Stuffed (BuffID.WellFed3)
+            // Exquisitely Stuffed
             { "golden delight", BuffID.WellFed3 },
             { "grape juice", BuffID.WellFed3 },
             { "seafood dinner", BuffID.WellFed3 },
@@ -140,21 +126,7 @@ namespace Permabuffs
             { "spaghetti", BuffID.WellFed3 },
             { "steak", BuffID.WellFed3 },
             { "stuffing", BuffID.WellFed3 },
-            { "donut", BuffID.WellFed },
-            { "frosted donut", BuffID.WellFed },
-            { "frosted cake", BuffID.WellFed },
-            { "cheeseburger", BuffID.WellFed2 },
-            { "cheese pizza", BuffID.WellFed2 },
-            { "candy apple", BuffID.WellFed },
-            { "candy cane", BuffID.WellFed },
-            { "sundae", BuffID.WellFed2 },
-            { "mushroom stew", BuffID.WellFed },
-            { "meatball", BuffID.WellFed },
-            { "spicy pepper", BuffID.WellFed },
-            { "strange brew", BuffID.WellFed },
             { "turkey dinner", BuffID.WellFed3 },
-            { "carrot", BuffID.WellFed },
-            { "cooked scorpion", BuffID.WellFed },
             { "scorpion stew", BuffID.WellFed3 }
         };
     }
