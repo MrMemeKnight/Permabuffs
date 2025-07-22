@@ -65,7 +65,8 @@ namespace Permabuffs
                 if (player == null || !player.Active || !playerToggles.TryGetValue(player.Index, out bool enabled) || !enabled)
                     continue;
 
-                var piggyBank = player.TPlayer.bank.item;
+                var piggyBank = player.TPlayer.bank?.item;
+                if (piggyBank == null) continue;
 
                 HashSet<int> grantedBuffs = new();
                 foreach (var item in piggyBank)
@@ -77,7 +78,7 @@ namespace Permabuffs
                     {
                         if (!grantedBuffs.Contains(buffId))
                         {
-                            player.SetBuff(buffId, 3600, quiet: true);
+                            player.SetBuff(buffId, 3600);
                             grantedBuffs.Add(buffId);
                         }
                     }
