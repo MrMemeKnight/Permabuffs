@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Terraria;
-using TShockAPI;
 
 namespace Permabuffs
 {
@@ -10,59 +8,49 @@ namespace Permabuffs
 
         public static void Initialize()
         {
-            buffIDs.Clear();
-
-            // Common Combat Potions
-            buffIDs.Add("Regeneration", BuffID.Regeneration);
-            buffIDs.Add("Swiftness", BuffID.Swiftness);
-            buffIDs.Add("Ironskin", BuffID.Ironskin);
-            buffIDs.Add("Endurance", BuffID.Endurance);
-            buffIDs.Add("Lifeforce", BuffID.Lifeforce);
-            buffIDs.Add("Wrath", BuffID.Wrath);
-            buffIDs.Add("Rage", BuffID.Rage);
-            buffIDs.Add("Magic Power", BuffID.MagicPower);
-            buffIDs.Add("Mana Regeneration", BuffID.ManaRegeneration);
-            buffIDs.Add("Archery", BuffID.Archery);
-            buffIDs.Add("Ammo Reservation", BuffID.AmmoReservation);
-            buffIDs.Add("Summoning", BuffID.Summoning);
-            buffIDs.Add("Thorns", BuffID.Thorns);
-            buffIDs.Add("Sharpened", BuffID.Sharpened);
-
-            // Exploration & Utility Potions
-            buffIDs.Add("Spelunker", BuffID.Spelunker);
-            buffIDs.Add("Hunter", BuffID.Hunter);
-            buffIDs.Add("Dangersense", BuffID.Dangersense);
-            buffIDs.Add("Shine", BuffID.Shine);
-            buffIDs.Add("Night Owl", BuffID.NightOwl);
-            buffIDs.Add("Mining", BuffID.Mining);
-            buffIDs.Add("Builder", BuffID.Builder);
-            buffIDs.Add("Calm", BuffID.Calm);
-            buffIDs.Add("Luck", BuffID.LuckPotion);
-
-            // Movement & Mobility Potions
-            buffIDs.Add("Featherfall", BuffID.Featherfall);
-            buffIDs.Add("Gravitation", BuffID.Gravitation);
-            buffIDs.Add("Gills", BuffID.Gills);
-            buffIDs.Add("Water Walking", BuffID.WaterWalking);
-            buffIDs.Add("Obsidian Skin", BuffID.ObsidianSkin);
-            buffIDs.Add("Flipper", BuffID.Flipper);
-            buffIDs.Add("Invisibility", BuffID.Invisibility);
-
-            // Other Special Potions
-            buffIDs.Add("Inferno", BuffID.Inferno);
-            buffIDs.Add("Battle", BuffID.Battle);
-            buffIDs.Add("Warmth", BuffID.Warmth);
-            buffIDs.Add("Titan", BuffID.Titan);
-            buffIDs.Add("Heartreach", BuffID.Heartreach);
-            buffIDs.Add("Bewitched", BuffID.Bewitched);
-            buffIDs.Add("Clairvoyance", BuffID.Clairvoyance);
-
-            // Food Buffs (from actual consumables only)
-            buffIDs.Add("Well Fed", BuffID.WellFed);
-            buffIDs.Add("Well Fed 2", BuffID.WellFed2);
-            buffIDs.Add("Well Fed 3", BuffID.WellFed3);
-
-            // Optional: Alcohol
-            buffIDs.Add("Tipsy", BuffID.Tipsy); // From Ale/Sake
-
-            //
+            buffIDs["swiftness"] = 3;
+            buffIDs["ironskin"] = 5;
+            buffIDs["regeneration"] = 2;
+            buffIDs["mana regeneration"] = 6;
+            buffIDs["magic power"] = 7;
+            buffIDs["archery"] = 4;
+            buffIDs["thorns"] = 14;
+            buffIDs["invisibility"] = 10;
+            buffIDs["night owl"] = 12;
+            buffIDs["shine"] = 11;
+            buffIDs["hunter"] = 9;
+            buffIDs["spelunker"] = 8;
+            buffIDs["gills"] = 1;
+            buffIDs["featherfall"] = 2;
+            buffIDs["gravitation"] = 17;
+            buffIDs["obsidian skin"] = 1;
+            buffIDs["water walking"] = 13;
+            buffIDs["endurance"] = 110;
+            buffIDs["lifeforce"] = 112;
+            buffIDs["wrath"] = 115;
+            buffIDs["rage"] = 114;
+            buffIDs["ammo reservation"] = 17;
+            buffIDs["inferno"] = 116;
+            buffIDs["calm"] = 117;
+            buffIDs["crate"] = 118;
+            buffIDs["fishing"] = 119;
+            buffIDs["sonar"] = 120;
+            buffIDs["battle"] = 111;
+            buffIDs["builder"] = 98;
+            buffIDs["titan"] = 21;
+            buffIDs["flipper"] = 9;
+            buffIDs["dangersense"] = 19;
+            buffIDs["teleportation"] = 100; // doesn't give buff but good placeholder
+            buffIDs["warmth"] = 113;
+            buffIDs["summoning"] = 113;
+            buffIDs["heartreach"] = 105;
+            buffIDs["withered armor"] = 69; // optional: skip debuffs if needed
+            buffIDs["clarity"] = 122;
+            buffIDs["luck"] = 124;
+            buffIDs["gravity"] = 18;
+            buffIDs["well fed"] = 26;
+            buffIDs["well fed 2"] = 206;
+            buffIDs["well fed 3"] = 207;
+        }
+    }
+}
