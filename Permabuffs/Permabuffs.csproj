@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <OutputType>Library</OutputType>
-    <Platforms>linux-arm64</Platforms>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,14 +15,11 @@
     <Reference Include="OTAPI">
       <HintPath>../lib/OTAPI.dll</HintPath>
     </Reference>
-    <Reference Include="TerrariaServer">
-      <HintPath>../lib/TerrariaServer.dll</HintPath>
-    </Reference>
     <Reference Include="Mono.Data.Sqlite">
       <HintPath>../lib/Mono.Data.Sqlite.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data">
-      <HintPath>../lib/MySql.Data.dll</HintPath>
+    <Reference Include="TerrariaServer">
+      <HintPath>../lib/TerrariaServer.dll</HintPath>
     </Reference>
   </ItemGroup>
 
