@@ -30,3 +30,9 @@ jobs:
           -c Release \
           -r linux-arm64 \
           --no-self-contained
+
+    - name: Upload built plugin DLL
+      uses: actions/upload-artifact@v4
+      with:
+        name: Permabuffs-arm64
+        path: Permabuffs/bin/Release/net6.0/linux-arm64/Permabuffs.dll
