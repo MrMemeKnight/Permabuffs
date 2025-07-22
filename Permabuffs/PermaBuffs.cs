@@ -4,7 +4,6 @@ using TerrariaApi.Server;
 using TShockAPI;
 using System.Collections.Generic;
 using System.Linq;
-using Permabuffs;
 
 namespace Permabuffs
 {
@@ -20,10 +19,12 @@ namespace Permabuffs
 
         public override void Initialize()
         {
-            DB.Connect();
+            // STEP 2: Skip DB.Connect() to test if it causes crash
+            // DB.Connect();
+
             Commands.ChatCommands.Add(new Command("permabuffs.manage", PermaBuffCommand, "permabuff"));
 
-            // TEMPORARILY DISABLED: This may be the cause of the crash on ARM64
+            // STEP 1: Already tested disabling OnUpdate
             // ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
         }
 
@@ -51,8 +52,8 @@ namespace Permabuffs
                         player.SendErrorMessage("Invalid buff name.");
                         return;
                     }
-                    DB.AddBuff(player.Account.ID, buffId);
-                    player.SendSuccessMessage($"Added permanent buff: {args.Parameters[1]}");
+                    // DB.AddBuff(player.Account.ID, buffId);
+                    player.SendSuccessMessage($"[TEST MODE] Would add permanent buff: {args.Parameters[1]}");
                     break;
 
                 case "remove":
@@ -66,8 +67,8 @@ namespace Permabuffs
                         player.SendErrorMessage("Invalid buff name.");
                         return;
                     }
-                    DB.RemoveBuff(player.Account.ID, buffId);
-                    player.SendSuccessMessage($"Removed permanent buff: {args.Parameters[1]}");
+                    // DB.RemoveBuff(player.Account.ID, buffId);
+                    player.SendSuccessMessage($"[TEST MODE] Would remove permanent buff: {args.Parameters[1]}");
                     break;
 
                 default:
@@ -76,7 +77,6 @@ namespace Permabuffs
             }
         }
 
-        // OnUpdate intentionally removed from hook registration
         private void OnUpdate(EventArgs args)
         {
             foreach (var player in TShock.Players.Where(p => p != null && p.Active && p.RealPlayer))
