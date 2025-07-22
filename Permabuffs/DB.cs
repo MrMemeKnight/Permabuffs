@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using Mono.Data.Sqlite;
+using Microsoft.Data.Sqlite;
 using TShockAPI;
 
 namespace Permabuffs
