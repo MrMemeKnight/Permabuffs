@@ -1,112 +1,106 @@
 using System.Collections.Generic;
-using Terraria.ID;
 
 namespace Permabuffs
 {
-    /// <summary>
-    /// Maps item IDs to corresponding buff IDs for potions, flasks, and food.
-    /// Used to grant buffs when players have 30+ of an item in the Piggy Bank.
-    /// </summary>
-    public static class Potions
+  /// <summary>
+  /// Maps potion/food item names to the buff ID they apply.
+  /// </summary>
+  public class NameToBuffIDs
+  {
+    public static Dictionary<string, int> BuffIDs = new();
+
+    public static void PopulateBuffIDs()
     {
-        public static Dictionary<int, int> Map = new Dictionary<int, int>();
+      // BUFF POTIONS
+      BuffIDs.Add("Ammo Reservation Potion", 112);
+      BuffIDs.Add("Archery Potion", 16);
+      BuffIDs.Add("Battle Potion", 13);
+      BuffIDs.Add("Builder Potion", 107);
+      BuffIDs.Add("Calming Potion", 106);
+      BuffIDs.Add("Crate Potion", 123);
+      BuffIDs.Add("Dangersense Potion", 111);
+      BuffIDs.Add("Endurance Potion", 114);
+      BuffIDs.Add("Featherfall Potion", 8);
+      BuffIDs.Add("Fishing Potion", 121);
+      BuffIDs.Add("Flipper Potion", 109);
+      BuffIDs.Add("Gills Potion", 4);
+      BuffIDs.Add("Gravitation Potion", 18);
+      BuffIDs.Add("Greater Luck Potion", 257);
+      BuffIDs.Add("Heartreach Potion", 105);
+      BuffIDs.Add("Hunter Potion", 17);
+      BuffIDs.Add("Inferno Potion", 116);
+      BuffIDs.Add("Invisibility Potion", 10);
+      BuffIDs.Add("Ironskin Potion", 5);
+      BuffIDs.Add("Lesser Luck Potion", 257);
+      BuffIDs.Add("Lifeforce Potion", 113);
+      BuffIDs.Add("Luck Potion", 257);
+      BuffIDs.Add("Magic Power Potion", 7);
+      BuffIDs.Add("Mana Regeneration Potion", 6);
+      BuffIDs.Add("Mining Potion", 104);
+      BuffIDs.Add("Night Owl Potion", 12);
+      BuffIDs.Add("Obsidian Skin Potion", 1);
+      BuffIDs.Add("Rage Potion", 115);
+      BuffIDs.Add("Regeneration Potion", 2);
+      BuffIDs.Add("Shine Potion", 11);
+      BuffIDs.Add("Sonar Potion", 122);
+      BuffIDs.Add("Spelunker Potion", 9);
+      BuffIDs.Add("Stink Potion", 371);
+      BuffIDs.Add("Summoning Potion", 110);
+      BuffIDs.Add("Swiftness Potion", 3);
+      BuffIDs.Add("Thorns Potion", 14);
+      BuffIDs.Add("Titan Potion", 108);
+      BuffIDs.Add("Warmth Potion", 124);
+      BuffIDs.Add("Water Walking Potion", 15);
+      BuffIDs.Add("Wrath Potion", 117);
 
-        public static void Initialize()
-        {
-            Map.Clear();
+      // FLASKS
+      BuffIDs.Add("Flask of Cursed Flames", 73);
+      BuffIDs.Add("Flask of Fire", 74);
+      BuffIDs.Add("Flask of Gold", 75);
+      BuffIDs.Add("Flask of Ichor", 76);
+      BuffIDs.Add("Flask of Nanites", 77);
+      BuffIDs.Add("Flask of Party", 78);
+      BuffIDs.Add("Flask of Poison", 79);
+      BuffIDs.Add("Flask of Venom", 71);
 
-            // Standard Buff Potions
-            Map[ItemID.AmmoReservationPotion] = BuffID.AmmoReservation;
-            Map[ItemID.ArcheryPotion] = BuffID.Archery;
-            Map[ItemID.BattlePotion] = BuffID.Battle;
-            Map[ItemID.BuilderPotion] = BuffID.Builder;
-            Map[ItemID.CalmPotion] = BuffID.Calm;
-            Map[ItemID.CratePotion] = BuffID.Crate;
-            Map[ItemID.DangersensePotion] = BuffID.Dangersense;
-            Map[ItemID.EndurancePotion] = BuffID.Endurance;
-            Map[ItemID.FeatherfallPotion] = BuffID.Featherfall;
-            Map[ItemID.FishingPotion] = BuffID.Fishing;
-            Map[ItemID.FlipperPotion] = BuffID.Flipper;
-            Map[ItemID.GillsPotion] = BuffID.Gills;
-            Map[ItemID.GravitationPotion] = BuffID.Gravitation;
-            Map[ItemID.GreaterLuckPotion] = BuffID.Lucky;
-            Map[ItemID.HeartreachPotion] = BuffID.Heartreach;
-            Map[ItemID.HunterPotion] = BuffID.Hunter;
-            Map[ItemID.InfernoPotion] = BuffID.Inferno;
-            Map[ItemID.InvisibilityPotion] = BuffID.Invisibility;
-            Map[ItemID.IronskinPotion] = BuffID.Ironskin;
-            Map[ItemID.LifeforcePotion] = BuffID.Lifeforce;
-            Map[ItemID.LesserLuckPotion] = BuffID.Lucky;
-            Map[ItemID.LuckPotion] = BuffID.Lucky;
-            Map[ItemID.MagicPowerPotion] = BuffID.MagicPower;
-            Map[ItemID.ManaRegenerationPotion] = BuffID.ManaRegeneration;
-            Map[ItemID.MiningPotion] = BuffID.Mining;
-            Map[ItemID.NightOwlPotion] = BuffID.NightOwl;
-            Map[ItemID.ObsidianSkinPotion] = BuffID.ObsidianSkin;
-            Map[ItemID.RagePotion] = BuffID.Rage;
-            Map[ItemID.RegenerationPotion] = BuffID.Regeneration;
-            Map[ItemID.ShinePotion] = BuffID.Shine;
-            Map[ItemID.SonarPotion] = BuffID.Sonar;
-            Map[ItemID.SpelunkerPotion] = BuffID.Spelunker;
-            Map[ItemID.StinkPotion] = BuffID.Stink;
-            Map[ItemID.SummoningPotion] = BuffID.Summoning;
-            Map[ItemID.SwiftnessPotion] = BuffID.Swiftness;
-            Map[ItemID.ThornsPotion] = BuffID.Thorns;
-            Map[ItemID.TitanPotion] = BuffID.Titan;
-            Map[ItemID.WarmthPotion] = BuffID.Warmth;
-            Map[ItemID.WaterWalkingPotion] = BuffID.WaterWalking;
-            Map[ItemID.WrathPotion] = BuffID.Wrath;
+      // WELL FED (buff 26)
+      string[] wellFed = new string[]
+      {
+        "Apple", "Apple Juice", "Apricot", "Banana", "Blackcurrant", "Blood Orange",
+        "Bloody Moscato", "Bunny Stew", "Carton of Milk", "Cherry", "Coconut", "Cooked Fish",
+        "Elderberry", "Frozen Banana Daiquiri", "Fruit Juice", "Fruit Salad", "Grapefruit",
+        "Grilled Squirrel", "Lemon", "Lemonade", "Mango", "Marshmallow", "Peach", "Peach Sangria",
+        "Pineapple", "Piña Colada", "Plum", "Potato Chips", "Rambutan", "Roasted Bird",
+        "Shucked Oyster", "Smoothie of Darkness", "Teacup", "Tropical Smoothie"
+      };
+      foreach (var item in wellFed)
+        BuffIDs[item] = 26;
 
-            // Flasks
-            Map[ItemID.FlaskofCursedFlames] = BuffID.CursedInferno;
-            Map[ItemID.FlaskofFire] = BuffID.Inferno;
-            Map[ItemID.FlaskofGold] = BuffID.Gold;
-            Map[ItemID.FlaskofIchor] = BuffID.Ichor;
-            Map[ItemID.FlaskofNanites] = BuffID.Nanites;
-            Map[ItemID.FlaskofParty] = BuffID.Party;
-            Map[ItemID.FlaskofPoison] = BuffID.Poisoned;
-            Map[ItemID.FlaskofVenom] = BuffID.Venom;
+      // PLENTY SATISFIED (buff 206)
+      string[] plentySatisfied = new string[]
+      {
+        "Grub Soup", "Bowl of Soup", "Cooked Shrimp", "Pumpkin Pie", "Sashimi", "Escargot",
+        "Lobster Tail", "Prismatic Punch", "Roasted Duck", "Sauteed Frog Legs", "Pho", "Pad Thai",
+        "Dragon Fruit", "Star Fruit", "Banana Split", "Chicken Nugget", "Chocolate Chip Cookie",
+        "Coffee", "Cream Soda", "Fried Egg", "Fries", "Grapes", "Hotdog", "Ice Cream", "Nachos",
+        "Shrimp Po’ Boy"
+      };
+      foreach (var item in plentySatisfied)
+        BuffIDs[item] = 206;
 
-            // Food Buffs (Well Fed Tiers)
-            var wellFedItems = new int[]
-            {
-                ItemID.AppleJuice, ItemID.BloodyMoscato, ItemID.BunnyStew,
-                ItemID.CookedFish, ItemID.FrozenBananaDaiquiri,
-                ItemID.FruitJuice, ItemID.FruitSalad, ItemID.GrilledSquirrel,
-                ItemID.Lemonade, ItemID.PeachSangria, ItemID.RoastedBird,
-                ItemID.SmoothieofDarkness, ItemID.TropicalSmoothie,
-                ItemID.Teacup, ItemID.Apple, ItemID.Apricot, ItemID.Banana,
-                ItemID.BlackCurrant, ItemID.BloodOrange, ItemID.Cherry,
-                ItemID.Coconut, ItemID.Elderberry, ItemID.Grapefruit,
-                ItemID.Lemon, ItemID.Mango, ItemID.Peach, ItemID.Pineapple,
-                ItemID.Plum, ItemID.Rambutan, ItemID.CartonofMilk,
-                ItemID.PotatoChips, ItemID.ShuckedOyster, ItemID.Marshmallow
-            };
-            foreach (var id in wellFedItems) Map[id] = BuffID.WellFed;
+      // EXQUISITELY STUFFED (buff 207)
+      string[] exquisitelyStuffed = new string[]
+      {
+        "Golden Delight", "Grape Juice", "Seafood Dinner", "Bacon", "Christmas Pudding",
+        "Gingerbread Cookie", "Sugar Cookie", "Apple Pie", "BBQ Ribs", "Burger", "Milkshake",
+        "Pizza", "Spaghetti", "Steak"
+      };
+      foreach (var item in exquisitelyStuffed)
+        BuffIDs[item] = 207;
 
-            var plentyItems = new int[]
-            {
-                ItemID.GrubSoup, ItemID.BowlofSoup, ItemID.CookedShrimp,
-                ItemID.PumpkinPie, ItemID.Sashimi, ItemID.Escargot,
-                ItemID.LobsterTail, ItemID.PrismaticPunch, ItemID.RoastedDuck,
-                ItemID.SauteedFrogLegs, ItemID.Pho, ItemID.PadThai,
-                ItemID.DragonFruit, ItemID.StarFruit, ItemID.BananaSplit,
-                ItemID.ChickenNugget, ItemID.ChocolateChipCookie,
-                ItemID.Coffee, ItemID.CreamSoda, ItemID.FriedEgg,
-                ItemID.Fries, ItemID.Grapes, ItemID.Hotdog,
-                ItemID.IceCream, ItemID.Nachos
-            };
-            foreach (var id in plentyItems) Map[id] = BuffID.WellFed2;
-
-            var exaltedItems = new int[]
-            {
-                ItemID.GoldenDelight, ItemID.GrapeJuice, ItemID.SeafoodDinner,
-                ItemID.Bacon, ItemID.ChristmasPudding, ItemID.GingerbreadCookie,
-                ItemID.SugarCookie, ItemID.ApplePie, ItemID.BBQRibs,
-                ItemID.Burger, ItemID.Milkshake, ItemID.Pizza,
-                ItemID.Spaghetti, ItemID.Steak
-            };
-            foreach (var id in exaltedItems) Map[id] = BuffID.WellFed3;
-        }
+      // TIPSY
+      BuffIDs.Add("Sake", 25);
+      BuffIDs.Add("Ale", 25);
     }
+  }
 }
