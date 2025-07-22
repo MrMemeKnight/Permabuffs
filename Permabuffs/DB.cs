@@ -1,36 +1,74 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
+using Mono.Data.Sqlite;
 using TShockAPI;
-using TShockAPI.DB;
 
 namespace Permabuffs
 {
     public class DB
     {
-        private static IDbConnection db;
+        private readonly string connectionString;
+        private SqliteConnection db;
 
-        public static void Initialize()
+        public DB()
         {
-            db = TShock.DB;
+            string path = Path.Combine(TShock.SavePath, "Permabuffs.sqlite");
+            connectionString = $"URI=file:{path}";
+            db = new SqliteConnection(connectionString);
+            db.Open();
+            CreatePermabuffTable();
         }
 
-        public static void LoadPlayerBuffs(int playerID, List<int> buffs)
+        // ✅ Constructor with 1 argument added for compatibility
+        public DB(string path)
         {
-            using var reader = db.QueryReader("SELECT BuffID FROM Permabuffs WHERE PlayerID=@0", playerID);
+            connectionString = $"URI=file:{path}";
+            db = new SqliteConnection(connectionString);
+            db.Open();
+            CreatePermabuffTable();
+        }
+
+        private void CreatePermabuffTable()
+        {
+            using var cmd = new SqliteCommand("CREATE TABLE IF NOT EXISTS permabuffs (UserID INTEGER NOT NULL, BuffID INTEGER NOT NULL, PRIMARY KEY(UserID, BuffID));", db);
+            cmd.ExecuteNonQuery();
+        }
+
+        public List<int> GetPermabuffs(int userId)
+        {
+            var list = new List<int>();
+            using var cmd = new SqliteCommand("SELECT BuffID FROM permabuffs WHERE UserID=@0", db);
+            cmd.Parameters.AddWithValue("@0", userId);
+            using var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
-                buffs.Add(reader.Get<int>("BuffID"));
+                list.Add(reader.GetInt32(0));
             }
+            return list;
         }
 
-        public static void SavePlayerBuffs(int playerID, List<int> buffs)
+        public void AddPermabuff(int userId, int buffId)
         {
-            db.Query("DELETE FROM Permabuffs WHERE PlayerID=@0", playerID);
-            foreach (int buffID in buffs)
-            {
-                db.Query("INSERT INTO Permabuffs (PlayerID, BuffID) VALUES (@0, @1)", playerID, buffID);
-            }
+            using var cmd = new SqliteCommand("INSERT OR IGNORE INTO permabuffs (UserID, BuffID) VALUES (@0, @1);", db);
+            cmd.Parameters.AddWithValue("@0", userId);
+            cmd.Parameters.AddWithValue("@1", buffId);
+            cmd.ExecuteNonQuery();
+        }
+
+        public void RemovePermabuff(int userId, int buffId)
+        {
+            using var cmd = new SqliteCommand("DELETE FROM permabuffs WHERE UserID=@0 AND BuffID=@1;", db);
+            cmd.Parameters.AddWithValue("@0", userId);
+            cmd.Parameters.AddWithValue("@1", buffId);
+            cmd.ExecuteNonQuery();
+        }
+
+        public void Dispose()
+        {
+            db.Close();
+            db.Dispose();
         }
     }
 }
