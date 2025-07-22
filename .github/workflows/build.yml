@@ -1,10 +1,11 @@
-name: Build Permabuffs Plugin
+name: Build Permabuffs for ARM64
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    paths:
+      - '**.cs'
+      - '**.csproj'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 jobs:
@@ -12,24 +13,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 6.0.x
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
 
-    - name: Restore and Build
-      run: |
-        dotnet build Permabuffs/Permabuffs.csproj \
-          -c Release \
-          -r linux-arm64 \
-          --no-self-contained
-
-    - name: Upload plugin DLL
-      uses: actions/upload-artifact@v4
-      with:
-        name: Permabuffs
-        path: |
-          Permabuffs/bin/Release/linux-arm64/*.dll
+      - name: Build Permabuffs plugin
+        run: dotnet build Permabuffs/Permabuffs.csproj -c Release -r linux-arm64 --no-self-contained
