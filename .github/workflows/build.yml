@@ -11,22 +11,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 6.0.x
+      - name: Setup .NET 6 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
 
-    - name: Build plugin
-      run: |
-        dotnet build Permabuffs/Permabuffs.csproj \
+      - name: Restore dependencies
+        run: dotnet restore Permabuffs/Permabuffs.csproj
+
+      - name: Build for ARM64
+        run: dotnet build Permabuffs/Permabuffs.csproj \
           -c Release \
           -r linux-arm64 \
           --no-self-contained
 
-    - name: Publish plugin
-      run: |
-        mkdir -p build
-        cp Permabuffs/bin/Release/net6.0/linux-arm64/*.dll build/
+      - name: Publish plugin
+        run: dotnet publish Permabuffs/Permabuffs.csproj \
+          --configuration Release \
+          --runtime linux-arm64 \
+          --no-self-contained \
+          --output ./output
+
+      - name: Upload Permabuffs DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: Permabuffs-Plugin
+          path: ./output/
