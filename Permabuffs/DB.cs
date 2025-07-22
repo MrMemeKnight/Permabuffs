@@ -1,56 +1,50 @@
 using System;
 using System.Data;
-using Microsoft.Data.Sqlite;
-using TShockAPI;
+using TShockAPI.DB;
 
 namespace Permabuffs
 {
     public class DB
     {
-        private static string connectionString = "Data Source=permabuffs.sqlite;";
+        private readonly IDbConnection _db;
 
-        public static void Initialize()
+        public DB(IDbConnection db)
         {
-            using var connection = new SqliteConnection(connectionString);
-            connection.Open();
+            _db = db;
 
-            var command = connection.CreateCommand();
-            command.CommandText = @"
-                CREATE TABLE IF NOT EXISTS Permabuffs (
-                    UUID TEXT PRIMARY KEY,
-                    Enabled INTEGER NOT NULL
-                );";
-            command.ExecuteNonQuery();
+            var table = new SqlTable("Permabuffs",
+                new SqlColumn("UserID", MySqlDbType.Int32) { Primary = true },
+                new SqlColumn("Enabled", MySqlDbType.Int32)
+            );
+
+            var creator = new SqlTableCreator(_db,
+                db.GetSqlType() == SqlType.Sqlite
+                    ? new SqliteQueryCreator()
+                    : new MysqlQueryCreator());
+
+            creator.EnsureTableStructure(table);
         }
 
-        public static void SetEnabled(string uuid, bool enabled)
+        public void SetState(int userId, bool enabled)
         {
-            using var connection = new SqliteConnection(connectionString);
-            connection.Open();
+            var exists = _db.QueryReader("SELECT * FROM Permabuffs WHERE UserID = @0", userId).Read();
 
-            var command = connection.CreateCommand();
-            command.CommandText = @"
-                INSERT INTO Permabuffs (UUID, Enabled)
-                VALUES ($uuid, $enabled)
-                ON CONFLICT(UUID) DO UPDATE SET Enabled = $enabled;";
-            command.Parameters.AddWithValue("$uuid", uuid);
-            command.Parameters.AddWithValue("$enabled", enabled ? 1 : 0);
-            command.ExecuteNonQuery();
+            if (exists)
+            {
+                _db.Query("UPDATE Permabuffs SET Enabled = @0 WHERE UserID = @1", enabled ? 1 : 0, userId);
+            }
+            else
+            {
+                _db.Query("INSERT INTO Permabuffs (UserID, Enabled) VALUES (@0, @1)", userId, enabled ? 1 : 0);
+            }
         }
 
-        public static bool GetEnabled(string uuid)
+        public bool GetState(int userId)
         {
-            using var connection = new SqliteConnection(connectionString);
-            connection.Open();
-
-            var command = connection.CreateCommand();
-            command.CommandText = "SELECT Enabled FROM Permabuffs WHERE UUID = $uuid;";
-            command.Parameters.AddWithValue("$uuid", uuid);
-
-            using var reader = command.ExecuteReader();
+            using var reader = _db.QueryReader("SELECT Enabled FROM Permabuffs WHERE UserID = @0", userId);
             if (reader.Read())
             {
-                return reader.GetInt32(0) == 1;
+                return reader.Get<int>("Enabled") == 1;
             }
 
             return false;
