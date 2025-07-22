@@ -1,22 +1,23 @@
 using System;
 using System.Collections.Generic;
-using System.Timers;
+using System.Linq;
+using System.Timers; // Keep this for clarity
 using Terraria;
-using TerrariaApi.Server;
+using Terraria.ID;
 using TShockAPI;
+using TerrariaApi.Server;
 
 namespace Permabuffs
 {
     [ApiVersion(2, 1)]
     public class Permabuffs : TerrariaPlugin
     {
-        public override string Author => "Myoni (SyntaxVoid)";
-        public override string Description => "Automatically applies buffs from potions in piggy bank.";
-        public override string Name => "Permabuffs";
+        public override string Name => "PermaBuffs";
+        public override string Author => "SyntaxVoid, modified by ChatGPT";
+        public override string Description => "Allows players to receive buffs automatically from potions stored in Piggy Bank.";
         public override Version Version => new Version(1, 0);
 
-        private Timer timer;
-        private DB db;
+        private static System.Timers.Timer _timer;
 
         public Permabuffs(Main game) : base(game)
         {
@@ -27,6 +28,7 @@ namespace Permabuffs
             ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
             ServerApi.Hooks.ServerJoin.Register(this, OnJoin);
             ServerApi.Hooks.ServerLeave.Register(this, OnLeave);
+            ServerApi.Hooks.GamePostUpdate.Register(this, OnGameUpdate);
         }
 
         protected override void Dispose(bool disposing)
@@ -36,91 +38,73 @@ namespace Permabuffs
                 ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
                 ServerApi.Hooks.ServerJoin.Deregister(this, OnJoin);
                 ServerApi.Hooks.ServerLeave.Deregister(this, OnLeave);
-                if (timer != null)
-                {
-                    timer.Stop();
-                    timer.Dispose();
-                }
+                ServerApi.Hooks.GamePostUpdate.Deregister(this, OnGameUpdate);
+                _timer?.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
         private void OnInitialize(EventArgs args)
         {
-            db = new DB();
+            Commands.ChatCommands.Add(new Command("permabuff.toggle", TogglePermabuffs, "pbenable", "pbdisable")
+            {
+                HelpText = "Enable or disable automatic permanent potion effects."
+            });
 
-            Commands.ChatCommands.Add(new Command("permabuffs.toggle", TogglePermabuffs, "pbenable", "pbdisable"));
+            _timer = new System.Timers.Timer(10000);
+            _timer.Elapsed += CheckBuffs;
+            _timer.Start();
 
             Potions.PopulateBuffMap();
-
-            timer = new Timer(1000); // 1 second
-            timer.Elapsed += OnTimedEvent;
-            timer.AutoReset = true;
-            timer.Enabled = true;
-        }
-
-        private void TogglePermabuffs(CommandArgs args)
-        {
-            if (args.Parameters.Count != 0)
-            {
-                args.Player.SendErrorMessage("Usage: /pbenable or /pbdisable");
-                return;
-            }
-
-            var userId = args.Player.Account.ID;
-            bool enable = args.Message.ToLower().Contains("enable");
-
-            db.SetEnabled(userId, enable);
-
-            args.Player.SendSuccessMessage(enable ? "Permabuffs enabled." : "Permabuffs disabled.");
         }
 
         private void OnJoin(JoinEventArgs args)
         {
-            int userId = TShock.Players[args.Who]?.Account?.ID ?? -1;
-            if (userId != -1 && !db.PlayerExists(userId))
-            {
-                db.AddPlayer(userId);
-            }
+            DB.ToggleStatus[args.Who] = DB.GetStatus(args.Who);
         }
 
         private void OnLeave(LeaveEventArgs args)
         {
+            if (DB.ToggleStatus.ContainsKey(args.Who))
+            {
+                DB.ToggleStatus.Remove(args.Who);
+            }
         }
 
-        private void OnTimedEvent(object sender, ElapsedEventArgs e)
+        private void TogglePermabuffs(CommandArgs args)
         {
-            foreach (TSPlayer player in TShock.Players)
+            bool enable = args.Message == "pbenable";
+
+            DB.SetStatus(args.Player.Index, enable);
+            DB.ToggleStatus[args.Player.Index] = enable;
+
+            args.Player.SendSuccessMessage($"PermaBuffs {(enable ? "enabled" : "disabled")}.");
+        }
+
+        private void OnGameUpdate(EventArgs args)
+        {
+            // Optional alternative to timer-based updates
+        }
+
+        private void CheckBuffs(object sender, ElapsedEventArgs e)
+        {
+            foreach (TSPlayer player in TShock.Players.Where(p => p?.Active ?? false))
             {
-                if (player == null || !player.Active || !player.RealPlayer || player.Account == null)
+                if (!DB.ToggleStatus.TryGetValue(player.Index, out bool enabled) || !enabled)
                     continue;
 
-                int userId = player.Account.ID;
-                if (!db.IsEnabled(userId))
-                    continue;
-
-                var piggyBank = player.TPlayer.bank.item;
-
-                foreach (var item in piggyBank)
+                var inventory = player.TPlayer.bank.item;
+                foreach (var item in inventory)
                 {
-                    if (item == null || item.stack < 30)
+                    if (item == null || item.stack < 30 || string.IsNullOrWhiteSpace(item.Name))
                         continue;
 
-                    if (Potions.buffMap.TryGetValue(item.Name.ToLower(), out int buffID))
+                    if (Potions.BuffMap.TryGetValue(item.Name.ToLower(), out int buffId))
                     {
-                        bool hasBuff = false;
-                        foreach (var b in player.TPlayer.buffType)
+                        if (!player.TPlayer.HasBuff(buffId))
                         {
-                            if (b == buffID)
-                            {
-                                hasBuff = true;
-                                break;
-                            }
-                        }
-
-                        if (!hasBuff)
-                        {
-                            player.TPlayer.AddBuff(buffID, 60 * 60 * 5); // 5 minutes
+                            player.TPlayer.AddBuff(buffId, 3600, true);
                         }
                     }
                 }
