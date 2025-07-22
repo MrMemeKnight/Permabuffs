@@ -1,77 +1,95 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Timers;
-using OTAPI;
-using Terraria;
-using Terraria.ID;
 using TShockAPI;
+using Terraria;
+using TerrariaApi.Server;
 
 namespace Permabuffs
 {
-    public class Permabuffs
+    [ApiVersion(2, 1)]
+    public class Permabuffs : TerrariaPlugin
     {
-        private static Timer _timer;
-        private static Dictionary<int, List<int>> _playerBuffs = new();
-        private static Dictionary<string, int> _buffMap = new();
+        private static System.Timers.Timer _timer;
+        private static Dictionary<string, bool> _enabledPlayers = new Dictionary<string, bool>();
+        private static DB _db;
 
-        public static void Initialize()
+        public override string Name => "Permabuffs";
+        public override string Author => "Myoni (SyntaxVoid)";
+        public override string Description => "Adds permanent buff functionality via piggy bank.";
+        public override Version Version => new Version(1, 0);
+
+        public Permabuffs(Main game) : base(game) { }
+
+        public override void Initialize()
         {
-            PopulateBuffMap();
-            _timer = new Timer(5000);
+            ServerApi.Hooks.ServerJoin.Register(this, OnJoin);
+            Commands.ChatCommands.Add(new Command("permabuffs.toggle", ToggleBuffs, "pbenable", "pbdisable"));
+            _db = new DB("Permabuffs.db");
+
+            _timer = new System.Timers.Timer(3000);
             _timer.Elapsed += CheckBuffs;
             _timer.Start();
-
-            Commands.ChatCommands.Add(new Command("permabuffs.toggle", TogglePermabuffs, "pbenable", "pbdisable"));
         }
 
-        private static void TogglePermabuffs(CommandArgs args)
+        protected override void Dispose(bool disposing)
         {
-            if (!_playerBuffs.ContainsKey(args.Player.Index))
+            if (disposing)
             {
-                _playerBuffs[args.Player.Index] = new List<int>();
+                ServerApi.Hooks.ServerJoin.Deregister(this, OnJoin);
+                _timer.Dispose();
             }
+            base.Dispose(disposing);
+        }
 
-            if (args.Message.StartsWith("/pbenable", StringComparison.OrdinalIgnoreCase))
+        private void OnJoin(JoinEventArgs args)
+        {
+            var playerName = TShock.Players[args.Who]?.Name;
+            if (!string.IsNullOrEmpty(playerName) && !_enabledPlayers.ContainsKey(playerName))
             {
-                args.Player.SendSuccessMessage("Permabuffs enabled.");
-                return;
-            }
-
-            if (args.Message.StartsWith("/pbdisable", StringComparison.OrdinalIgnoreCase))
-            {
-                _playerBuffs.Remove(args.Player.Index);
-                args.Player.SendSuccessMessage("Permabuffs disabled.");
+                _enabledPlayers[playerName] = true;
             }
         }
 
-        private static void CheckBuffs(object sender, ElapsedEventArgs e)
+        private void ToggleBuffs(CommandArgs args)
         {
-            foreach (TSPlayer tsPlayer in TShock.Players)
+            if (args.Message.StartsWith("/pbenable"))
             {
-                if (tsPlayer == null || !tsPlayer.Active || !_playerBuffs.ContainsKey(tsPlayer.Index))
+                _enabledPlayers[args.Player.Name] = true;
+                args.Player.SendSuccessMessage("Permanent buffs enabled.");
+            }
+            else if (args.Message.StartsWith("/pbdisable"))
+            {
+                _enabledPlayers[args.Player.Name] = false;
+                args.Player.SendSuccessMessage("Permanent buffs disabled.");
+            }
+        }
+
+        private void CheckBuffs(object sender, ElapsedEventArgs e)
+        {
+            foreach (var tsPlayer in TShock.Players)
+            {
+                if (tsPlayer == null || !tsPlayer.Active || !tsPlayer.TPlayer.active || !_enabledPlayers.TryGetValue(tsPlayer.Name, out var enabled) || !enabled)
                     continue;
 
                 var player = tsPlayer.TPlayer;
+                var piggyBank = player.bank.item;
 
-                foreach (Item item in player.bank.item)
+                foreach (var item in piggyBank)
                 {
                     if (item == null || item.stack < 30)
                         continue;
 
-                    if (_buffMap.TryGetValue(item.Name, out int buffID))
+                    if (Potions.BuffMap.TryGetValue(item.Name, out var buffId))
                     {
-                        if (!player.HasBuff(buffID, out _))
+                        if (!player.buffType.Contains(buffId))
                         {
-                            tsPlayer.SetBuff(buffID, 3600, true);
+                            player.AddBuff(buffId, 60 * 10); // 10 seconds
                         }
                     }
                 }
             }
-        }
-
-        private static void PopulateBuffMap()
-        {
-            _buffMap = Potions.GetBuffMap();
         }
     }
 }
