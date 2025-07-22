@@ -2,155 +2,143 @@ using System.Collections.Generic;
 
 namespace Permabuffs
 {
-  /// <Summary>
-  /// I'm sure there's a better way to do this... but this is used to create
-  /// a dictionary mapping all of the potion names to their respective buff IDs.
-  /// </Summary>
-  public class NameToBuffIDs
-  {
-    public static Dictionary<string, int> BuffIDs 
-      = new Dictionary<string, int>();
-    public static void PopulateBuffIDs()
+    public static class Potions
     {
-      // BUFF POTIONS
-      BuffIDs.Add("Ammo Reservation Potion", 112);
-      BuffIDs.Add("Archery Potion", 16);
-      BuffIDs.Add("Battle Potion", 13);
-      BuffIDs.Add("Builder Potion", 107);
-      BuffIDs.Add("Calming Potion", 106);
-      BuffIDs.Add("Crate Potion", 123);
-      BuffIDs.Add("Dangersense Potion", 111);
-      BuffIDs.Add("Endurance Potion", 114);
-      BuffIDs.Add("Featherfall Potion", 8);
-      BuffIDs.Add("Fishing Potion",  121);
-      BuffIDs.Add("Flipper Potion", 109);
-      BuffIDs.Add("Gills Potion", 4);
-      BuffIDs.Add("Gravitation Potion", 18);
-      BuffIDs.Add("Greater Luck Potion", 257);
-      BuffIDs.Add("Heartreach Potion", 105);
-      BuffIDs.Add("Hunter Potion", 17);
-      BuffIDs.Add("Inferno Potion", 116);
-      BuffIDs.Add("Invisibility Potion", 10);
-      BuffIDs.Add("Ironskin Potion", 5);
-      BuffIDs.Add("Lesser Luck Potion", 257);
-      BuffIDs.Add("Lifeforce Potion", 113);
-      BuffIDs.Add("Luck Potion", 257);
-      BuffIDs.Add("Magic Power Potion", 7);
-      BuffIDs.Add("Mana Regeneration Potion", 6);
-      BuffIDs.Add("Mining Potion", 104);
-      BuffIDs.Add("Night Owl Potion", 12);
-      BuffIDs.Add("Obsidian Skin Potion", 1);
-      BuffIDs.Add("Rage Potion", 115);
-      BuffIDs.Add("Regeneration Potion", 2);
-      BuffIDs.Add("Shine Potion", 11);
-      BuffIDs.Add("Sonar Potion", 122);
-      BuffIDs.Add("Spelunker Potion", 9);
-      BuffIDs.Add("Stink Potion", 371);
-      BuffIDs.Add("Summoning Potion", 110);
-      BuffIDs.Add("Swiftness Potion",  3);
-      BuffIDs.Add("Thorns Potion", 14);
-      BuffIDs.Add("Titan Potion", 108);
-      BuffIDs.Add("Warmth Potion", 124);
-      BuffIDs.Add("Water Walking Potion", 15);
-      BuffIDs.Add("Wrath Potion", 117);
-      BuffIDs.Add("Flask of Cursed Flames", 73);
-      BuffIDs.Add("Flask of Fire", 74);
-      BuffIDs.Add("Flask of Gold", 75);
-      BuffIDs.Add("Flask of Ichor", 76);
-      BuffIDs.Add("Flask of Nanites", 77);
-      BuffIDs.Add("Flask of Party", 78);
-      BuffIDs.Add("Flask of Poison", 79);
-      BuffIDs.Add("Flask of Venom", 71);
+        public static readonly Dictionary<string, int> Buffs = new Dictionary<string, int>();
 
-      // WELL FED
-      BuffIDs.Add("Apple Juice", 26);
-      BuffIDs.Add("Bloody Moscato", 26);
-      BuffIDs.Add("Bunny Stew", 26);
-      BuffIDs.Add("Cooked Fish", 26);
-      BuffIDs.Add("Frozen Banana Daiquiri", 26);
-      BuffIDs.Add("Fruit Juice", 26);
-      BuffIDs.Add("Fruit Salad", 26);
-      BuffIDs.Add("Grilled Squirrel", 26);
-      BuffIDs.Add("Lemonade", 26);
-      BuffIDs.Add("Peach Sangria", 26);
-      // BuffIDs.Add("Pi%C3%B1a Colada", 26); // Check actual in game name
-      BuffIDs.Add("Roasted Bird", 26);
-      BuffIDs.Add("Smoothie of Darkness", 26);
-      BuffIDs.Add("Tropical Smoothie", 26);
-      BuffIDs.Add("Teacup", 26);
-      BuffIDs.Add("Apple", 26);
-      BuffIDs.Add("Apricot", 26);
-      BuffIDs.Add("Banana", 26);
-      BuffIDs.Add("Blackcurrant", 26);
-      BuffIDs.Add("Blood Orange", 26);
-      BuffIDs.Add("Cherry", 26);
-      BuffIDs.Add("Coconut", 26);
-      BuffIDs.Add("Elderberry", 26);
-      BuffIDs.Add("Grapefruit", 26);
-      BuffIDs.Add("Lemon", 26);
-      BuffIDs.Add("Mango", 26);
-      BuffIDs.Add("Peach", 26);
-      BuffIDs.Add("Pineapple", 26);
-      BuffIDs.Add("Plum", 26);
-      BuffIDs.Add("Rambutan", 26);
-      BuffIDs.Add("Carton of Milk", 26);
-      BuffIDs.Add("Potato Chips", 26);
-      BuffIDs.Add("Shucked Oyster", 26);
-      BuffIDs.Add("Marshmallow", 26);
+        public static void Initialize()
+        {
+            // BUFF POTIONS
+            Buffs["Ammo Reservation Potion"] = 112;
+            Buffs["Archery Potion"] = 16;
+            Buffs["Battle Potion"] = 13;
+            Buffs["Builder Potion"] = 107;
+            Buffs["Calming Potion"] = 106;
+            Buffs["Crate Potion"] = 123;
+            Buffs["Dangersense Potion"] = 111;
+            Buffs["Endurance Potion"] = 114;
+            Buffs["Featherfall Potion"] = 8;
+            Buffs["Fishing Potion"] = 121;
+            Buffs["Flipper Potion"] = 109;
+            Buffs["Gills Potion"] = 4;
+            Buffs["Gravitation Potion"] = 18;
+            Buffs["Greater Luck Potion"] = 257;
+            Buffs["Heartreach Potion"] = 105;
+            Buffs["Hunter Potion"] = 17;
+            Buffs["Inferno Potion"] = 116;
+            Buffs["Invisibility Potion"] = 10;
+            Buffs["Ironskin Potion"] = 5;
+            Buffs["Lesser Luck Potion"] = 257;
+            Buffs["Lifeforce Potion"] = 113;
+            Buffs["Luck Potion"] = 257;
+            Buffs["Magic Power Potion"] = 7;
+            Buffs["Mana Regeneration Potion"] = 6;
+            Buffs["Mining Potion"] = 104;
+            Buffs["Night Owl Potion"] = 12;
+            Buffs["Obsidian Skin Potion"] = 1;
+            Buffs["Rage Potion"] = 115;
+            Buffs["Regeneration Potion"] = 2;
+            Buffs["Shine Potion"] = 11;
+            Buffs["Sonar Potion"] = 122;
+            Buffs["Spelunker Potion"] = 9;
+            Buffs["Stink Potion"] = 371;
+            Buffs["Summoning Potion"] = 110;
+            Buffs["Swiftness Potion"] = 3;
+            Buffs["Thorns Potion"] = 14;
+            Buffs["Titan Potion"] = 108;
+            Buffs["Warmth Potion"] = 124;
+            Buffs["Water Walking Potion"] = 15;
+            Buffs["Wrath Potion"] = 117;
+            Buffs["Flask of Cursed Flames"] = 73;
+            Buffs["Flask of Fire"] = 74;
+            Buffs["Flask of Gold"] = 75;
+            Buffs["Flask of Ichor"] = 76;
+            Buffs["Flask of Nanites"] = 77;
+            Buffs["Flask of Party"] = 78;
+            Buffs["Flask of Poison"] = 79;
+            Buffs["Flask of Venom"] = 71;
 
-      // PLENTY SATISFIED
-      BuffIDs.Add("Grub Soup", 206);
-      BuffIDs.Add("Bowl of Soup", 206);
-      BuffIDs.Add("Cooked Shrimp", 206);
-      BuffIDs.Add("Pumpkin Pie", 206);
-      BuffIDs.Add("Sashimi", 206);
-      BuffIDs.Add("Escargot", 206);
-      BuffIDs.Add("Lobster Tail", 206);
-      BuffIDs.Add("Prismatic Punch", 206);
-      BuffIDs.Add("Roasted Duck", 206);
-      BuffIDs.Add("Sauteed Frog Legs", 206);
-      BuffIDs.Add("Pho", 206);
-      BuffIDs.Add("Pad Thai", 206);
-      BuffIDs.Add("Dragon Fruit", 206);
-      BuffIDs.Add("Star Fruit", 206);
-      BuffIDs.Add("Banana Split", 206);
-      BuffIDs.Add("Chicken Nugget", 206);
-      BuffIDs.Add("Chocolate Chip Cookie", 206);
-      BuffIDs.Add("Coffee", 206);
-      BuffIDs.Add("Cream Soda", 206);
-      BuffIDs.Add("Fried Egg", 206);
-      BuffIDs.Add("Fries", 206);
-      BuffIDs.Add("Grapes", 206);
-      BuffIDs.Add("Hotdog", 206);
-      BuffIDs.Add("Ice Cream", 206);
-      BuffIDs.Add("Nachos", 206);
-      // BuffIDs.Add("Shrimp Po%27 Boy", 206); // Check actual in game name
+            // WELL FED
+            Buffs["Apple Juice"] = 26;
+            Buffs["Bloody Moscato"] = 26;
+            Buffs["Bunny Stew"] = 26;
+            Buffs["Cooked Fish"] = 26;
+            Buffs["Frozen Banana Daiquiri"] = 26;
+            Buffs["Fruit Juice"] = 26;
+            Buffs["Fruit Salad"] = 26;
+            Buffs["Grilled Squirrel"] = 26;
+            Buffs["Lemonade"] = 26;
+            Buffs["Peach Sangria"] = 26;
+            Buffs["Roasted Bird"] = 26;
+            Buffs["Smoothie of Darkness"] = 26;
+            Buffs["Tropical Smoothie"] = 26;
+            Buffs["Teacup"] = 26;
+            Buffs["Apple"] = 26;
+            Buffs["Apricot"] = 26;
+            Buffs["Banana"] = 26;
+            Buffs["Blackcurrant"] = 26;
+            Buffs["Blood Orange"] = 26;
+            Buffs["Cherry"] = 26;
+            Buffs["Coconut"] = 26;
+            Buffs["Elderberry"] = 26;
+            Buffs["Grapefruit"] = 26;
+            Buffs["Lemon"] = 26;
+            Buffs["Mango"] = 26;
+            Buffs["Peach"] = 26;
+            Buffs["Pineapple"] = 26;
+            Buffs["Plum"] = 26;
+            Buffs["Rambutan"] = 26;
+            Buffs["Carton of Milk"] = 26;
+            Buffs["Potato Chips"] = 26;
+            Buffs["Shucked Oyster"] = 26;
+            Buffs["Marshmallow"] = 26;
 
-      // EXQUISITELY STUFFED
-      BuffIDs.Add("Golden Delight", 207);
-      BuffIDs.Add("Grape Juice", 207);
-      BuffIDs.Add("Seafood Dinner", 207);
-      BuffIDs.Add("Bacon", 207);
-      BuffIDs.Add("Christmas Pudding", 207);
-      BuffIDs.Add("Gingerbread Cookie", 207);
-      BuffIDs.Add("Sugar Cookie", 207);
-      BuffIDs.Add("Apple Pie", 207);
-      BuffIDs.Add("BBQ Ribs", 207);
-      BuffIDs.Add("Burger", 207);
-      BuffIDs.Add("Milkshake", 207);
-      BuffIDs.Add("Pizza", 207);
-      BuffIDs.Add("Spaghetti", 207);
-      BuffIDs.Add("Steak", 207);
+            // PLENTY SATISFIED
+            Buffs["Grub Soup"] = 206;
+            Buffs["Bowl of Soup"] = 206;
+            Buffs["Cooked Shrimp"] = 206;
+            Buffs["Pumpkin Pie"] = 206;
+            Buffs["Sashimi"] = 206;
+            Buffs["Escargot"] = 206;
+            Buffs["Lobster Tail"] = 206;
+            Buffs["Prismatic Punch"] = 206;
+            Buffs["Roasted Duck"] = 206;
+            Buffs["Sauteed Frog Legs"] = 206;
+            Buffs["Pho"] = 206;
+            Buffs["Pad Thai"] = 206;
+            Buffs["Dragon Fruit"] = 206;
+            Buffs["Star Fruit"] = 206;
+            Buffs["Banana Split"] = 206;
+            Buffs["Chicken Nugget"] = 206;
+            Buffs["Chocolate Chip Cookie"] = 206;
+            Buffs["Coffee"] = 206;
+            Buffs["Cream Soda"] = 206;
+            Buffs["Fried Egg"] = 206;
+            Buffs["Fries"] = 206;
+            Buffs["Grapes"] = 206;
+            Buffs["Hotdog"] = 206;
+            Buffs["Ice Cream"] = 206;
+            Buffs["Nachos"] = 206;
 
-      // TIPSY
-      BuffIDs.Add("Sake", 25);
-      BuffIDs.Add("Ale", 25);
+            // EXQUISITELY STUFFED
+            Buffs["Golden Delight"] = 207;
+            Buffs["Grape Juice"] = 207;
+            Buffs["Seafood Dinner"] = 207;
+            Buffs["Bacon"] = 207;
+            Buffs["Christmas Pudding"] = 207;
+            Buffs["Gingerbread Cookie"] = 207;
+            Buffs["Sugar Cookie"] = 207;
+            Buffs["Apple Pie"] = 207;
+            Buffs["BBQ Ribs"] = 207;
+            Buffs["Burger"] = 207;
+            Buffs["Milkshake"] = 207;
+            Buffs["Pizza"] = 207;
+            Buffs["Spaghetti"] = 207;
+            Buffs["Steak"] = 207;
 
-
-      return;
+            // TIPSY
+            Buffs["Sake"] = 25;
+            Buffs["Ale"] = 25;
+        }
     }
-
-    
-    
-  }
 }
