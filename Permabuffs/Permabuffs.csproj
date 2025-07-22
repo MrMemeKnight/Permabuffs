@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <OutputType>Library</OutputType>
@@ -7,20 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
-
   <ItemGroup>
-    <Reference Include="TShockAPI">
-      <HintPath>../lib/TShockAPI.dll</HintPath>
-    </Reference>
-    <Reference Include="OTAPI">
-      <HintPath>../lib/OTAPI.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Data.Sqlite">
-      <HintPath>../lib/Mono.Data.Sqlite.dll</HintPath>
-    </Reference>
-    <Reference Include="TerrariaServer">
-      <HintPath>../lib/TerrariaServer.dll</HintPath>
-    </Reference>
+    <Reference Include="TShockAPI"><HintPath>../lib/TShockAPI.dll</HintPath></Reference>
+    <Reference Include="OTAPI"><HintPath>../lib/OTAPI.dll</HintPath></Reference>
+    <Reference Include="TerrariaServer"><HintPath>../lib/TerrariaServer.dll</HintPath></Reference>
   </ItemGroup>
-
 </Project>
