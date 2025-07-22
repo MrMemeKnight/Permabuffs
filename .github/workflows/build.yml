@@ -1,0 +1,32 @@
+name: Build Permabuffs Plugin (ARM64)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build for linux-arm64
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET 6 SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore Permabuffs/Permabuffs.csproj
+
+    - name: Build plugin for ARM64
+      run: |
+        dotnet build Permabuffs/Permabuffs.csproj \
+          -c Release \
+          -r linux-arm64 \
+          --no-self-contained
