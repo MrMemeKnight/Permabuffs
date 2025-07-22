@@ -1,11 +1,7 @@
-using Microsoft.Xna.Framework;
-using OTAPI;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
+using OTAPI;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
@@ -13,73 +9,70 @@ using TShockAPI;
 namespace Permabuffs
 {
     [ApiVersion(2, 1)]
-    public class PermaBuffs : TerrariaPlugin
+    public class Permabuffs : TerrariaPlugin
     {
-        public override string Author => "SyntaxVoid";
-        public override string Description => "Permanent potion buffs!";
-        public override string Name => "PermaBuffs";
-        public override Version Version => new Version(1, 1, 1);
+        public override string Name => "Permabuffs";
+        public override Version Version => new Version(1, 0);
+        public override string Author => "Myoni (SyntaxVoid)";
+        public override string Description => "Piggy bank permabuffs!";
 
-        private CancellationTokenSource? tokenSource;
-        private Task? refreshTask;
-
-        public PermaBuffs(Main game) : base(game) { }
+        public Permabuffs(Main game) : base(game)
+        {
+        }
 
         public override void Initialize()
         {
-            ServerApi.Hooks.GamePostInitialize.Register(this, OnPostInitialize);
-            ServerApi.Hooks.ServerLeave.Register(this, OnLeave);
+            ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
+            ServerApi.Hooks.ServerJoin.Register(this, OnJoin);
+
+            Commands.ChatCommands.Add(new Command("permbuff", CmdPermabuff, "permabuff"));
+
+            Potions.Initialize();
+            DB.Load();
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                ServerApi.Hooks.GamePostInitialize.Deregister(this, OnPostInitialize);
-                ServerApi.Hooks.ServerLeave.Deregister(this, OnLeave);
-                tokenSource?.Cancel();
+                ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
+                ServerApi.Hooks.ServerJoin.Deregister(this, OnJoin);
             }
             base.Dispose(disposing);
         }
 
-        private void OnLeave(LeaveEventArgs args)
+        private void OnInitialize(EventArgs args)
         {
-            PermabuffManager.Remove(args.Who);
-        }
-
-        private void OnPostInitialize(EventArgs args)
-        {
-            Potions.Initialize();
             DB.Load();
-            tokenSource = new CancellationTokenSource();
-            refreshTask = RunPeriodicBuffsAsync(tokenSource.Token);
         }
 
-        private async Task RunPeriodicBuffsAsync(CancellationToken token)
+        private void OnJoin(JoinEventArgs args)
         {
-            try
-            {
-                while (!token.IsCancellationRequested)
-                {
-                    foreach (TSPlayer player in TShock.Players)
-                    {
-                        if (player == null || !player.Active)
-                            continue;
+            var player = TShock.Players[args.Who];
+            if (player == null || !player.Active)
+                return;
 
-                        BuffManager.GiveBuffs(player);
-                    }
-
-                    await Task.Delay(1500, token);
-                }
-            }
-            catch (TaskCanceledException)
+            List<int> buffs = DB.Get(args.Who);
+            foreach (int buff in buffs)
             {
-                // Graceful cancellation
-            }
-            catch (Exception ex)
-            {
-                TShock.Log.ConsoleError($"[PermaBuffs] Error in buff loop: {ex}");
+                player.SetBuff(buff, 60 * 60 * 30); // 30-minute duration (auto-refreshed)
             }
         }
-    }
-}
+
+        private void CmdPermabuff(CommandArgs args)
+        {
+            if (args.Parameters.Count != 1)
+            {
+                args.Player.SendErrorMessage("Usage: /permabuff <potion name>");
+                return;
+            }
+
+            string potionName = args.Parameters[0].ToLowerInvariant();
+
+            if (!Potions.NameToBuffIDs.ContainsKey(potionName))
+            {
+                args.Player.SendErrorMessage("Invalid potion name.");
+                return;
+            }
+
+            int buff
