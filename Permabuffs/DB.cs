@@ -1,66 +1,47 @@
-using System.Collections.Generic;
 using System.Data;
-using TShockAPI;
-using Mono.Data.Sqlite;
+using TShockAPI.DB;
 
 namespace Permabuffs
 {
     public class DB
     {
-        private static string dbPath = TShock.SavePath + "/permabuffs.sqlite";
-        private static SqliteConnection db;
+        private IDbConnection db;
 
-        public static void Connect()
+        public DB()
         {
-            db = new SqliteConnection($"URI=file:{dbPath}");
-            db.Open();
-
-            using var cmd = db.CreateCommand();
-            cmd.CommandText =
-                @"CREATE TABLE IF NOT EXISTS permabuffs (
-                    UserID INTEGER NOT NULL,
-                    BuffID INTEGER NOT NULL
-                );";
-            cmd.ExecuteNonQuery();
+            db = TShock.DB;
+            var table = new SqlTable("Permabuffs",
+                new SqlColumn("UserID", MySql.Data.MySqlClient.MySqlDbType.Int32) { Primary = true },
+                new SqlColumn("Enabled", MySql.Data.MySqlClient.MySqlDbType.Int32));
+            var creator = new SqlTableCreator(db,
+                db.GetSqlType() == SqlType.Sqlite
+                    ? new SqliteQueryCreator(db, TShock.Config.Settings.TablePrefix)
+                    : new MysqlQueryCreator(db, TShock.Config.Settings.TablePrefix));
+            creator.EnsureTableStructure(table);
         }
 
-        public static void CreatePlayer(int userId)
+        public bool PlayerExists(int userId)
         {
-            // No-op
+            using var reader = db.QueryReader("SELECT * FROM Permabuffs WHERE UserID = @0", userId);
+            return reader.Read();
         }
 
-        public static List<int> GetBuffs(int userId)
+        public void AddPlayer(int userId)
         {
-            var result = new List<int>();
-
-            using var cmd = db.CreateCommand();
-            cmd.CommandText = "SELECT BuffID FROM permabuffs WHERE UserID=@0";
-            cmd.Parameters.AddWithValue("@0", userId);
-
-            using var reader = cmd.ExecuteReader();
-            while (reader.Read())
-            {
-                result.Add(reader.GetInt32(0));
-            }
-            return result;
+            db.Query("INSERT INTO Permabuffs (UserID, Enabled) VALUES (@0, @1)", userId, 0);
         }
 
-        public static void AddBuff(int userId, int buffId)
+        public bool IsEnabled(int userId)
         {
-            using var cmd = db.CreateCommand();
-            cmd.CommandText = "INSERT INTO permabuffs (UserID, BuffID) VALUES (@0, @1)";
-            cmd.Parameters.AddWithValue("@0", userId);
-            cmd.Parameters.AddWithValue("@1", buffId);
-            cmd.ExecuteNonQuery();
+            using var reader = db.QueryReader("SELECT Enabled FROM Permabuffs WHERE UserID = @0", userId);
+            if (reader.Read())
+                return reader.Get<int>("Enabled") == 1;
+            return false;
         }
 
-        public static void RemoveBuff(int userId, int buffId)
+        public void SetEnabled(int userId, bool enabled)
         {
-            using var cmd = db.CreateCommand();
-            cmd.CommandText = "DELETE FROM permabuffs WHERE UserID=@0 AND BuffID=@1";
-            cmd.Parameters.AddWithValue("@0", userId);
-            cmd.Parameters.AddWithValue("@1", buffId);
-            cmd.ExecuteNonQuery();
+            db.Query("UPDATE Permabuffs SET Enabled = @0 WHERE UserID = @1", enabled ? 1 : 0, userId);
         }
     }
 }
