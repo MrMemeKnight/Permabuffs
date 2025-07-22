@@ -1,19 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Platforms>linux-arm64</Platforms>
-    <OutputType>Library</OutputType>
-    <Nullable>disable</Nullable>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <OutputPath>bin\</OutputPath>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="OTAPI">
-      <HintPath>..\lib\OTAPI.dll</HintPath>
-    </Reference>
     <Reference Include="TShockAPI">
       <HintPath>..\lib\TShockAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="OTAPI">
+      <HintPath>..\lib\OTAPI.dll</HintPath>
     </Reference>
     <Reference Include="TerrariaServer">
       <HintPath>..\lib\TerrariaServer.dll</HintPath>
@@ -25,4 +24,5 @@
       <HintPath>..\lib\MySql.Data.dll</HintPath>
     </Reference>
   </ItemGroup>
+
 </Project>
