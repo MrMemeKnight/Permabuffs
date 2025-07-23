@@ -67,7 +67,7 @@ namespace Permabuffs
                         continue;
 
                     int buffId = Potions.buffMap[item.Name];
-                    if (!player.HasBuff(buffId))
+                    if (!Array.Exists(plr.buffType, id => id == buffID))
                         player.AddBuff(buffId, 60 * 10);
                 }
             }
