@@ -1,47 +1,53 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria;
-using TShockAPI;
 using TerrariaApi.Server;
+using TShockAPI;
 
 namespace Permabuffs
 {
     [ApiVersion(2, 1)]
-    public class Permabuffs : TerrariaPlugin
+    public class PermaBuffs : TerrariaPlugin
     {
-        public override string Author => "SyntaxVoid, updated by you";
-        public override string Description => "Applies permanent buffs if 30 of the potion are in piggy bank";
-        public override string Name => "Permabuffs";
-        public override Version Version => new Version(1, 0);
+        public override string Name => "PermaBuffs";
+        public override string Author => "SyntaxVoid + updated by Gian";
+        public override string Description => "Applies permanent buffs if 30+ buff items are in Piggy Bank";
+        public override Version Version => new Version(1, 0, 0, 0);
 
-        private static Dictionary<int, bool> EnabledForPlayers = new Dictionary<int, bool>();
+        private static Dictionary<int, bool> EnabledUsers = new();
 
-        public Permabuffs(Main game) : base(game) { }
+        public PermaBuffs(Main game) : base(game) { }
 
         public override void Initialize()
         {
             ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
-            Commands.ChatCommands.Add(new Command("permabuffs.toggle", TogglePermabuff, "pbenable", "pbdisable"));
+            Commands.ChatCommands.Add(new Command("permabuff.toggle", TogglePermaBuffs, "pbenable", "pbdisable"));
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
                 ServerApi.Hooks.GameUpdate.Deregister(this, OnUpdate);
-            }
             base.Dispose(disposing);
         }
 
-        private void TogglePermabuff(CommandArgs args)
+        private void TogglePermaBuffs(CommandArgs args)
         {
-            int id = args.Player.Index;
+            int userId = args.Player.Index;
+            if (!EnabledUsers.ContainsKey(userId))
+                EnabledUsers[userId] = false;
 
-            if (!EnabledForPlayers.ContainsKey(id))
-                EnabledForPlayers[id] = false;
-
-            EnabledForPlayers[id] = !EnabledForPlayers[id];
-            args.Player.SendSuccessMessage($"Permabuffs {(EnabledForPlayers[id] ? "enabled" : "disabled")}.");
+            if (args.Message.Contains("pbenable"))
+            {
+                EnabledUsers[userId] = true;
+                args.Player.SendSuccessMessage("Permabuffs enabled.");
+            }
+            else if (args.Message.Contains("pbdisable"))
+            {
+                EnabledUsers[userId] = false;
+                args.Player.SendSuccessMessage("Permabuffs disabled.");
+            }
         }
 
         private void OnUpdate(EventArgs args)
@@ -51,28 +57,18 @@ namespace Permabuffs
                 if (player?.Active != true || !player.TPlayer.active)
                     continue;
 
-                int id = player.Index;
-
-                if (!EnabledForPlayers.ContainsKey(id) || !EnabledForPlayers[id])
+                if (!EnabledUsers.TryGetValue(player.Index, out bool enabled) || !enabled)
                     continue;
 
-                Player tPlayer = player.TPlayer;
-                List<int> buffs = Potions.GetBuffsFromPiggyBank(tPlayer);
-
+                var buffs = Potions.GetBuffsFromPiggyBank(player.TPlayer);
                 foreach (int buffID in buffs)
-{
-    // Only apply the buff if the player doesn't already have it
-    bool alreadyHasBuff = false;
-    foreach (var buff in player.buffType)
-    {
-        if (buff == buffID)
-        {
-            alreadyHasBuff = true;
-            break;
+                {
+                    if (!player.TPlayer.HasBuff(buffID))
+                    {
+                        player.TPlayer.AddBuff(buffID, 1800); // 30 seconds
+                    }
+                }
+            }
         }
-    }
-    if (!alreadyHasBuff)
-    {
-        player.AddBuff(buffID, 60 * 60, true); // 60 seconds
     }
 }
