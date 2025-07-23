@@ -89,7 +89,7 @@ namespace Permabuffs
                     int buffID = kvp.Key;
 
                     // Apply buff using same method as /buff
-                    tsPlayer.SetBuff(buffID, 3600, true); // 3600 ticks = 60 seconds
+                    tsPlayer.SetBuff(buffID, 54000, quiet: true); // 3600 ticks = 60 seconds
                 }
             }
         }
