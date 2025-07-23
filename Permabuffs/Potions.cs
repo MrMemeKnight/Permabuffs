@@ -36,7 +36,6 @@ namespace Permabuffs
             buffMap["Regeneration Potion"] = BuffID.Regeneration;
             buffMap["Thorns Potion"] = BuffID.Thorns;
             buffMap["Warmth Potion"] = BuffID.Warmth;
-            buffMap["Worm Scarf"] = BuffID.WellFed3; // if included by name logic, else remove
 
             // Movement Potions (7)
             buffMap["Featherfall Potion"] = BuffID.Featherfall;
