@@ -70,7 +70,7 @@ namespace Permabuffs
                 var tsPlayer = player;
                 var terrariaPlayer = Main.player[tsPlayer.Index];
 
-                var buffMap = Potions.GetBuffMap();
+                var buffMap = Potions.BuffMap;
                 HashSet<int> appliedBuffs = new HashSet<int>();
 
                 foreach (var item in terrariaPlayer.bank.item)
