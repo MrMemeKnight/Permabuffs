@@ -154,22 +154,24 @@ namespace Permabuffs
         }
 
         public static List<int> GetBuffsFromPiggyBank(Player player)
-{
-    List<int> buffsToApply = new List<int>();
-
-    foreach (Item item in player.bank.item)
-    {
-        if (item == null || string.IsNullOrWhiteSpace(item.Name) || item.stack < 30)
-            continue;
-
-        if (buffMap.TryGetValue(item.Name, out int buffID))
         {
-            if (!buffsToApply.Contains(buffID))
+            List<int> buffsToApply = new List<int>();
+
+            foreach (Item item in player.bank.item)
             {
-                buffsToApply.Add(buffID);
+                if (item == null || string.IsNullOrWhiteSpace(item.Name) || item.stack < 30)
+                    continue;
+
+                if (buffMap.TryGetValue(item.Name, out int buffID))
+                {
+                    if (!buffsToApply.Contains(buffID))
+                    {
+                        buffsToApply.Add(buffID);
+                    }
+                }
             }
+
+            return buffsToApply;
         }
     }
-
-    return buffsToApply;
 }
