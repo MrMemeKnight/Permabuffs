@@ -79,7 +79,6 @@ namespace Permabuffs
             buffMap["Sake"] = BuffID.Tipsy;
             buffMap["Bloody Moscato"] = BuffID.WellFed;
             buffMap["Smoothie of Darkness"] = BuffID.WellFed;
-            buffMap["Prismatic Punch"] = BuffID.WellFed2;
             buffMap["Tropical Smoothie"] = BuffID.WellFed;
             buffMap["Peach Sangria"] = BuffID.WellFed;
             buffMap["Fruit Juice"] = BuffID.WellFed;
@@ -155,6 +154,7 @@ namespace Permabuffs
             buffMap["Dragon Fruit"] = BuffID.WellFed2;
             buffMap["Bowl of Soup"] = BuffID.WellFed2;
             buffMap["Pho"] = BuffID.WellFed2;
+            buffMap["Prismatic Punch"] = BuffID.WellFed2;
 
             // Food – Exquisitely Stuffed (Tier 3)
             buffMap["Apple Pie"] = BuffID.WellFed3;
@@ -167,7 +167,6 @@ namespace Permabuffs
             buffMap["Steak"] = BuffID.WellFed3;
             buffMap["Sugar Cookie"] = BuffID.WellFed3;
             buffMap["Christmas Pudding"] = BuffID.WellFed3;
-            buffMap["Prismatic Punch"] = BuffID.WellFed3;
 
         }
 
