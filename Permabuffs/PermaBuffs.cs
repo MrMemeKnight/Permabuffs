@@ -84,13 +84,17 @@ namespace Permabuffs
                     {
                         if (!Array.Exists(player.buffType, b => b == buffID))
                         {
-                            player.AddBuff(buffID, 3600, true); // 60 seconds
+                             if (player.buffCount < player.buffType.Length)
+                             {
+                            player.buffType[player.buffCount] = buffID;
+                            player.buffTime[player.buffCount] = 3600;
+                            player.buffCount++;
+
                             NetMessage.SendData(55, -1, -1, null, tsPlayer.Index, buffID);
 
                             if ((DateTime.UtcNow - lastLogTime).TotalSeconds > 2)
                             {
                                 TShock.Log.ConsoleInfo($"[PB] Applied buff {buffID} to {tsPlayer.Name}");
-                                lastLogTime = DateTime.UtcNow;
                             }
                         }
                     }
