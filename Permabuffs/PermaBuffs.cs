@@ -64,12 +64,8 @@ namespace Permabuffs
 
                 foreach (int buffID in buffs)
                 {
-                    // Apply buff for 10 seconds
-                    player.TPlayer.AddBuff(buffID, 600);
-                }
-
-                // Sync buffs to the client
-                NetMessage.SendData(50, -1, -1, null, player.Index);
+                     player.TPlayer.AddBuff(buffID, 600); // Server-side apply
+                     NetMessage.SendData(50, -1, -1, null, player.Index, buffID, 600f); // Sync with client
             }
         }
     }
