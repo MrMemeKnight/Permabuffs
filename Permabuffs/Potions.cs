@@ -3,159 +3,59 @@ using Terraria.ID;
 
 namespace Permabuffs
 {
-    /// <summary>
-    /// Maps potion, flask, food, and drink names (case-insensitive) to their buff IDs
-    /// for permanent buff detection.
-    /// </summary>
-    public static class Potions
+    public class Potions
     {
-        public static readonly Dictionary<string, int> BuffMap = new Dictionary<string, int>()
+        public static Dictionary<string, int> buffMap = new Dictionary<string, int>();
+
+        public static void PopulateBuffMap()
         {
-            // Potions
-            { "ammo reservation potion", BuffID.AmmoReservation },
-            { "archery potion", BuffID.Archery },
-            { "battle potion", BuffID.Battle },
-            { "builder potion", BuffID.Builder },
-            { "calming potion", BuffID.Calm },
-            { "crate potion", BuffID.Crate },
-            { "dangersense potion", BuffID.Dangersense },
-            { "endurance potion", BuffID.Endurance },
-            { "featherfall potion", BuffID.Featherfall },
-            { "fishing potion", BuffID.Fishing },
-            { "flipper potion", BuffID.Flipper },
-            { "gills potion", BuffID.Gills },
-            { "gravitation potion", BuffID.Gravitation },
-            { "hunter potion", BuffID.Hunter },
-            { "inferno potion", BuffID.Inferno },
-            { "invisibility potion", BuffID.Invisibility },
-            { "ironskin potion", BuffID.Ironskin },
-            { "lifeforce potion", BuffID.Lifeforce },
-            { "magic power potion", BuffID.MagicPower },
-            { "mana regeneration potion", BuffID.ManaRegeneration },
-            { "mining potion", BuffID.Mining },
-            { "night owl potion", BuffID.NightOwl },
-            { "obsidian skin potion", BuffID.ObsidianSkin },
-            { "rage potion", BuffID.Rage },
-            { "regeneration potion", BuffID.Regeneration },
-            { "shine potion", BuffID.Shine },
-            { "sonar potion", BuffID.Sonar },
-            { "spelunker potion", BuffID.Spelunker },
-            { "stink potion", BuffID.StinkyPotion },
-            { "summoning potion", BuffID.Summoning },
-            { "swiftness potion", BuffID.Swiftness },
-            { "thorns potion", BuffID.Thorns },
-            { "titan potion", BuffID.Titan },
-            { "warmth potion", BuffID.Warmth },
-            { "water walking potion", BuffID.WaterWalking },
-            { "wrath potion", BuffID.Wrath },
+            if (buffMap.Count > 0) return;
 
-            // Flasks / Weapon Imbues
-            { "flask of cursed flames", BuffID.WeaponImbueCursedFlames },
-            { "flask of fire", BuffID.WeaponImbueFire },
-            { "flask of gold", BuffID.WeaponImbueGold },
-            { "flask of ichor", BuffID.WeaponImbueIchor },
-            { "flask of nanites", BuffID.WeaponImbueNanites },
-            { "flask of party", BuffID.WeaponImbueConfetti },
-            { "flask of poison", BuffID.WeaponImbueVenom },
-            { "flask of venom", BuffID.WeaponImbueVenom },
-
-            // Drinks (Tipsy)
-            { "ale", BuffID.Tipsy },
-            { "sake", BuffID.Tipsy },
-
-            // Well-Fed (Tier 1 BuffID)
-            { "apple", BuffID.WellFed },
-            { "apple juice", BuffID.WellFed },
-            { "apples", BuffID.WellFed },
-            { "bloody moscato", BuffID.WellFed },
-            { "bunny stew", BuffID.WellFed },
-            { "bowl of soup", BuffID.WellFed },
-            { "burger", BuffID.WellFed2 },
-            { "carton of milk", BuffID.WellFed },
-            { "cherry", BuffID.WellFed },
-            { "coconut", BuffID.WellFed },
-            { "coffee", BuffID.WellFed },
-            { "cooked fish", BuffID.WellFed },
-            { "fried egg", BuffID.WellFed },
-            { "fruit juice", BuffID.WellFed },
-            { "fruit salad", BuffID.WellFed3 },
-            { "grilled squirrel", BuffID.WellFed },
-            { "lemonade", BuffID.WellFed },
-            { "peach sangria", BuffID.WellFed },
-            { "roasted bird", BuffID.WellFed },
-            { "smoothie of darkness", BuffID.WellFed },
-            { "tropical smoothie", BuffID.WellFed },
-            { "teacup", BuffID.WellFed },
-            { "blackcurrant", BuffID.WellFed },
-            { "blood orange", BuffID.WellFed },
-            { "elderberry", BuffID.WellFed },
-            { "grapefruit", BuffID.WellFed },
-            { "lemon", BuffID.WellFed },
-            { "mango", BuffID.WellFed },
-            { "peach", BuffID.WellFed },
-            { "pineapple", BuffID.WellFed },
-            { "plum", BuffID.WellFed },
-            { "rambutan", BuffID.WellFed },
-            { "potato chips", BuffID.WellFed },
-            { "roasted bird", BuffID.WellFed },
-            { "shucked oyster", BuffID.WellFed },
-            { "marshmallow", BuffID.WellFed },
-
-            // Plenty Satisfied (Tier 2)
-            { "grub soup", BuffID.WellFed },
-            { "cooked shrimp", BuffID.WellFed },
-            { "pumpkin pie", BuffID.WellFed },
-            { "sashimi", BuffID.WellFed },
-            { "escargot", BuffID.WellFed },
-            { "lobster tail", BuffID.WellFed3 },
-            { "prismatic punch", BuffID.WellFed },
-            { "roasted duck", BuffID.WellFed3 },
-            { "sauteed frog legs", BuffID.WellFed },
-            { "pho", BuffID.WellFed2 },
-            { "pad thai", BuffID.WellFed },
-            { "dragon fruit", BuffID.WellFed },
-            { "star fruit", BuffID.WellFed },
-            { "banana split", BuffID.WellFed2 },
-            { "chicken nugget", BuffID.WellFed },
-            { "chocolate chip cookie", BuffID.WellFed },
-            { "cream soda", BuffID.WellFed },
-            { "fries", BuffID.WellFed },
-            { "grapes", BuffID.WellFed },
-            { "hotdog", BuffID.WellFed },
-            { "ice cream", BuffID.WellFed },
-            { "nachos", BuffID.WellFed },
-
-            // Exquisitely Stuffed (Tier 3)
-            { "golden delight", BuffID.WellFed3 },
-            { "grape juice", BuffID.WellFed3 },
-            { "seafood dinner", BuffID.WellFed3 },
-            { "bacon", BuffID.WellFed3 },
-            { "christmas pudding", BuffID.WellFed3 },
-            { "gingerbread cookie", BuffID.WellFed3 },
-            { "sugar cookie", BuffID.WellFed },
-            { "apple pie", BuffID.WellFed3 },
-            { "bbq ribs", BuffID.WellFed3 },
-            { "burger", BuffID.WellFed2 },
-            { "milkshake", BuffID.WellFed3 },
-            { "pizza", BuffID.WellFed2 },
-            { "spaghetti", BuffID.WellFed2 },
-            { "steak", BuffID.WellFed3 },
-
-            // Seasonal & Misc
-            { "eggnog", BuffID.WellFed },
-            { "donut", BuffID.WellFed },
-            { "frosted donut", BuffID.WellFed },
-            { "frosted cake", BuffID.WellFed },
-            { "cheeseburger", BuffID.WellFed2 },
-            { "cheese pizza", BuffID.WellFed2 },
-            { "gummy worm", BuffID.WellFed },
-            { "candy apple", BuffID.WellFed },
-            { "candy cane", BuffID.WellFed },
-            { "sundae", BuffID.WellFed2 },
-            { "mushroom stew", BuffID.WellFed },
-            { "meatball", BuffID.WellFed },
-            { "spicy pepper", BuffID.WellFed },
-            { "strange brew", BuffID.WellFed }
-        };
+            buffMap.Add("Ironskin Potion", BuffID.Ironskin);
+            buffMap.Add("Swiftness Potion", BuffID.Swiftness);
+            buffMap.Add("Regeneration Potion", BuffID.Regeneration);
+            buffMap.Add("Shine Potion", BuffID.Shine);
+            buffMap.Add("Night Owl Potion", BuffID.NightOwl);
+            buffMap.Add("Mining Potion", BuffID.Mining);
+            buffMap.Add("Heartreach Potion", BuffID.Heartreach);
+            buffMap.Add("Calming Potion", BuffID.Calm);
+            buffMap.Add("Builder Potion", BuffID.Builder);
+            buffMap.Add("Titan Potion", BuffID.Titan);
+            buffMap.Add("Flipper Potion", BuffID.Flipper);
+            buffMap.Add("Spelunker Potion", BuffID.Spelunker);
+            buffMap.Add("Obsidian Skin Potion", BuffID.ObsidianSkin);
+            buffMap.Add("Hunter Potion", BuffID.Hunter);
+            buffMap.Add("Gravitation Potion", BuffID.Gravitation);
+            buffMap.Add("Thorns Potion", BuffID.Thorns);
+            buffMap.Add("Invisibility Potion", BuffID.Invisibility);
+            buffMap.Add("Magic Power Potion", BuffID.MagicPower);
+            buffMap.Add("Mana Regeneration Potion", BuffID.ManaRegeneration);
+            buffMap.Add("Summoning Potion", BuffID.Summoning);
+            buffMap.Add("Wrath Potion", BuffID.Wrath);
+            buffMap.Add("Rage Potion", BuffID.Rage);
+            buffMap.Add("Endurance Potion", BuffID.Endurance);
+            buffMap.Add("Lifeforce Potion", BuffID.Lifeforce);
+            buffMap.Add("Warmth Potion", BuffID.Warmth);
+            buffMap.Add("Archery Potion", BuffID.Archery);
+            buffMap.Add("Ammo Reservation Potion", BuffID.AmmoReservation);
+            buffMap.Add("Battle Potion", BuffID.Battle);
+            buffMap.Add("Fishing Potion", BuffID.Fishing);
+            buffMap.Add("Sonar Potion", BuffID.Sonar);
+            buffMap.Add("Crate Potion", BuffID.Crate);
+            buffMap.Add("Sharpening Station", BuffID.Sharpened);
+            buffMap.Add("Tipsy", BuffID.Tipsy);
+            buffMap.Add("Ale", BuffID.Tipsy);
+            buffMap.Add("Sake", BuffID.Tipsy);
+            buffMap.Add("Cooked Fish", BuffID.WellFed);
+            buffMap.Add("Cooked Shrimp", BuffID.WellFed);
+            buffMap.Add("Bowl of Soup", BuffID.WellFed);
+            buffMap.Add("Pumpkin Pie", BuffID.WellFed);
+            buffMap.Add("Grilled Squirrel", BuffID.WellFed);
+            buffMap.Add("Buggy Pudding", BuffID.WellFed);
+            buffMap.Add("Spaghetti", BuffID.WellFed2);
+            buffMap.Add("Bacon", BuffID.WellFed2);
+            buffMap.Add("Seafood Dinner", BuffID.WellFed3);
+            buffMap.Add("Stink Potion", BuffID.Stinky);
+        }
     }
 }
