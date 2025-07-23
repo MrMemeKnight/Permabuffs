@@ -149,5 +149,24 @@ static Potions()
     }
 }
 
+// Your existing code...
+
+        buffMap["Teacup"] = BuffID.WellFed;
+    } // ← Existing closing brace of PopulateBuffMap
+
+    // ⬇️ Add below this line ⬇️
+    public static List<int> GetBuffsFromPiggyBank()
+    {
+        List<int> buffs = new List<int>();
+
+        foreach (var kvp in buffMap)
+        {
+            buffs.Add(kvp.Value);
+        }
+
+        return buffs;
+    }
+} // ← Closing brace of class Potions
+
 }
 
