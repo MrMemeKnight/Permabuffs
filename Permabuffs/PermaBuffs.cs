@@ -1,29 +1,27 @@
 using System;
 using System.Collections.Generic;
 using Terraria;
-using TerrariaApi.Server;
 using TShockAPI;
-using Microsoft.Xna.Framework;
+using TerrariaApi.Server;
 
 namespace Permabuffs
 {
     [ApiVersion(2, 1)]
     public class Permabuffs : TerrariaPlugin
     {
-        public override string Name => "PermaBuffs";
-        public override string Author => "SyntaxVoid (Myoni)";
-        public override string Description => "Automatically gives players buffs based on items in their piggy bank.";
-        public override Version Version => new Version(1, 0, 0, 0);
+        public override string Author => "SyntaxVoid, updated by you";
+        public override string Description => "Applies permanent buffs if 30 of the potion are in piggy bank";
+        public override string Name => "Permabuffs";
+        public override Version Version => new Version(1, 0);
 
-        public Permabuffs(Main game) : base(game)
-        {
-        }
+        private static Dictionary<int, bool> EnabledForPlayers = new Dictionary<int, bool>();
+
+        public Permabuffs(Main game) : base(game) { }
 
         public override void Initialize()
         {
             ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
-            Commands.ChatCommands.Add(new Command("permabuffs.use", EnableBuffs, "pbenable"));
-            Commands.ChatCommands.Add(new Command("permabuffs.use", DisableBuffs, "pbdisable"));
+            Commands.ChatCommands.Add(new Command("permabuffs.toggle", TogglePermabuff, "pbenable", "pbdisable"));
         }
 
         protected override void Dispose(bool disposing)
@@ -35,35 +33,47 @@ namespace Permabuffs
             base.Dispose(disposing);
         }
 
-        private void EnableBuffs(CommandArgs args)
+        private void TogglePermabuff(CommandArgs args)
         {
-            DB.ToggleBuffs(args.Player.Account.ID, true);
-            args.Player.SendSuccessMessage("PermaBuffs enabled.");
-        }
+            int id = args.Player.Index;
 
-        private void DisableBuffs(CommandArgs args)
-        {
-            DB.ToggleBuffs(args.Player.Account.ID, false);
-            args.Player.SendSuccessMessage("PermaBuffs disabled.");
+            if (!EnabledForPlayers.ContainsKey(id))
+                EnabledForPlayers[id] = false;
+
+            EnabledForPlayers[id] = !EnabledForPlayers[id];
+            args.Player.SendSuccessMessage($"Permabuffs {(EnabledForPlayers[id] ? "enabled" : "disabled")}.");
         }
 
         private void OnUpdate(EventArgs args)
         {
             foreach (TSPlayer player in TShock.Players)
             {
-                if (player == null || !player.Active || player.TPlayer == null || !player.TPlayer.active)
+                if (player?.Active != true || !player.TPlayer.active)
                     continue;
 
-                if (!DB.IsEnabled(player.Account.ID))
+                int id = player.Index;
+
+                if (!EnabledForPlayers.ContainsKey(id) || !EnabledForPlayers[id])
                     continue;
 
-                List<int> buffList = Potions.GetBuffsFromPiggyBank(player.TPlayer);
+                Player tPlayer = player.TPlayer;
+                List<int> buffs = Potions.GetBuffsFromPiggyBank(tPlayer);
 
-                foreach (int buff in buffList)
+                foreach (int buffID in buffs)
                 {
-                    if (!player.TPlayer.HasBuff(buff))
+                    bool alreadyHasBuff = false;
+                    for (int i = 0; i < Player.MaxBuffs; i++)
                     {
-                        player.TPlayer.AddBuff(buff, 1800); // 30 seconds = 60 * 30 = 1800 ticks
+                        if (tPlayer.buffType[i] == buffID)
+                        {
+                            alreadyHasBuff = true;
+                            break;
+                        }
+                    }
+
+                    if (!alreadyHasBuff)
+                    {
+                        tPlayer.AddBuff(buffID, 60 * 2); // 2 seconds, refreshed continuously
                     }
                 }
             }
