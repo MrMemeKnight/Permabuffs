@@ -14,6 +14,8 @@ namespace Permabuffs
         public override string Description => "Applies permanent buffs if 30+ buff items are in Piggy Bank";
         public override Version Version => new Version(1, 0, 0, 0);
 
+        private static DateTime lastLogTime = DateTime.MinValue;
+
         private static Dictionary<int, bool> EnabledUsers = new();
         private static Dictionary<int, DateTime> LastBuffApplied = new();
 
