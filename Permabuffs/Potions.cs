@@ -6,7 +6,7 @@ namespace Permabuffs
 {
     public static class Potions
     {
-        public static Dictionary<int, int> buffMap = new Dictionary<int, int>();
+        public static Dictionary<string, int> buffMap = new Dictionary<string, int>();
 
         static Potions()
         {
