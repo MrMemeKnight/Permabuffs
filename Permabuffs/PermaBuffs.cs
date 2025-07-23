@@ -53,22 +53,24 @@ namespace Permabuffs
         private void OnUpdate(EventArgs args)
         {
             foreach (TSPlayer player in TShock.Players)
-{
-    if (player?.Active != true || !player.TPlayer.active)
-        continue;
+            {
+                if (player == null || !player.Active || !player.TPlayer.active)
+                    continue;
 
-    if (!EnabledUsers.TryGetValue(player.Index, out bool enabled) || !enabled)
-        continue;
+                if (!EnabledUsers.TryGetValue(player.Index, out bool enabled) || !enabled)
+                    continue;
 
-    var buffs = Potions.GetBuffsFromPiggyBank(player.TPlayer);
-    foreach (int buffID in buffs)
-    {
-        player.TPlayer.AddBuff(buffID, 1800);
-NetMessage.SendData(55, -1, -1, null, player.Index, buffID);
+                var buffs = Potions.GetBuffsFromPiggyBank(player.TPlayer);
+
+                foreach (int buffID in buffs)
+                {
+                    // Apply buff for 10 seconds
+                    player.TPlayer.AddBuff(buffID, 600);
+                }
+
+                // Sync buffs to the client
+                NetMessage.SendData(50, -1, -1, null, player.Index);
+            }
+        }
     }
-
-    // Force the buffs to be updated
-    player.TPlayer.UpdateBuffs();
-}
-
 }
