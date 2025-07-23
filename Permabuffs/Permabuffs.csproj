@@ -1,28 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <OutputType>Library</OutputType>
+    <Platforms>linux-arm64</Platforms>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="TShockAPI">
-      <HintPath>../lib/TShockAPI.dll</HintPath>
-    </Reference>
     <Reference Include="OTAPI">
       <HintPath>../lib/OTAPI.dll</HintPath>
     </Reference>
-    <Reference Include="TerrariaServer">
-      <HintPath>../lib/TerrariaServer.exe</HintPath>
+    <Reference Include="TShockAPI">
+      <HintPath>../lib/TShockAPI.dll</HintPath>
     </Reference>
-    <Reference Include="ServerAPI">
-      <HintPath>../lib/ServerAPI.dll</HintPath>
+    <Reference Include="TerrariaServer">
+      <HintPath>../lib/TerrariaServer.dll</HintPath>
     </Reference>
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.7" />
-  </ItemGroup>
 </Project>
