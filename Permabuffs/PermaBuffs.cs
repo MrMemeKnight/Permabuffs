@@ -18,6 +18,11 @@ namespace Permabuffs
         private static readonly List<int> enabledPlayers = new List<int>();
         private static readonly Dictionary<string, int> buffMap = Potions.BuffMap;
 
+        // Track timers per player
+        private readonly Dictionary<int, DateTime> lastScanTime = new();
+        private readonly Dictionary<int, DateTime> lastBuffTime = new();
+        private readonly Dictionary<int, List<int>> detectedBuffs = new();
+
         public Permabuffs(Main game) : base(game) { }
 
         public override void Initialize()
@@ -41,84 +46,99 @@ namespace Permabuffs
 
         private void OnLogin(PlayerPostLoginEventArgs args)
         {
-            if (!enabledPlayers.Contains(args.Player.Account.ID))
-                enabledPlayers.Add(args.Player.Account.ID);
+            int id = args.Player.Account.ID;
+            if (!enabledPlayers.Contains(id))
+                enabledPlayers.Add(id);
         }
 
         private void EnableCommand(CommandArgs args)
         {
-            var tsplr = args.Player;
-            if (!enabledPlayers.Contains(tsplr.Account.ID))
+            int id = args.Player.Account.ID;
+            if (!enabledPlayers.Contains(id))
             {
-                enabledPlayers.Add(tsplr.Account.ID);
-                tsplr.SendSuccessMessage("Permabuffs enabled.");
+                enabledPlayers.Add(id);
+                args.Player.SendSuccessMessage("Permabuffs enabled.");
             }
             else
             {
-                tsplr.SendInfoMessage("Permabuffs are already enabled.");
+                args.Player.SendInfoMessage("Permabuffs already enabled.");
             }
         }
 
         private void DisableCommand(CommandArgs args)
         {
-            var tsplr = args.Player;
-            if (enabledPlayers.Contains(tsplr.Account.ID))
+            int id = args.Player.Account.ID;
+            if (enabledPlayers.Contains(id))
             {
-                enabledPlayers.Remove(tsplr.Account.ID);
-                tsplr.SendSuccessMessage("Permabuffs disabled.");
+                enabledPlayers.Remove(id);
+                args.Player.SendSuccessMessage("Permabuffs disabled.");
             }
             else
             {
-                tsplr.SendInfoMessage("Permabuffs are already disabled.");
+                args.Player.SendInfoMessage("Permabuffs already disabled.");
             }
         }
 
         private void OnUpdate(EventArgs args)
         {
+            DateTime now = DateTime.UtcNow;
+
             foreach (TSPlayer tsplr in TShock.Players)
             {
                 if (tsplr == null || !tsplr.Active || tsplr.Account == null)
                     continue;
 
+                int id = tsplr.Account.ID;
                 Player plr = tsplr.TPlayer;
 
-                if (!enabledPlayers.Contains(tsplr.Account.ID))
+                if (!enabledPlayers.Contains(id))
                     continue;
 
-                TSPlayer.Server.SendInfoMessage($"[Permabuffs] Checking {tsplr.Name}'s piggy bank...");
-
-                for (int i = 0; i < plr.bank.item.Length; i++)
+                // Scan piggy bank every 60s
+                if (!lastScanTime.ContainsKey(id) || (now - lastScanTime[id]).TotalSeconds >= 60)
                 {
-                    var item = plr.bank.item[i];
-                    if (item == null || item.stack < 30)
-                        continue;
+                    lastScanTime[id] = now;
+                    detectedBuffs[id] = new List<int>();
 
-                    TSPlayer.Server.SendInfoMessage($"[Permabuffs] Found item: {item.Name} x{item.stack}");
-
-                    if (buffMap.TryGetValue(item.Name, out int buffID))
+                    for (int i = 0; i < plr.bank.item.Length; i++)
                     {
-                        TSPlayer.Server.SendInfoMessage($"[Permabuffs] Item '{item.Name}' maps to BuffID {buffID}");
+                        var item = plr.bank.item[i];
+                        if (item == null || item.stack < 30)
+                            continue;
 
-                        bool hasBuff = false;
-                        for (int j = 0; j < plr.buffType.Length; j++)
+                        if (buffMap.TryGetValue(item.Name, out int buffID))
                         {
-                            if (plr.buffType[j] == buffID)
+                            detectedBuffs[id].Add(buffID);
+                            tsplr.SendInfoMessage($"[DEBUG] Found {item.Name} in piggy bank -> Buff {buffID}");
+                        }
+                    }
+                }
+
+                // Apply buffs every 30s
+                if (!lastBuffTime.ContainsKey(id) || (now - lastBuffTime[id]).TotalSeconds >= 30)
+                {
+                    lastBuffTime[id] = now;
+
+                    if (!detectedBuffs.ContainsKey(id)) continue;
+
+                    foreach (int buffID in detectedBuffs[id])
+                    {
+                        bool alreadyHas = false;
+                        foreach (int activeBuff in plr.buffType)
+                        {
+                            if (activeBuff == buffID)
                             {
-                                hasBuff = true;
-                                TSPlayer.Server.SendInfoMessage($"[Permabuffs] Player already has buff {buffID}");
+                                alreadyHas = true;
                                 break;
                             }
                         }
 
-                        if (!hasBuff)
+                        if (!alreadyHas)
                         {
-                            plr.AddBuff(buffID, 60 * 10);
-                            TSPlayer.Server.SendInfoMessage($"[Permabuffs] Applied buff {buffID} to {tsplr.Name}");
+                            plr.AddBuff(buffID, 60 * 10); // 10 seconds
+                            NetMessage.SendData((int)PacketTypes.AddBuff, -1, -1, null, tsplr.Index, buffID, 10f);
+                            tsplr.SendInfoMessage($"[DEBUG] Applying buff ID: {buffID}");
                         }
-                    }
-                    else
-                    {
-                        TSPlayer.Server.SendInfoMessage($"[Permabuffs] Item '{item.Name}' not found in buff map");
                     }
                 }
             }
