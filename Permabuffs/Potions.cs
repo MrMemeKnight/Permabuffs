@@ -174,5 +174,7 @@ namespace Permabuffs
 
             return buffs;
         }
+
+        public static Dictionary<string, int> BuffMap => buffMap;
     }
 }
