@@ -15,6 +15,7 @@ namespace Permabuffs
         public override Version Version => new Version(1, 0, 0, 0);
 
         private static Dictionary<int, bool> EnabledUsers = new();
+        private static Dictionary<int, DateTime> LastBuffApplied = new();
 
         public PermaBuffs(Main game) : base(game) { }
 
@@ -56,28 +57,32 @@ namespace Permabuffs
                 if (tsPlayer == null || !tsPlayer.Active || !tsPlayer.TPlayer.active)
                     continue;
 
+                if (!EnabledUsers.TryGetValue(tsPlayer.Index, out bool enabled) || !enabled)
+                    continue;
+
                 Player player = tsPlayer.TPlayer;
-                int userId = tsPlayer.Index;
 
-                if (!EnabledUsers.TryGetValue(userId, out bool enabled) || !enabled)
-                    continue;
-
-                var buffsToApply = Potions.GetBuffsFromPiggyBank(player);
-
-                if (buffsToApply.Count == 0)
+                // Apply buffs once every 5 seconds
+                if (!LastBuffApplied.TryGetValue(tsPlayer.Index, out DateTime last) || (DateTime.UtcNow - last).TotalSeconds >= 5)
                 {
-                    TShock.Log.ConsoleInfo($"[Permabuffs] No eligible items found in piggy bank for {tsPlayer.Name}.");
-                    continue;
-                }
+                    LastBuffApplied[tsPlayer.Index] = DateTime.UtcNow;
 
-                foreach (int buffID in buffsToApply)
-                {
-                    if (player.FindBuffIndex(buffID) == -1)
+                    var buffsToApply = Potions.GetBuffsFromPiggyBank(player);
+
+                    if (buffsToApply.Count == 0)
                     {
-                        player.AddBuff(buffID, 1800); // 30 seconds
-                        NetMessage.SendData(55, -1, -1, null, player.whoAmI, buffID);
+                        TShock.Log.ConsoleInfo($"[PB] No valid buffs found in Piggy Bank for {tsPlayer.Name}.");
+                        continue;
+                    }
 
-                        TShock.Log.ConsoleInfo($"[Permabuffs] Applied buff ID {buffID} to {tsPlayer.Name}.");
+                    foreach (int buffID in buffsToApply)
+                    {
+                        if (player.FindBuffIndex(buffID) == -1)
+                        {
+                            player.AddBuff(buffID, 1800); // 30 seconds
+                            NetMessage.SendData(55, -1, -1, null, tsPlayer.Index, buffID);
+                            TShock.Log.ConsoleInfo($"[PB] Applied buff {buffID} to {tsPlayer.Name}");
+                        }
                     }
                 }
             }
