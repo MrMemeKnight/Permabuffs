@@ -79,10 +79,10 @@ namespace Permabuffs
 
                     foreach (int buffID in buffsToApply)
                     {
-                        if (player.FindBuffIndex(buffID) == -1)
+                        if (!player.TPlayer.HasBuff(buffID))
                         {
-                            player.AddBuff(buffID, 1800); // 30 seconds
-                            NetMessage.SendData(55, -1, -1, null, tsPlayer.Index, buffID);
+                            player.AddBuff(buffID, 3600, true); // 30 seconds
+                            NetMessage.SendData(55, -1, -1, null, player.Index, buffID);
                             if ((DateTime.UtcNow - lastLogTime).TotalSeconds > 2)
                            {
                             TShock.Log.ConsoleInfo($"[PB] Applied buff {buffID} to {tsPlayer.Name}");
