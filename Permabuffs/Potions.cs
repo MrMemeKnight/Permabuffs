@@ -1,20 +1,17 @@
+using System;
 using System.Collections.Generic;
-using Terraria.ID;
+using System.Timers;
+using Terraria;
 
 namespace Permabuffs
 {
     public static class Potions
     {
-        public static Dictionary<string, int> buffMap = new();
+        public static Dictionary<string, int> buffMap = new Dictionary<string, int>();
 
-        static Potions()
+        public static void PopulateBuffMap()
         {
-            PopulateBuffMap();
-        }
-
-        private static void PopulateBuffMap()
-        {
-            // Attack Potions (8)
+            // Attack (8)
             buffMap["Ammo Reservation Potion"] = BuffID.AmmoReservation;
             buffMap["Archery Potion"] = BuffID.Archery;
             buffMap["Battle Potion"] = BuffID.Battle;
@@ -24,7 +21,7 @@ namespace Permabuffs
             buffMap["Titan Potion"] = BuffID.Titan;
             buffMap["Wrath Potion"] = BuffID.Wrath;
 
-            // Defense Potions (12)
+            // Defense (11)
             buffMap["Calming Potion"] = BuffID.Calm;
             buffMap["Endurance Potion"] = BuffID.Endurance;
             buffMap["Heartreach Potion"] = BuffID.Heartreach;
@@ -37,7 +34,7 @@ namespace Permabuffs
             buffMap["Thorns Potion"] = BuffID.Thorns;
             buffMap["Warmth Potion"] = BuffID.Warmth;
 
-            // Movement Potions (7)
+            // Movement (7)
             buffMap["Featherfall Potion"] = BuffID.Featherfall;
             buffMap["Flipper Potion"] = BuffID.Flipper;
             buffMap["Gills Potion"] = BuffID.Gills;
@@ -46,7 +43,7 @@ namespace Permabuffs
             buffMap["Swiftness Potion"] = BuffID.Swiftness;
             buffMap["Water Walking Potion"] = BuffID.WaterWalking;
 
-            // Detection and Vision Potions (6)
+            // Detection and Vision (6)
             buffMap["Biome Sight Potion"] = BuffID.BiomeSight;
             buffMap["Dangersense Potion"] = BuffID.Dangersense;
             buffMap["Hunter Potion"] = BuffID.Hunter;
@@ -54,16 +51,16 @@ namespace Permabuffs
             buffMap["Shine Potion"] = BuffID.Shine;
             buffMap["Spelunker Potion"] = BuffID.Spelunker;
 
-            // Fishing Potions (3)
+            // Fishing (3)
             buffMap["Fishing Potion"] = BuffID.Fishing;
             buffMap["Sonar Potion"] = BuffID.Sonar;
             buffMap["Crate Potion"] = BuffID.Crate;
 
-            // Other Potions (2)
+            // Other (2)
             buffMap["Builder Potion"] = BuffID.Builder;
             buffMap["Mining Potion"] = BuffID.Mining;
 
-            // Flasks (7)
+            // Flasks (8)
             buffMap["Flask of Poison"] = BuffID.WeaponImbuePoison;
             buffMap["Flask of Fire"] = BuffID.WeaponImbueFire;
             buffMap["Flask of Venom"] = BuffID.WeaponImbueVenom;
@@ -73,24 +70,24 @@ namespace Permabuffs
             buffMap["Flask of Nanites"] = BuffID.WeaponImbueNanites;
             buffMap["Flask of Party"] = BuffID.WeaponImbueConfetti;
 
-            // Foods and Drinks (80+)
-            // These give Well Fed, Plenty Satisfied, or Exquisitely Stuffed
+            // Foods and Drinks (85)
             buffMap["Ale"] = BuffID.Tipsy;
             buffMap["Apple Pie"] = BuffID.ExquisitelyStuffed;
             buffMap["Bacon"] = BuffID.ExquisitelyStuffed;
             buffMap["Banana Split"] = BuffID.ExquisitelyStuffed;
             buffMap["BBQ Ribs"] = BuffID.ExquisitelyStuffed;
             buffMap["Bowl of Soup"] = BuffID.WellFed;
-            buffMap["Bunny Stew"] = BuffID.PlentySatisfied;
+            buffMap["Bunny Stew"] = BuffID.ExquisitelyStuffed;
             buffMap["Burger"] = BuffID.ExquisitelyStuffed;
             buffMap["Carton of Milk"] = BuffID.WellFed;
-            buffMap["Chicken Nugget"] = BuffID.PlentySatisfied;
+            buffMap["Chicken Nugget"] = BuffID.ExquisitelyStuffed;
             buffMap["Chocolate Chip Cookie"] = BuffID.WellFed;
             buffMap["Christmas Pudding"] = BuffID.ExquisitelyStuffed;
             buffMap["Coffee"] = BuffID.WellFed;
             buffMap["Cooked Marshmallow"] = BuffID.WellFed;
             buffMap["Cream Soda"] = BuffID.WellFed;
-            buffMap["Escargot"] = BuffID.PlentySatisfied;
+            buffMap["Escargot"] = BuffID.ExquisitelyStuffed;
+            buffMap["Fish"] = BuffID.PlentySatisfied;
             buffMap["Fried Egg"] = BuffID.WellFed;
             buffMap["Fries"] = BuffID.WellFed;
             buffMap["Froggle Bunwich"] = BuffID.PlentySatisfied;
@@ -115,42 +112,42 @@ namespace Permabuffs
             buffMap["Star Fruit"] = BuffID.WellFed;
             buffMap["Fruit Juice"] = BuffID.PlentySatisfied;
             buffMap["Fruit Salad"] = BuffID.PlentySatisfied;
-            buffMap["Apple Juice"] = BuffID.PlentySatisfied;
+            buffMap["Apple Juice"] = BuffID.WellFed;
             buffMap["Bloody Moscato"] = BuffID.PlentySatisfied;
             buffMap["Frozen Banana Daiquiri"] = BuffID.PlentySatisfied;
-            buffMap["Lemonade"] = BuffID.PlentySatisfied;
+            buffMap["Lemonade"] = BuffID.WellFed;
             buffMap["Peach Sangria"] = BuffID.PlentySatisfied;
             buffMap["Piña Colada"] = BuffID.PlentySatisfied;
             buffMap["Prismatic Punch"] = BuffID.PlentySatisfied;
             buffMap["Smoothie of Darkness"] = BuffID.PlentySatisfied;
             buffMap["Tropical Smoothie"] = BuffID.PlentySatisfied;
-            buffMap["Gingerbread Cookie"] = BuffID.PlentySatisfied;
+            buffMap["Gingerbread Cookie"] = BuffID.WellFed;
             buffMap["Golden Delight"] = BuffID.ExquisitelyStuffed;
             buffMap["Grapes"] = BuffID.WellFed;
-            buffMap["Grape Juice"] = BuffID.PlentySatisfied;
-            buffMap["Grilled Squirrel"] = BuffID.PlentySatisfied;
+            buffMap["Grape Juice"] = BuffID.WellFed;
+            buffMap["Grilled Squirrel"] = BuffID.ExquisitelyStuffed;
             buffMap["Grub Soup"] = BuffID.PlentySatisfied;
-            buffMap["Hotdog"] = BuffID.PlentySatisfied;
+            buffMap["Hotdog"] = BuffID.ExquisitelyStuffed;
             buffMap["Ice Cream"] = BuffID.PlentySatisfied;
             buffMap["Joja Cola"] = BuffID.WellFed;
             buffMap["Milkshake"] = BuffID.PlentySatisfied;
             buffMap["Monster Lasagna"] = BuffID.PlentySatisfied;
             buffMap["Nachos"] = BuffID.PlentySatisfied;
-            buffMap["Pad Thai"] = BuffID.PlentySatisfied;
-            buffMap["Pizza"] = BuffID.PlentySatisfied;
+            buffMap["Pad Thai"] = BuffID.ExquisitelyStuffed;
+            buffMap["Pizza"] = BuffID.ExquisitelyStuffed;
             buffMap["Pho"] = BuffID.PlentySatisfied;
-            buffMap["Potato Chips"] = BuffID.PlentySatisfied;
-            buffMap["Pumpkin Pie"] = BuffID.PlentySatisfied;
-            buffMap["Roasted Bird"] = BuffID.PlentySatisfied;
-            buffMap["Roasted Duck"] = BuffID.PlentySatisfied;
+            buffMap["Potato Chips"] = BuffID.WellFed;
+            buffMap["Pumpkin Pie"] = BuffID.ExquisitelyStuffed;
+            buffMap["Roasted Bird"] = BuffID.ExquisitelyStuffed;
+            buffMap["Roasted Duck"] = BuffID.ExquisitelyStuffed;
             buffMap["Sake"] = BuffID.Tipsy;
             buffMap["Sauteed Frog Legs"] = BuffID.PlentySatisfied;
             buffMap["Shrimp Po' Boy"] = BuffID.PlentySatisfied;
             buffMap["Shucked Oyster"] = BuffID.PlentySatisfied;
-            buffMap["Spaghetti"] = BuffID.PlentySatisfied;
-            buffMap["Steak"] = BuffID.PlentySatisfied;
-            buffMap["Sugar Cookie"] = BuffID.PlentySatisfied;
-            buffMap["Teacup"] = BuffID.PlentySatisfied;
+            buffMap["Spaghetti"] = BuffID.ExquisitelyStuffed;
+            buffMap["Steak"] = BuffID.ExquisitelyStuffed;
+            buffMap["Sugar Cookie"] = BuffID.WellFed;
+            buffMap["Teacup"] = BuffID.WellFed;
         }
     }
 }
