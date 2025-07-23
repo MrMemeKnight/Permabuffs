@@ -162,9 +162,8 @@ namespace Permabuffs
                 if (item != null && !item.IsAir && item.stack >= 30)
                 {
                     string name = Lang.GetItemNameValue(item.type);
-                    if (buffMap.ContainsKey(name))
+                    if (buffMap.TryGetValue(name, out int buffID))
                     {
-                        int buffID = buffMap[item.Name];
                         if (buffID > 0 && !buffs.Contains(buffID))
                         {
                             buffs.Add(buffID);
