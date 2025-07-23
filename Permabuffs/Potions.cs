@@ -152,7 +152,7 @@ namespace Permabuffs
             buffMap["Flask of Party"] = BuffID.WeaponImbueConfetti;
         }
 
-        public static List<int> GetBuffsFromPiggyBank()
+        public static List<int> GetBuffsFromPiggyBank(Player player)
         {
             List<int> buffs = new List<int>();
 
