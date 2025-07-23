@@ -82,7 +82,7 @@ namespace Permabuffs
                 if (!Enabled.TryGetValue(player.Index, out bool isEnabled) || !isEnabled)
                     continue;
 
-                List<int> buffsToApply = PotionsHelper.GetBuffsFromPiggyBank(player); // (Assuming you have this helper)
+                List<int> buffsToApply = Potions.GetBuffsFromPiggyBank(player); // (Assuming you have this helper)
                 PlayerBuffs[player.Index] = buffsToApply;
 
                 foreach (int buffId in buffsToApply)
