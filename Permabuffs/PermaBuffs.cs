@@ -80,7 +80,7 @@ namespace Permabuffs
                     {
                         TShock.Log.ConsoleInfo($"[Permabuffs] Applying buff ID {buffID} to {tsPlayer.Name}.");
                         player.AddBuff(buffID, 1800); // 30 seconds
-                        NetMessage.SendData(55, -1, -1, null, userId, buffID);
+                        NetMessage.SendData(50, -1, -1, null, player.whoAmI); // send updated buffs
                     }
                     else
                     {
