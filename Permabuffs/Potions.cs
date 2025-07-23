@@ -162,8 +162,7 @@ namespace Permabuffs
         if (item == null || string.IsNullOrWhiteSpace(item.Name) || item.stack < 30)
             continue;
 
-        string lowerName = item.Name.ToLowerInvariant();
-        if (buffMap.TryGetValue(lowerName, out int buffID))
+        if (buffMap.TryGetValue(item.Name, out int buffID))
         {
             if (!buffsToApply.Contains(buffID))
             {
