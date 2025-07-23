@@ -87,14 +87,18 @@ namespace Permabuffs
 
         foreach (var pair in Potions.buffMap)
         {
-            int itemType = pair.Key;
+            string itemName = pair.Key;
             int buffID = pair.Value;
+
+            int itemType = TShock.Utils.GetItemByName(itemName).FirstOrDefault()?.type ?? 0;
+            if (itemType == 0)
+                continue;
 
             int totalStack = piggyBank.Where(i => i != null && i.type == itemType).Sum(i => i.stack);
 
             if (totalStack >= 30 && !player.HasBuff(buffID))
             {
-                player.SetBuff(buffID, 60 * 30); // 30 seconds
+                player.SetBuff(buffID, 60 * 30); // Apply for 30 seconds
                 applicableBuffs.Add(buffID);
             }
         }
