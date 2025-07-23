@@ -60,23 +60,19 @@ namespace Permabuffs
                 List<int> buffs = Potions.GetBuffsFromPiggyBank(tPlayer);
 
                 foreach (int buffID in buffs)
-                {
-                    bool alreadyHasBuff = false;
-                    for (int i = 0; i < player.buffType.Length; i++)
-                    {
-                        if (tPlayer.buffType[i] == buffID)
-                        {
-                            alreadyHasBuff = true;
-                            break;
-                        }
-                    }
-
-                    if (!alreadyHasBuff)
-                    {
-                        tPlayer.AddBuff(buffID, 60 * 2); // 2 seconds, refreshed continuously
-                    }
-                }
-            }
+{
+    // Only apply the buff if the player doesn't already have it
+    bool alreadyHasBuff = false;
+    foreach (var buff in player.buffType)
+    {
+        if (buff == buffID)
+        {
+            alreadyHasBuff = true;
+            break;
         }
+    }
+    if (!alreadyHasBuff)
+    {
+        player.AddBuff(buffID, 60 * 60, true); // 60 seconds
     }
 }
