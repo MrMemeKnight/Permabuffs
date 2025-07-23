@@ -85,6 +85,7 @@ namespace Permabuffs
                            {
                             TShock.Log.ConsoleInfo($"[PB] Applied buff {buffID} to {tsPlayer.Name}");
                             lastLogTime = DateTime.UtcNow;
+                           }
                         }
                     }
                 }
