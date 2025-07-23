@@ -61,7 +61,7 @@ namespace Permabuffs
 
                 foreach (int buffID in buffs)
                 {
-                    if (!tPlayer.HasBuff(buffID))
+                    if (!player.buffType.Contains(buffID))
                     {
                         tPlayer.AddBuff(buffID, 60 * 2); // 2 seconds, constantly refreshed
                     }
