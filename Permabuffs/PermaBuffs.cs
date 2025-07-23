@@ -76,23 +76,29 @@ namespace Permabuffs
         }
 
         private void CheckBuffs(object sender, ElapsedEventArgs e)
+{
+    foreach (TSPlayer player in TShock.Players.Where(p => p != null && p.Active))
+    {
+        if (!Enabled.TryGetValue(player.Index, out bool isEnabled) || !isEnabled)
+            continue;
+
+        List<int> applicableBuffs = new();
+        Item[] piggyBank = player.TPlayer.bank.item;
+
+        foreach (var pair in Potions.buffMap)
         {
-            foreach (TSPlayer player in TShock.Players.Where(p => p != null && p.Active))
+            int itemType = pair.Key;
+            int buffID = pair.Value;
+
+            int totalStack = piggyBank.Where(i => i != null && i.type == itemType).Sum(i => i.stack);
+
+            if (totalStack >= 30 && !player.HasBuff(buffID))
             {
-                if (!Enabled.TryGetValue(player.Index, out bool isEnabled) || !isEnabled)
-                    continue;
-
-                List<int> buffsToApply = Potions.GetBuffsFromPiggyBank(player.TPlayer);
-                PlayerBuffs[player.Index] = buffsToApply;
-
-                foreach (int buffId in buffsToApply)
-                {
-                    if (!player.TPlayer.buffType.Contains(buffId))
-                    {
-                        player.SetBuff(buffId, 60 * 30); // Apply buff for 30 seconds
-                    }
-                }
+                player.SetBuff(buffID, 60 * 30); // 30 seconds
+                applicableBuffs.Add(buffID);
             }
         }
+
+        PlayerBuffs[player.Index] = applicableBuffs;
     }
 }
