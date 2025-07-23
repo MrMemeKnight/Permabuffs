@@ -93,7 +93,6 @@ namespace Permabuffs
             buffMap["Banana"] = BuffID.WellFed;
             buffMap["Blackcurrant"] = BuffID.WellFed;
             buffMap["Blood Orange"] = BuffID.WellFed;
-            buffMap["Bowl of Soup"] = BuffID.WellFed;
             buffMap["Bunny Stew"] = BuffID.WellFed;
             buffMap["Cherry"] = BuffID.WellFed;
             buffMap["Coconut"] = BuffID.WellFed;
@@ -101,13 +100,11 @@ namespace Permabuffs
             buffMap["Elderberry"] = BuffID.WellFed;
             buffMap["Grapefruit"] = BuffID.WellFed;
             buffMap["Grilled Squirrel"] = BuffID.WellFed;
-            buffMap["Grub Soup"] = BuffID.WellFed;
             buffMap["Joja Cola"] = BuffID.WellFed;
             buffMap["Lemon"] = BuffID.WellFed;
             buffMap["Mango"] = BuffID.WellFed;
             buffMap["Marshmallow"] = BuffID.WellFed;
             buffMap["Peach"] = BuffID.WellFed;
-            buffMap["Pho"] = BuffID.WellFed;
             buffMap["Pineapple"] = BuffID.WellFed;
             buffMap["Plum"] = BuffID.WellFed;
             buffMap["Pomegranate"] = BuffID.WellFed;
@@ -125,6 +122,11 @@ namespace Permabuffs
             buffMap["Carton of Milk"] = BuffID.WellFed;
             buffMap["Piña Colada"] = BuffID.WellFed;
             buffMap["Potato Chips"] = BuffID.WellFed;
+            buffMap["Blackcurrant"] = BuffID.WellFed;
+            buffMap["Blood Orange"] = BuffID.WellFed;
+            buffMap["Fruit Salad"] = BuffID.WellFed;
+            buffMap["Frozen Banana Daiquiri"] = BuffID.WellFed;
+            buffMap["Apple Juice"] = BuffID.WellFed;
 
             // Food – Plenty Satisfied (Tier 2)
             buffMap["Bacon"] = BuffID.WellFed2;
@@ -142,7 +144,6 @@ namespace Permabuffs
             buffMap["Grapes"] = BuffID.WellFed2;
             buffMap["Nachos"] = BuffID.WellFed2;
             buffMap["Shrimp Po' Boy"] = BuffID.WellFed2;
-            buffMap["Prismatic Punch"] = BuffID.WellFed2;
             buffMap["Pad Thai"] = BuffID.WellFed2;
             buffMap["Pumpkin Pie"] = BuffID.WellFed2;
             buffMap["Escargot"] = BuffID.WellFed2;
@@ -152,6 +153,8 @@ namespace Permabuffs
             buffMap["Roasted Duck"] = BuffID.WellFed2;
             buffMap["Star Fruit"] = BuffID.WellFed2;
             buffMap["Dragon Fruit"] = BuffID.WellFed2;
+            buffMap["Bowl of Soup"] = BuffID.WellFed2;
+            buffMap["Pho"] = BuffID.WellFed2;
 
             // Food – Exquisitely Stuffed (Tier 3)
             buffMap["Apple Pie"] = BuffID.WellFed3;
@@ -164,6 +167,7 @@ namespace Permabuffs
             buffMap["Steak"] = BuffID.WellFed3;
             buffMap["Sugar Cookie"] = BuffID.WellFed3;
             buffMap["Christmas Pudding"] = BuffID.WellFed3;
+            buffMap["Prismatic Punch"] = BuffID.WellFed3;
 
         }
 
