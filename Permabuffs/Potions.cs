@@ -174,6 +174,3 @@ namespace Permabuffs
 
     return buffsToApply;
 }
-
-}
-}
