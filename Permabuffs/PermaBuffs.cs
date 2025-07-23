@@ -1,27 +1,29 @@
 using System;
 using System.Collections.Generic;
 using Terraria;
-using TShockAPI;
 using TerrariaApi.Server;
+using TShockAPI;
+using Microsoft.Xna.Framework;
 
 namespace Permabuffs
 {
     [ApiVersion(2, 1)]
     public class Permabuffs : TerrariaPlugin
     {
-        public override string Author => "SyntaxVoid, updated by you";
-        public override string Description => "Applies permanent buffs if 30 of the potion are in piggy bank";
-        public override string Name => "Permabuffs";
-        public override Version Version => new Version(1, 0);
+        public override string Name => "PermaBuffs";
+        public override string Author => "SyntaxVoid (Myoni)";
+        public override string Description => "Automatically gives players buffs based on items in their piggy bank.";
+        public override Version Version => new Version(1, 0, 0, 0);
 
-        private static Dictionary<int, bool> EnabledForPlayers = new Dictionary<int, bool>();
-
-        public Permabuffs(Main game) : base(game) { }
+        public Permabuffs(Main game) : base(game)
+        {
+        }
 
         public override void Initialize()
         {
             ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
-            Commands.ChatCommands.Add(new Command("permabuffs.toggle", TogglePermabuff, "pbenable", "pbdisable"));
+            Commands.ChatCommands.Add(new Command("permabuffs.use", EnableBuffs, "pbenable"));
+            Commands.ChatCommands.Add(new Command("permabuffs.use", DisableBuffs, "pbdisable"));
         }
 
         protected override void Dispose(bool disposing)
@@ -33,53 +35,37 @@ namespace Permabuffs
             base.Dispose(disposing);
         }
 
-        private void TogglePermabuff(CommandArgs args)
+        private void EnableBuffs(CommandArgs args)
         {
-            int id = args.Player.Index;
+            DB.ToggleBuffs(args.Player.Account.ID, true);
+            args.Player.SendSuccessMessage("PermaBuffs enabled.");
+        }
 
-            if (!EnabledForPlayers.ContainsKey(id))
-                EnabledForPlayers[id] = false;
-
-            EnabledForPlayers[id] = !EnabledForPlayers[id];
-            args.Player.SendSuccessMessage($"Permabuffs {(EnabledForPlayers[id] ? "enabled" : "disabled")}.");
+        private void DisableBuffs(CommandArgs args)
+        {
+            DB.ToggleBuffs(args.Player.Account.ID, false);
+            args.Player.SendSuccessMessage("PermaBuffs disabled.");
         }
 
         private void OnUpdate(EventArgs args)
-{
-    foreach (TSPlayer player in TShock.Players)
-    {
-        if (player?.Active != true || !player.TPlayer.active)
-            continue;
-
-        int id = player.Index;
-
-        if (!EnabledForPlayers.ContainsKey(id) || !EnabledForPlayers[id])
-            continue;
-
-        Player tPlayer = player.TPlayer;
-
-        // Make sure piggy bank is loaded
-        if (tPlayer.bank?.item == null)
-            continue;
-
-        List<int> buffs = Potions.GetBuffsFromPiggyBank(tPlayer);
-
-        foreach (int buffID in buffs)
         {
-            bool alreadyHasBuff = false;
-
-            for (int i = 0; i < Player.MaxBuffs; i++)
+            foreach (TSPlayer player in TShock.Players)
             {
-                if (tPlayer.buffType[i] == buffID)
+                if (player == null || !player.Active || player.TPlayer == null || !player.TPlayer.active)
+                    continue;
+
+                if (!DB.IsEnabled(player.Account.ID))
+                    continue;
+
+                List<int> buffList = Potions.GetBuffsFromPiggyBank(player.TPlayer);
+
+                foreach (int buff in buffList)
                 {
-                    alreadyHasBuff = true;
-                    break;
+                    if (!player.TPlayer.HasBuff(buff))
+                    {
+                        player.TPlayer.AddBuff(buff, 1800); // 30 seconds = 60 * 30 = 1800 ticks
+                    }
                 }
-            }
-
-            if (!alreadyHasBuff)
-            {
-                tPlayer.AddBuff(buffID, 60 * 10); // 10 seconds to ensure overlap with update interval
             }
         }
     }
