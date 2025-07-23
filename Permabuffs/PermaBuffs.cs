@@ -1,161 +1,89 @@
+using Terraria;
+using TerrariaApi.Server;
+using TShockAPI;
+using TShockAPI.Hooks;
 using System.Collections.Generic;
-using Terraria.ID;
+using System.Linq;
 
 namespace Permabuffs
 {
-    /// <summary>
-    /// Maps potion, flask, food, and drink names (case-insensitive) to their buff IDs
-    /// for permanent buff detection.
-    /// </summary>
-    public static class Potions
+    [ApiVersion(2, 1)]
+    public class PermaBuffs : TerrariaPlugin
     {
-        public static readonly Dictionary<string, int> BuffMap = new Dictionary<string, int>()
+        public override string Name => "Permabuffs";
+        public override string Author => "Myoni (SyntaxVoid)";
+        public override string Description => "Grants buffs based on Piggy Bank inventory.";
+        public override Version Version => new Version(1, 0);
+
+        public static Dictionary<int, List<int>> PlayerBuffs = new Dictionary<int, List<int>>();
+        public static HashSet<int> EnabledPlayers = new HashSet<int>();
+
+        public PermaBuffs(Main game) : base(game) { }
+
+        public override void Initialize()
         {
-            // Potions
-            { "ammo reservation potion", BuffID.AmmoReservation },
-            { "archery potion", BuffID.Archery },
-            { "battle potion", BuffID.Battle },
-            { "builder potion", BuffID.Builder },
-            { "calming potion", BuffID.Calm },
-            { "crate potion", BuffID.Crate },
-            { "dangersense potion", BuffID.Dangersense },
-            { "endurance potion", BuffID.Endurance },
-            { "featherfall potion", BuffID.Featherfall },
-            { "fishing potion", BuffID.Fishing },
-            { "flipper potion", BuffID.Flipper },
-            { "gills potion", BuffID.Gills },
-            { "gravitation potion", BuffID.Gravitation },
-            { "hunter potion", BuffID.Hunter },
-            { "inferno potion", BuffID.Inferno },
-            { "invisibility potion", BuffID.Invisibility },
-            { "ironskin potion", BuffID.Ironskin },
-            { "lifeforce potion", BuffID.Lifeforce },
-            { "magic power potion", BuffID.MagicPower },
-            { "mana regeneration potion", BuffID.ManaRegeneration },
-            { "mining potion", BuffID.Mining },
-            { "night owl potion", BuffID.NightOwl },
-            { "obsidian skin potion", BuffID.ObsidianSkin },
-            { "rage potion", BuffID.Rage },
-            { "regeneration potion", BuffID.Regeneration },
-            { "shine potion", BuffID.Shine },
-            { "sonar potion", BuffID.Sonar },
-            { "spelunker potion", BuffID.Spelunker },
-            { "stink potion", BuffID.StinkyPotion },
-            { "summoning potion", BuffID.Summoning },
-            { "swiftness potion", BuffID.Swiftness },
-            { "thorns potion", BuffID.Thorns },
-            { "titan potion", BuffID.Titan },
-            { "warmth potion", BuffID.Warmth },
-            { "water walking potion", BuffID.WaterWalking },
-            { "wrath potion", BuffID.Wrath },
+            ServerApi.Hooks.GameUpdate.Register(this, OnGameUpdate);
+            PlayerHooks.PlayerPostLogin += OnPlayerPostLogin;
+            Commands.ChatCommands.Add(new Command("permabuffs.toggle", TogglePermabuffs, "pbenable", "pbdisable"));
+        }
 
-            // Flasks / Weapon Imbues
-            { "flask of cursed flames", BuffID.WeaponImbueCursedFlames },
-            { "flask of fire", BuffID.WeaponImbueFire },
-            { "flask of gold", BuffID.WeaponImbueGold },
-            { "flask of ichor", BuffID.WeaponImbueIchor },
-            { "flask of nanites", BuffID.WeaponImbueNanites },
-            { "flask of party", BuffID.WeaponImbueConfetti },
-            { "flask of poison", BuffID.WeaponImbueVenom },
-            { "flask of venom", BuffID.WeaponImbueVenom },
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                ServerApi.Hooks.GameUpdate.Deregister(this, OnGameUpdate);
+                PlayerHooks.PlayerPostLogin -= OnPlayerPostLogin;
+            }
+            base.Dispose(disposing);
+        }
 
-            // Drinks (Tipsy)
-            { "ale", BuffID.Tipsy },
-            { "sake", BuffID.Tipsy },
+        private void OnPlayerPostLogin(PlayerPostLoginEventArgs args)
+        {
+            int who = args.Player.Index;
+            if (!PlayerBuffs.ContainsKey(who))
+                PlayerBuffs[who] = new List<int>();
 
-            // Well-Fed (Tier 1 BuffID)
-            { "apple", BuffID.WellFed },
-            { "apple juice", BuffID.WellFed },
-            { "apples", BuffID.WellFed },
-            { "bloody moscato", BuffID.WellFed },
-            { "bunny stew", BuffID.WellFed },
-            { "bowl of soup", BuffID.WellFed },
-            { "burger", BuffID.WellFed2 },
-            { "carton of milk", BuffID.WellFed },
-            { "cherry", BuffID.WellFed },
-            { "coconut", BuffID.WellFed },
-            { "coffee", BuffID.WellFed },
-            { "cooked fish", BuffID.WellFed },
-            { "fried egg", BuffID.WellFed },
-            { "fruit juice", BuffID.WellFed },
-            { "fruit salad", BuffID.WellFed3 },
-            { "grilled squirrel", BuffID.WellFed },
-            { "lemonade", BuffID.WellFed },
-            { "peach sangria", BuffID.WellFed },
-            { "roasted bird", BuffID.WellFed },
-            { "smoothie of darkness", BuffID.WellFed },
-            { "tropical smoothie", BuffID.WellFed },
-            { "teacup", BuffID.WellFed },
-            { "blackcurrant", BuffID.WellFed },
-            { "blood orange", BuffID.WellFed },
-            { "elderberry", BuffID.WellFed },
-            { "grapefruit", BuffID.WellFed },
-            { "lemon", BuffID.WellFed },
-            { "mango", BuffID.WellFed },
-            { "peach", BuffID.WellFed },
-            { "pineapple", BuffID.WellFed },
-            { "plum", BuffID.WellFed },
-            { "rambutan", BuffID.WellFed },
-            { "potato chips", BuffID.WellFed },
-            { "roasted bird", BuffID.WellFed },
-            { "shucked oyster", BuffID.WellFed },
-            { "marshmallow", BuffID.WellFed },
+            EnabledPlayers.Add(who);
+        }
 
-            // Plenty Satisfied (Tier 2)
-            { "grub soup", BuffID.WellFed },
-            { "cooked shrimp", BuffID.WellFed },
-            { "pumpkin pie", BuffID.WellFed },
-            { "sashimi", BuffID.WellFed },
-            { "escargot", BuffID.WellFed },
-            { "lobster tail", BuffID.WellFed3 },
-            { "prismatic punch", BuffID.WellFed },
-            { "roasted duck", BuffID.WellFed3 },
-            { "sauteed frog legs", BuffID.WellFed },
-            { "pho", BuffID.WellFed2 },
-            { "pad thai", BuffID.WellFed },
-            { "dragon fruit", BuffID.WellFed },
-            { "star fruit", BuffID.WellFed },
-            { "banana split", BuffID.WellFed2 },
-            { "chicken nugget", BuffID.WellFed },
-            { "chocolate chip cookie", BuffID.WellFed },
-            { "cream soda", BuffID.WellFed },
-            { "fries", BuffID.WellFed },
-            { "grapes", BuffID.WellFed },
-            { "hotdog", BuffID.WellFed },
-            { "ice cream", BuffID.WellFed },
-            { "nachos", BuffID.WellFed },
+        private void TogglePermabuffs(CommandArgs args)
+        {
+            if (args.CommandName == "pbenable")
+            {
+                EnabledPlayers.Add(args.Player.Index);
+                args.Player.SendSuccessMessage("PermaBuffs enabled.");
+            }
+            else
+            {
+                EnabledPlayers.Remove(args.Player.Index);
+                args.Player.SendSuccessMessage("PermaBuffs disabled.");
+            }
+        }
 
-            // Exquisitely Stuffed (Tier 3)
-            { "golden delight", BuffID.WellFed3 },
-            { "grape juice", BuffID.WellFed3 },
-            { "seafood dinner", BuffID.WellFed3 },
-            { "bacon", BuffID.WellFed3 },
-            { "christmas pudding", BuffID.WellFed3 },
-            { "gingerbread cookie", BuffID.WellFed3 },
-            { "sugar cookie", BuffID.WellFed },
-            { "apple pie", BuffID.WellFed3 },
-            { "bbq ribs", BuffID.WellFed3 },
-            { "burger", BuffID.WellFed2 },
-            { "milkshake", BuffID.WellFed3 },
-            { "pizza", BuffID.WellFed2 },
-            { "spaghetti", BuffID.WellFed2 },
-            { "steak", BuffID.WellFed3 },
+        private void OnGameUpdate(EventArgs args)
+        {
+            foreach (TSPlayer tsplr in TShock.Players.Where(p => p != null && p.Active))
+            {
+                int who = tsplr.Index;
+                if (!EnabledPlayers.Contains(who)) continue;
 
-            // Seasonal & Misc
-            { "eggnog", BuffID.WellFed },
-            { "donut", BuffID.WellFed },
-            { "frosted donut", BuffID.WellFed },
-            { "frosted cake", BuffID.WellFed },
-            { "cheeseburger", BuffID.WellFed2 },
-            { "cheese pizza", BuffID.WellFed2 },
-            { "gummy worm", BuffID.WellFed },
-            { "candy apple", BuffID.WellFed },
-            { "candy cane", BuffID.WellFed },
-            { "sundae", BuffID.WellFed2 },
-            { "mushroom stew", BuffID.WellFed },
-            { "meatball", BuffID.WellFed },
-            { "spicy pepper", BuffID.WellFed },
-            { "strange brew", BuffID.WellFed }
-        };
+                Player player = Main.player[who];
+                List<int> buffs = new List<int>();
+
+                foreach (Item item in player.bank.item)
+                {
+                    if (item != null && item.stack >= 30 && Potions.buffMap.TryGetValue(item.Name, out int buffId))
+                    {
+                        if (!player.HasBuff(buffId))
+                        {
+                            player.AddBuff(buffId, 60 * 10, true); // 10 seconds
+                        }
+                        buffs.Add(buffId);
+                    }
+                }
+
+                PlayerBuffs[who] = buffs;
+            }
+        }
     }
 }
