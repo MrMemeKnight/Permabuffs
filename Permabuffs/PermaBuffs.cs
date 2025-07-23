@@ -62,7 +62,7 @@ namespace Permabuffs
                 foreach (int buffID in buffs)
                 {
                     bool alreadyHasBuff = false;
-                    for (int i = 0; i < Player.MaxBuffs; i++)
+                    for (int i = 0; i < player.buffType.Length; i++)
                     {
                         if (tPlayer.buffType[i] == buffID)
                         {
