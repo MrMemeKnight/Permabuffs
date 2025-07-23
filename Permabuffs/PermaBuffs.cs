@@ -72,7 +72,7 @@ namespace Permabuffs
 
                 foreach (int buffID in buffsToApply)
                 {
-                    if (!player.HasBuff(buffID))
+                    if (player.FindBuffIndex(buffID) == -1)
                     {
                         player.AddBuff(buffID, 1800); // 30 seconds
                         NetMessage.SendData(55, -1, -1, null, player.whoAmI, buffID);
