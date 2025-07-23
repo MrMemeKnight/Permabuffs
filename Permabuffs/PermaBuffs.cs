@@ -82,12 +82,12 @@ namespace Permabuffs
                 if (!Enabled.TryGetValue(player.Index, out bool isEnabled) || !isEnabled)
                     continue;
 
-                List<int> buffsToApply = Potions.GetBuffsFromPiggyBank(player);
+                List<int> buffsToApply = PotionsHelper.GetBuffsFromPiggyBank(player); // (Assuming you have this helper)
                 PlayerBuffs[player.Index] = buffsToApply;
 
                 foreach (int buffId in buffsToApply)
                 {
-                    if (!player.TPlayer.HasBuff(buffId))
+                    if (!player.TPlayer.buffType.Contains(buffId))
                     {
                         player.SetBuff(buffId, 60 * 10); // Apply buff for 10 seconds
                     }
