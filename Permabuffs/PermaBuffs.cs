@@ -45,27 +45,41 @@ namespace Permabuffs
         }
 
         private void OnUpdate(EventArgs args)
+{
+    foreach (TSPlayer player in TShock.Players)
+    {
+        if (player?.Active != true || !player.TPlayer.active)
+            continue;
+
+        int id = player.Index;
+
+        if (!EnabledForPlayers.ContainsKey(id) || !EnabledForPlayers[id])
+            continue;
+
+        Player tPlayer = player.TPlayer;
+
+        // Make sure piggy bank is loaded
+        if (tPlayer.bank?.item == null)
+            continue;
+
+        List<int> buffs = Potions.GetBuffsFromPiggyBank(tPlayer);
+
+        foreach (int buffID in buffs)
         {
-            foreach (TSPlayer player in TShock.Players)
+            bool alreadyHasBuff = false;
+
+            for (int i = 0; i < Player.MaxBuffs; i++)
             {
-                if (player?.Active != true || !player.TPlayer.active)
-                    continue;
-
-                int id = player.Index;
-
-                if (!EnabledForPlayers.ContainsKey(id) || !EnabledForPlayers[id])
-                    continue;
-
-                Player tPlayer = player.TPlayer;
-                List<int> buffs = Potions.GetBuffsFromPiggyBank(tPlayer);
-
-                foreach (int buffID in buffs)
+                if (tPlayer.buffType[i] == buffID)
                 {
-                    if (!player.TPlayer.buffType.Contains(buffID))
-                    {
-                        tPlayer.AddBuff(buffID, 60 * 2); // 2 seconds, constantly refreshed
-                    }
+                    alreadyHasBuff = true;
+                    break;
                 }
+            }
+
+            if (!alreadyHasBuff)
+            {
+                tPlayer.AddBuff(buffID, 60 * 10); // 10 seconds to ensure overlap with update interval
             }
         }
     }
