@@ -65,8 +65,6 @@ namespace Permabuffs
                     continue;
                 }
 
-                TShock.Log.ConsoleInfo($"[Permabuffs] Checking buffs for player {tsPlayer.Name}...");
-
                 var buffsToApply = Potions.GetBuffsFromPiggyBank(player);
 
                 if (buffsToApply.Count == 0)
@@ -79,7 +77,7 @@ namespace Permabuffs
                     if (player.FindBuffIndex(buffID) == -1)
                     {
                         player.AddBuff(buffID, 1800); // 30 seconds
-                        NetMessage.SendData(50, -1, -1, null, player.whoAmI); // Proper sync to client
+                        NetMessage.SendData(55, -1, -1, null, player.whoAmI, buffID); // correct buff sync
 
                         TShock.Log.ConsoleInfo($"[Permabuffs] Applied buff ID {buffID} to {tsPlayer.Name}.");
                     }
