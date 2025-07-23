@@ -61,11 +61,6 @@ namespace Permabuffs
                 { "Sonar Potion", Terraria.ID.BuffID.Sonar },
                 { "Crate Potion", Terraria.ID.BuffID.Crate },
 
-                // --- Luck Buff Potions ---
-                { "Greater Luck Potion", Terraria.ID.BuffID.Luck },
-                { "Luck Potion", Terraria.ID.BuffID.Luck2 },
-                { "Lesser Luck Potion", Terraria.ID.BuffID.Luck3 },
-
                 // --- Other Buff Potions ---
                 { "Builder Potion", Terraria.ID.BuffID.Builder },
                 { "Mining Potion", Terraria.ID.BuffID.Mining },
