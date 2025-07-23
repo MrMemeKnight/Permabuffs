@@ -70,3 +70,5 @@ NetMessage.SendData(55, -1, -1, null, player.Index, buffID);
     // Force the buffs to be updated
     player.TPlayer.UpdateBuffs();
 }
+
+}
