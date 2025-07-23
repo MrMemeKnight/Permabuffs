@@ -76,7 +76,7 @@ namespace Permabuffs
                     if (item == null || string.IsNullOrWhiteSpace(item.Name))
                         continue;
 
-                    string name = item.Name.ToLowerInvariant();
+                    string name = Lang.GetItemNameValue(item.type);
                     if (item.stack >= 30 && Potions.BuffMap.TryGetValue(name, out int buffID))
                     {
                         if (!buffCounts.ContainsKey(buffID))
