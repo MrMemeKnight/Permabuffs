@@ -16,7 +16,7 @@ namespace Permabuffs
         public override Version Version => new Version(1, 0, 0, 0);
 
         private static readonly List<int> enabledPlayers = new List<int>();
-        private static readonly Dictionary<string, int> buffMap = Potions.buffMap;
+        private static readonly Dictionary<string, int> buffMap = Potions.BuffMap;
 
         public Permabuffs(Main game) : base(game) { }
 
