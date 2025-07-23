@@ -3,11 +3,15 @@ using Terraria.ID;
 
 namespace Permabuffs
 {
+    /// <summary>
+    /// Maps potion, flask, food, and drink names (lowercase) to their respective buff IDs
+    /// for permanent buff detection.
+    /// </summary>
     public static class Potions
     {
-        public static readonly Dictionary<string, int> BuffMap = new(StringComparer.OrdinalIgnoreCase)
+        public static readonly Dictionary<string, int> BuffMap = new()
         {
-            // Buff Potions
+            // Potions
             { "ammo reservation potion", BuffID.AmmoReservation },
             { "archery potion", BuffID.Archery },
             { "battle potion", BuffID.Battle },
@@ -40,7 +44,7 @@ namespace Permabuffs
             { "shine potion", BuffID.Shine },
             { "sonar potion", BuffID.Sonar },
             { "spelunker potion", BuffID.Spelunker },
-            { "stink potion", BuffID.StinkyToy }, // approximate
+            { "stink potion", BuffID.StinkyPotion },
             { "summoning potion", BuffID.Summoning },
             { "swiftness potion", BuffID.Swiftness },
             { "thorns potion", BuffID.Thorns },
@@ -49,7 +53,7 @@ namespace Permabuffs
             { "water walking potion", BuffID.WaterWalking },
             { "wrath potion", BuffID.Wrath },
 
-            // Weapon Flasks
+            // Flasks / weapon imbue potions
             { "flask of cursed flames", BuffID.WeaponImbueCursedFlames },
             { "flask of fire", BuffID.WeaponImbueFire },
             { "flask of gold", BuffID.WeaponImbueGold },
@@ -59,46 +63,88 @@ namespace Permabuffs
             { "flask of poison", BuffID.WeaponImbueVenom },
             { "flask of venom", BuffID.WeaponImbueVenom },
 
-            // Drinks (Tipsy)
+            // Drinks -> Tipsy
             { "ale", BuffID.Tipsy },
             { "sake", BuffID.Tipsy },
 
-            // Well-Fed (26)
-            { "apple", BuffID.WellFed },
+            // Well-Fed (BuffID.WellFed = 26)
             { "apple juice", BuffID.WellFed },
-            { "banana", BuffID.WellFed },
             { "bunny stew", BuffID.WellFed },
-            { "carton of milk", BuffID.WellFed },
-            { "cherry", BuffID.WellFed },
-            { "coconut", BuffID.WellFed },
+            { "bloody moscato", BuffID.WellFed },
+            { "cook fish", BuffID.WellFed },
+            { "cooked fish", BuffID.WellFed },
+            { "frozen banana daiquiri", BuffID.WellFed },
+            { "fruit juice", BuffID.WellFed },
             { "fruit salad", BuffID.WellFed },
             { "grilled squirrel", BuffID.WellFed },
             { "lemonade", BuffID.WellFed },
-            { "marshmallow", BuffID.WellFed },
             { "peach sangria", BuffID.WellFed },
-            { "potato chips", BuffID.WellFed },
             { "roasted bird", BuffID.WellFed },
             { "smoothie of darkness", BuffID.WellFed },
-            { "teacup", BuffID.WellFed },
             { "tropical smoothie", BuffID.WellFed },
+            { "teacup", BuffID.WellFed },
+            { "apple", BuffID.WellFed },
+            { "apricot", BuffID.WellFed },
+            { "banana", BuffID.WellFed },
+            { "blackcurrant", BuffID.WellFed },
+            { "blood orange", BuffID.WellFed },
+            { "cherry", BuffID.WellFed },
+            { "coconut", BuffID.WellFed },
+            { "elderberry", BuffID.WellFed },
+            { "grapefruit", BuffID.WellFed },
+            { "lemon", BuffID.WellFed },
+            { "mango", BuffID.WellFed },
+            { "peach", BuffID.WellFed },
+            { "pineapple", BuffID.WellFed },
+            { "plum", BuffID.WellFed },
+            { "rambutan", BuffID.WellFed },
+            { "carton of milk", BuffID.WellFed },
+            { "potato chips", BuffID.WellFed },
+            { "shucked oyster", BuffID.WellFed },
+            { "marshmallow", BuffID.WellFed },
 
-            // Plenty Satisfied (206)
+            // Plenty Satisfied (BuffID.WellFed2 = 206)
+            { "grub soup", BuffID.WellFed2 },
+            { "bowl of soup", BuffID.WellFed2 },
             { "cooked shrimp", BuffID.WellFed2 },
+            { "pumpkin pie", BuffID.WellFed2 },
+            { "sashimi", BuffID.WellFed2 },
+            { "escargot", BuffID.WellFed2 },
             { "lobster tail", BuffID.WellFed2 },
             { "prismatic punch", BuffID.WellFed2 },
             { "roasted duck", BuffID.WellFed2 },
+            { "sauteed frog legs", BuffID.WellFed2 },
             { "pho", BuffID.WellFed2 },
+            { "pad thai", BuffID.WellFed2 },
+            { "dragon fruit", BuffID.WellFed2 },
+            { "star fruit", BuffID.WellFed2 },
             { "banana split", BuffID.WellFed2 },
             { "chicken nugget", BuffID.WellFed2 },
-            { "nachos", BuffID.WellFed2 },
+            { "chocolate chip cookie", BuffID.WellFed2 },
+            { "coffee", BuffID.WellFed2 },
+            { "cream soda", BuffID.WellFed2 },
+            { "fried egg", BuffID.WellFed2 },
+            { "fries", BuffID.WellFed2 },
+            { "grapes", BuffID.WellFed2 },
             { "hotdog", BuffID.WellFed2 },
+            { "ice cream", BuffID.WellFed2 },
+            { "nachos", BuffID.WellFed2 },
 
-            // Exquisitely Stuffed (207)
-            { "apple pie", BuffID.WellFed3 },
+            // Exquisitely Stuffed (BuffID.WellFed3 = 207)
+            { "golden delight", BuffID.WellFed3 },
+            { "grape juice", BuffID.WellFed3 },
+            { "seafood dinner", BuffID.WellFed3 },
             { "bacon", BuffID.WellFed3 },
+            { "christmas pudding", BuffID.WellFed3 },
+            { "gingerbread cookie", BuffID.WellFed3 },
+            { "sugar cookie", BuffID.WellFed3 },
+            { "apple pie", BuffID.WellFed3 },
+            { "bbq ribs", BuffID.WellFed3 },
             { "burger", BuffID.WellFed3 },
+            { "milkshake", BuffID.WellFed3 },
             { "pizza", BuffID.WellFed3 },
-            { "steak", BuffID.WellFed3 },
+            { "spaghetti", BuffID.WellFed3 },
+            { "steak", BuffID.WellFed3 }
         };
     }
 }
