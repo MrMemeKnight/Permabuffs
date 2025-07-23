@@ -64,11 +64,6 @@ namespace Permabuffs
             buffMap["Builder Potion"] = BuffID.Builder;
             buffMap["Mining Potion"] = BuffID.Mining;
 
-            // Luck
-            buffMap["Luck Potion"] = BuffID.Luck;
-            buffMap["Greater Luck Potion"] = BuffID.Luck2;
-            buffMap["Potion of Luck"] = BuffID.Luck3;
-
             // Flasks
             buffMap["Flask of Poison"] = BuffID.WeaponImbuePoison;
             buffMap["Flask of Fire"] = BuffID.WeaponImbueFire;
