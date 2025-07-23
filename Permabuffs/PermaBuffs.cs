@@ -78,13 +78,10 @@ namespace Permabuffs
                 {
                     if (player.FindBuffIndex(buffID) == -1)
                     {
-                        TShock.Log.ConsoleInfo($"[Permabuffs] Applying buff ID {buffID} to {tsPlayer.Name}.");
                         player.AddBuff(buffID, 1800); // 30 seconds
-                        NetMessage.SendData(50, -1, -1, null, player.whoAmI); // send updated buffs
-                    }
-                    else
-                    {
-                        TShock.Log.ConsoleInfo($"[Permabuffs] {tsPlayer.Name} already has buff {buffID}, skipping.");
+                        NetMessage.SendData(50, -1, -1, null, player.whoAmI); // Proper sync to client
+
+                        TShock.Log.ConsoleInfo($"[Permabuffs] Applied buff ID {buffID} to {tsPlayer.Name}.");
                     }
                 }
             }
