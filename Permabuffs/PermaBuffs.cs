@@ -81,7 +81,10 @@ namespace Permabuffs
                         {
                             player.AddBuff(buffID, 1800); // 30 seconds
                             NetMessage.SendData(55, -1, -1, null, tsPlayer.Index, buffID);
+                            if ((DateTime.UtcNow - lastLogTime).TotalSeconds > 2)
+                           {
                             TShock.Log.ConsoleInfo($"[PB] Applied buff {buffID} to {tsPlayer.Name}");
+                            lastLogTime = DateTime.UtcNow;
                         }
                     }
                 }
