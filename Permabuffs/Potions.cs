@@ -4,12 +4,12 @@ using Terraria.ID;
 namespace Permabuffs
 {
     /// <summary>
-    /// Maps potion, flask, food, and drink names (lowercase) to their respective buff IDs
+    /// Maps potion, flask, food, and drink names (case-insensitive) to their buff IDs
     /// for permanent buff detection.
     /// </summary>
     public static class Potions
     {
-        public static readonly Dictionary<string, int> BuffMap = new()
+        public static readonly Dictionary<string, int> BuffMap = new Dictionary<string, int>()
         {
             // Potions
             { "ammo reservation potion", BuffID.AmmoReservation },
@@ -25,15 +25,11 @@ namespace Permabuffs
             { "flipper potion", BuffID.Flipper },
             { "gills potion", BuffID.Gills },
             { "gravitation potion", BuffID.Gravitation },
-            { "greater luck potion", BuffID.Luck },
-            { "heartreach potion", BuffID.Heartreach },
             { "hunter potion", BuffID.Hunter },
             { "inferno potion", BuffID.Inferno },
             { "invisibility potion", BuffID.Invisibility },
             { "ironskin potion", BuffID.Ironskin },
-            { "lesser luck potion", BuffID.Luck },
             { "lifeforce potion", BuffID.Lifeforce },
-            { "luck potion", BuffID.Luck },
             { "magic power potion", BuffID.MagicPower },
             { "mana regeneration potion", BuffID.ManaRegeneration },
             { "mining potion", BuffID.Mining },
@@ -53,7 +49,7 @@ namespace Permabuffs
             { "water walking potion", BuffID.WaterWalking },
             { "wrath potion", BuffID.Wrath },
 
-            // Flasks / weapon imbue potions
+            // Flasks / Weapon Imbues
             { "flask of cursed flames", BuffID.WeaponImbueCursedFlames },
             { "flask of fire", BuffID.WeaponImbueFire },
             { "flask of gold", BuffID.WeaponImbueGold },
@@ -63,19 +59,26 @@ namespace Permabuffs
             { "flask of poison", BuffID.WeaponImbueVenom },
             { "flask of venom", BuffID.WeaponImbueVenom },
 
-            // Drinks -> Tipsy
+            // Drinks (Tipsy)
             { "ale", BuffID.Tipsy },
             { "sake", BuffID.Tipsy },
 
-            // Well-Fed (BuffID.WellFed = 26)
+            // Well-Fed (Tier 1 BuffID)
+            { "apple", BuffID.WellFed },
             { "apple juice", BuffID.WellFed },
-            { "bunny stew", BuffID.WellFed },
+            { "apples", BuffID.WellFed },
             { "bloody moscato", BuffID.WellFed },
-            { "cook fish", BuffID.WellFed },
+            { "bunny stew", BuffID.WellFed },
+            { "bowl of soup", BuffID.WellFed },
+            { "burger", BuffID.WellFed2 },
+            { "carton of milk", BuffID.WellFed },
+            { "cherry", BuffID.WellFed },
+            { "coconut", BuffID.WellFed },
+            { "coffee", BuffID.WellFed },
             { "cooked fish", BuffID.WellFed },
-            { "frozen banana daiquiri", BuffID.WellFed },
+            { "fried egg", BuffID.WellFed },
             { "fruit juice", BuffID.WellFed },
-            { "fruit salad", BuffID.WellFed },
+            { "fruit salad", BuffID.WellFed3 },
             { "grilled squirrel", BuffID.WellFed },
             { "lemonade", BuffID.WellFed },
             { "peach sangria", BuffID.WellFed },
@@ -83,13 +86,8 @@ namespace Permabuffs
             { "smoothie of darkness", BuffID.WellFed },
             { "tropical smoothie", BuffID.WellFed },
             { "teacup", BuffID.WellFed },
-            { "apple", BuffID.WellFed },
-            { "apricot", BuffID.WellFed },
-            { "banana", BuffID.WellFed },
             { "blackcurrant", BuffID.WellFed },
             { "blood orange", BuffID.WellFed },
-            { "cherry", BuffID.WellFed },
-            { "coconut", BuffID.WellFed },
             { "elderberry", BuffID.WellFed },
             { "grapefruit", BuffID.WellFed },
             { "lemon", BuffID.WellFed },
@@ -98,53 +96,66 @@ namespace Permabuffs
             { "pineapple", BuffID.WellFed },
             { "plum", BuffID.WellFed },
             { "rambutan", BuffID.WellFed },
-            { "carton of milk", BuffID.WellFed },
             { "potato chips", BuffID.WellFed },
+            { "roasted bird", BuffID.WellFed },
             { "shucked oyster", BuffID.WellFed },
             { "marshmallow", BuffID.WellFed },
 
-            // Plenty Satisfied (BuffID.WellFed2 = 206)
-            { "grub soup", BuffID.WellFed2 },
-            { "bowl of soup", BuffID.WellFed2 },
-            { "cooked shrimp", BuffID.WellFed2 },
-            { "pumpkin pie", BuffID.WellFed2 },
-            { "sashimi", BuffID.WellFed2 },
-            { "escargot", BuffID.WellFed2 },
-            { "lobster tail", BuffID.WellFed2 },
-            { "prismatic punch", BuffID.WellFed2 },
-            { "roasted duck", BuffID.WellFed2 },
-            { "sauteed frog legs", BuffID.WellFed2 },
+            // Plenty Satisfied (Tier 2)
+            { "grub soup", BuffID.WellFed },
+            { "cooked shrimp", BuffID.WellFed },
+            { "pumpkin pie", BuffID.WellFed },
+            { "sashimi", BuffID.WellFed },
+            { "escargot", BuffID.WellFed },
+            { "lobster tail", BuffID.WellFed3 },
+            { "prismatic punch", BuffID.WellFed },
+            { "roasted duck", BuffID.WellFed3 },
+            { "sauteed frog legs", BuffID.WellFed },
             { "pho", BuffID.WellFed2 },
-            { "pad thai", BuffID.WellFed2 },
-            { "dragon fruit", BuffID.WellFed2 },
-            { "star fruit", BuffID.WellFed2 },
+            { "pad thai", BuffID.WellFed },
+            { "dragon fruit", BuffID.WellFed },
+            { "star fruit", BuffID.WellFed },
             { "banana split", BuffID.WellFed2 },
-            { "chicken nugget", BuffID.WellFed2 },
-            { "chocolate chip cookie", BuffID.WellFed2 },
-            { "coffee", BuffID.WellFed2 },
-            { "cream soda", BuffID.WellFed2 },
-            { "fried egg", BuffID.WellFed2 },
-            { "fries", BuffID.WellFed2 },
-            { "grapes", BuffID.WellFed2 },
-            { "hotdog", BuffID.WellFed2 },
-            { "ice cream", BuffID.WellFed2 },
-            { "nachos", BuffID.WellFed2 },
+            { "chicken nugget", BuffID.WellFed },
+            { "chocolate chip cookie", BuffID.WellFed },
+            { "cream soda", BuffID.WellFed },
+            { "fries", BuffID.WellFed },
+            { "grapes", BuffID.WellFed },
+            { "hotdog", BuffID.WellFed },
+            { "ice cream", BuffID.WellFed },
+            { "nachos", BuffID.WellFed },
 
-            // Exquisitely Stuffed (BuffID.WellFed3 = 207)
+            // Exquisitely Stuffed (Tier 3)
             { "golden delight", BuffID.WellFed3 },
             { "grape juice", BuffID.WellFed3 },
             { "seafood dinner", BuffID.WellFed3 },
             { "bacon", BuffID.WellFed3 },
             { "christmas pudding", BuffID.WellFed3 },
             { "gingerbread cookie", BuffID.WellFed3 },
-            { "sugar cookie", BuffID.WellFed3 },
+            { "sugar cookie", BuffID.WellFed },
             { "apple pie", BuffID.WellFed3 },
             { "bbq ribs", BuffID.WellFed3 },
-            { "burger", BuffID.WellFed3 },
+            { "burger", BuffID.WellFed2 },
             { "milkshake", BuffID.WellFed3 },
-            { "pizza", BuffID.WellFed3 },
-            { "spaghetti", BuffID.WellFed3 },
-            { "steak", BuffID.WellFed3 }
+            { "pizza", BuffID.WellFed2 },
+            { "spaghetti", BuffID.WellFed2 },
+            { "steak", BuffID.WellFed3 },
+
+            // Seasonal & Misc
+            { "eggnog", BuffID.WellFed },
+            { "donut", BuffID.WellFed },
+            { "frosted donut", BuffID.WellFed },
+            { "frosted cake", BuffID.WellFed },
+            { "cheeseburger", BuffID.WellFed2 },
+            { "cheese pizza", BuffID.WellFed2 },
+            { "gummy worm", BuffID.WellFed },
+            { "candy apple", BuffID.WellFed },
+            { "candy cane", BuffID.WellFed },
+            { "sundae", BuffID.WellFed2 },
+            { "mushroom stew", BuffID.WellFed },
+            { "meatball", BuffID.WellFed },
+            { "spicy pepper", BuffID.WellFed },
+            { "strange brew", BuffID.WellFed }
         };
     }
 }
