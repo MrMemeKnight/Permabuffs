@@ -1,146 +1,119 @@
 using System;
 using System.Collections.Generic;
+using System.Timers;
 using Terraria;
-using TerrariaApi.Server;
+using Terraria.ID;
 using TShockAPI;
-using TShockAPI.Hooks;
 
 namespace Permabuffs
 {
-    [ApiVersion(2, 1)]
-    public class Permabuffs : TerrariaPlugin
+    public class PermabuffManager
     {
-        public override string Author => "SyntaxVoid (Myoni)";
-        public override string Description => "A plugin that allows players to gain buffs from potions placed in piggy banks.";
+        private readonly Dictionary<int, HashSet<int>> playerActiveBuffs = new();
+        private readonly Timer piggyBankScanTimer;
+        private readonly Timer buffApplyTimer;
+
+        public PermabuffManager()
+        {
+            piggyBankScanTimer = new Timer(60000); // 1 minute
+            piggyBankScanTimer.Elapsed += (sender, args) => ScanAllPlayersPiggyBanks();
+            piggyBankScanTimer.Start();
+
+            buffApplyTimer = new Timer(30000); // 30 seconds
+            buffApplyTimer.Elapsed += (sender, args) => ApplyAllPlayerBuffs();
+            buffApplyTimer.Start();
+        }
+
+        private void ScanAllPlayersPiggyBanks()
+        {
+            foreach (TSPlayer player in TShock.Players)
+            {
+                if (player?.Active != true || !player.ConnectionAlive || player.TPlayer == null)
+                    continue;
+
+                if (!PermabuffsPlugin.EnabledPlayers.Contains(player.Account?.ID ?? -1))
+                    continue;
+
+                HashSet<int> buffsToApply = new();
+
+                var piggyBank = player.TPlayer.bank.item;
+                foreach (var item in piggyBank)
+                {
+                    if (item == null || item.stack < 30)
+                        continue;
+
+                    if (Potions.BuffMap.TryGetValue(item.Name, out int buffID))
+                    {
+                        buffsToApply.Add(buffID);
+                    }
+                }
+
+                playerActiveBuffs[player.Index] = buffsToApply;
+                player.SendInfoMessage($"[DEBUG] Scanned piggy bank. Buffs queued: {string.Join(", ", buffsToApply)}");
+            }
+        }
+
+        private void ApplyAllPlayerBuffs()
+        {
+            foreach (TSPlayer player in TShock.Players)
+            {
+                if (player?.Active != true || !player.ConnectionAlive || player.TPlayer == null)
+                    continue;
+
+                if (!PermabuffsPlugin.EnabledPlayers.Contains(player.Account?.ID ?? -1))
+                    continue;
+
+                if (!playerActiveBuffs.TryGetValue(player.Index, out var buffs))
+                    continue;
+
+                foreach (var buffID in buffs)
+                {
+                    player.TPlayer.AddBuff(buffID, 60 * 60); // 60 seconds
+                }
+
+                player.SendInfoMessage($"[DEBUG] Applied buffs: {string.Join(", ", buffs)}");
+            }
+        }
+    }
+
+    public class PermabuffsPlugin : TerrariaPlugin
+    {
+        public static HashSet<int> EnabledPlayers = new();
+
         public override string Name => "Permabuffs";
-        public override Version Version => new Version(1, 0, 0, 0);
+        public override Version Version => new(1, 0);
+        public override string Author => "Myoni/SyntaxVoid";
+        public override string Description => "Applies buffs from Piggy Bank items.";
 
-        private static readonly List<int> enabledPlayers = new List<int>();
-        private static readonly Dictionary<string, int> buffMap = Potions.BuffMap;
+        private PermabuffManager manager;
 
-        // Track timers per player
-        private readonly Dictionary<int, DateTime> lastScanTime = new();
-        private readonly Dictionary<int, DateTime> lastBuffTime = new();
-        private readonly Dictionary<int, List<int>> detectedBuffs = new();
-
-        public Permabuffs(Main game) : base(game) { }
+        public PermabuffsPlugin(Main game) : base(game) { }
 
         public override void Initialize()
         {
-            ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
-            PlayerHooks.PlayerPostLogin += OnLogin;
+            manager = new PermabuffManager();
 
-            Commands.ChatCommands.Add(new Command("permabuffs.use", EnableCommand, "pbenable"));
-            Commands.ChatCommands.Add(new Command("permabuffs.use", DisableCommand, "pbdisable"));
+            Commands.ChatCommands.Add(new Command("permabuff.toggle", ToggleCommand, "pbenable", "pbdisable"));
         }
 
-        protected override void Dispose(bool disposing)
+        private void ToggleCommand(CommandArgs args)
         {
-            if (disposing)
+            int accountId = args.Player.Account?.ID ?? -1;
+            if (accountId == -1)
             {
-                ServerApi.Hooks.GameUpdate.Deregister(this, OnUpdate);
-                PlayerHooks.PlayerPostLogin -= OnLogin;
+                args.Player.SendErrorMessage("You must be logged in to use this command.");
+                return;
             }
-            base.Dispose(disposing);
-        }
 
-        private void OnLogin(PlayerPostLoginEventArgs args)
-        {
-            int id = args.Player.Account.ID;
-            if (!enabledPlayers.Contains(id))
-                enabledPlayers.Add(id);
-        }
-
-        private void EnableCommand(CommandArgs args)
-        {
-            int id = args.Player.Account.ID;
-            if (!enabledPlayers.Contains(id))
+            if (args.Message.Contains("pbenable"))
             {
-                enabledPlayers.Add(id);
+                EnabledPlayers.Add(accountId);
                 args.Player.SendSuccessMessage("Permabuffs enabled.");
             }
-            else
+            else if (args.Message.Contains("pbdisable"))
             {
-                args.Player.SendInfoMessage("Permabuffs already enabled.");
-            }
-        }
-
-        private void DisableCommand(CommandArgs args)
-        {
-            int id = args.Player.Account.ID;
-            if (enabledPlayers.Contains(id))
-            {
-                enabledPlayers.Remove(id);
+                EnabledPlayers.Remove(accountId);
                 args.Player.SendSuccessMessage("Permabuffs disabled.");
-            }
-            else
-            {
-                args.Player.SendInfoMessage("Permabuffs already disabled.");
-            }
-        }
-
-        private void OnUpdate(EventArgs args)
-        {
-            DateTime now = DateTime.UtcNow;
-
-            foreach (TSPlayer tsplr in TShock.Players)
-            {
-                if (tsplr == null || !tsplr.Active || tsplr.Account == null)
-                    continue;
-
-                int id = tsplr.Account.ID;
-                Player plr = tsplr.TPlayer;
-
-                if (!enabledPlayers.Contains(id))
-                    continue;
-
-                // Scan piggy bank every 60s
-                if (!lastScanTime.ContainsKey(id) || (now - lastScanTime[id]).TotalSeconds >= 60)
-                {
-                    lastScanTime[id] = now;
-                    detectedBuffs[id] = new List<int>();
-
-                    for (int i = 0; i < plr.bank.item.Length; i++)
-                    {
-                        var item = plr.bank.item[i];
-                        if (item == null || item.stack < 30)
-                            continue;
-
-                        if (buffMap.TryGetValue(item.Name, out int buffID))
-                        {
-                            detectedBuffs[id].Add(buffID);
-                            tsplr.SendInfoMessage($"[DEBUG] Found {item.Name} in piggy bank -> Buff {buffID}");
-                        }
-                    }
-                }
-
-                // Apply buffs every 30s
-                if (!lastBuffTime.ContainsKey(id) || (now - lastBuffTime[id]).TotalSeconds >= 30)
-                {
-                    lastBuffTime[id] = now;
-
-                    if (!detectedBuffs.ContainsKey(id)) continue;
-
-                    foreach (int buffID in detectedBuffs[id])
-                    {
-                        bool alreadyHas = false;
-                        foreach (int activeBuff in plr.buffType)
-                        {
-                            if (activeBuff == buffID)
-                            {
-                                alreadyHas = true;
-                                break;
-                            }
-                        }
-
-                        if (!alreadyHas)
-                        {
-                            plr.AddBuff(buffID, 60 * 10); // 10 seconds
-                            NetMessage.SendData((int)PacketTypes.AddBuff, -1, -1, null, tsplr.Index, buffID, 10f);
-                            tsplr.SendInfoMessage($"[DEBUG] Applying buff ID: {buffID}");
-                        }
-                    }
-                }
             }
         }
     }
