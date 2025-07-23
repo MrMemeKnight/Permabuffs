@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using Terraria.ID;
 
 namespace Permabuffs
 {
-    public class Potions
+    public static class Potions
     {
-        public static Dictionary<string, int> BuffMap { get; private set; }
+        public static Dictionary<string, int> buffMap = new();
 
         static Potions()
         {
@@ -13,146 +14,144 @@ namespace Permabuffs
 
         private static void PopulateBuffMap()
         {
-            BuffMap = new Dictionary<string, int>()
-            {
-                // --- Attack Buff Potions ---
-                { "Ammo Reservation Potion", Terraria.ID.BuffID.AmmoReservation },
-                { "Archery Potion", Terraria.ID.BuffID.Archery },
-                { "Battle Potion", Terraria.ID.BuffID.Battle },
-                { "Magic Power Potion", Terraria.ID.BuffID.MagicPower },
-                { "Rage Potion", Terraria.ID.BuffID.Rage },
-                { "Summoning Potion", Terraria.ID.BuffID.Summoning },
-                { "Titan Potion", Terraria.ID.BuffID.Titan },
-                { "Wrath Potion", Terraria.ID.BuffID.Wrath },
+            // Attack Potions (8)
+            buffMap["Ammo Reservation Potion"] = BuffID.AmmoReservation;
+            buffMap["Archery Potion"] = BuffID.Archery;
+            buffMap["Battle Potion"] = BuffID.Battle;
+            buffMap["Magic Power Potion"] = BuffID.MagicPower;
+            buffMap["Rage Potion"] = BuffID.Rage;
+            buffMap["Summoning Potion"] = BuffID.Summoning;
+            buffMap["Titan Potion"] = BuffID.Titan;
+            buffMap["Wrath Potion"] = BuffID.Wrath;
 
-                // --- Defense Buff Potions ---
-                { "Calming Potion", Terraria.ID.BuffID.Calm },
-                { "Endurance Potion", Terraria.ID.BuffID.Endurance },
-                { "Heartreach Potion", Terraria.ID.BuffID.Heartreach },
-                { "Inferno Potion", Terraria.ID.BuffID.Inferno },
-                { "Invisibility Potion", Terraria.ID.BuffID.Invisibility },
-                { "Ironskin Potion", Terraria.ID.BuffID.Ironskin },
-                { "Lifeforce Potion", Terraria.ID.BuffID.Lifeforce },
-                { "Mana Regeneration Potion", Terraria.ID.BuffID.ManaRegeneration },
-                { "Regeneration Potion", Terraria.ID.BuffID.Regeneration },
-                { "Thorns Potion", Terraria.ID.BuffID.Thorns },
-                { "Warmth Potion", Terraria.ID.BuffID.Warmth },
-                { "Wiesnbräu", Terraria.ID.BuffID.WellFed3 },
+            // Defense Potions (12)
+            buffMap["Calming Potion"] = BuffID.Calm;
+            buffMap["Endurance Potion"] = BuffID.Endurance;
+            buffMap["Heartreach Potion"] = BuffID.Heartreach;
+            buffMap["Inferno Potion"] = BuffID.Inferno;
+            buffMap["Invisibility Potion"] = BuffID.Invisibility;
+            buffMap["Ironskin Potion"] = BuffID.Ironskin;
+            buffMap["Lifeforce Potion"] = BuffID.Lifeforce;
+            buffMap["Mana Regeneration Potion"] = BuffID.ManaRegeneration;
+            buffMap["Regeneration Potion"] = BuffID.Regeneration;
+            buffMap["Thorns Potion"] = BuffID.Thorns;
+            buffMap["Warmth Potion"] = BuffID.Warmth;
+            buffMap["Worm Scarf"] = BuffID.WellFed3; // if included by name logic, else remove
 
-                // --- Movement Buff Potions ---
-                { "Featherfall Potion", Terraria.ID.BuffID.Featherfall },
-                { "Flipper Potion", Terraria.ID.BuffID.Flipper },
-                { "Gills Potion", Terraria.ID.BuffID.Gills },
-                { "Gravitation Potion", Terraria.ID.BuffID.Gravitation },
-                { "Obsidian Skin Potion", Terraria.ID.BuffID.ObsidianSkin },
-                { "Swiftness Potion", Terraria.ID.BuffID.Swiftness },
-                { "Water Walking Potion", Terraria.ID.BuffID.WaterWalking },
+            // Movement Potions (7)
+            buffMap["Featherfall Potion"] = BuffID.Featherfall;
+            buffMap["Flipper Potion"] = BuffID.Flipper;
+            buffMap["Gills Potion"] = BuffID.Gills;
+            buffMap["Gravitation Potion"] = BuffID.Gravitation;
+            buffMap["Obsidian Skin Potion"] = BuffID.ObsidianSkin;
+            buffMap["Swiftness Potion"] = BuffID.Swiftness;
+            buffMap["Water Walking Potion"] = BuffID.WaterWalking;
 
-                // --- Detection & Vision Buff Potions ---
-                { "Biome Sight Potion", Terraria.ID.BuffID.BiomeSight },
-                { "Dangersense Potion", Terraria.ID.BuffID.Dangersense },
-                { "Hunter Potion", Terraria.ID.BuffID.Hunter },
-                { "Night Owl Potion", Terraria.ID.BuffID.NightOwl },
-                { "Shine Potion", Terraria.ID.BuffID.Shine },
-                { "Spelunker Potion", Terraria.ID.BuffID.Spelunker },
+            // Detection and Vision Potions (6)
+            buffMap["Biome Sight Potion"] = BuffID.BiomeSight;
+            buffMap["Dangersense Potion"] = BuffID.Dangersense;
+            buffMap["Hunter Potion"] = BuffID.Hunter;
+            buffMap["Night Owl Potion"] = BuffID.NightOwl;
+            buffMap["Shine Potion"] = BuffID.Shine;
+            buffMap["Spelunker Potion"] = BuffID.Spelunker;
 
-                // --- Fishing Buff Potions ---
-                { "Fishing Potion", Terraria.ID.BuffID.Fishing },
-                { "Sonar Potion", Terraria.ID.BuffID.Sonar },
-                { "Crate Potion", Terraria.ID.BuffID.Crate },
+            // Fishing Potions (3)
+            buffMap["Fishing Potion"] = BuffID.Fishing;
+            buffMap["Sonar Potion"] = BuffID.Sonar;
+            buffMap["Crate Potion"] = BuffID.Crate;
 
-                // --- Other Buff Potions ---
-                { "Builder Potion", Terraria.ID.BuffID.Builder },
-                { "Mining Potion", Terraria.ID.BuffID.Mining },
+            // Other Potions (2)
+            buffMap["Builder Potion"] = BuffID.Builder;
+            buffMap["Mining Potion"] = BuffID.Mining;
 
-                // --- Flasks ---
-                { "Flask of Poison", Terraria.ID.BuffID.WeaponImbuePoison },
-                { "Flask of Fire", Terraria.ID.BuffID.WeaponImbueFire },
-                { "Flask of Venom", Terraria.ID.BuffID.WeaponImbueVenom },
-                { "Flask of Gold", Terraria.ID.BuffID.WeaponImbueGold },
-                { "Flask of Ichor", Terraria.ID.BuffID.WeaponImbueIchor },
-                { "Flask of Cursed Flames", Terraria.ID.BuffID.WeaponImbueCursedFlames },
-                { "Flask of Nanites", Terraria.ID.BuffID.WeaponImbueNanites },
-                { "Flask of Party", Terraria.ID.BuffID.WeaponImbueConfetti },
+            // Flasks (7)
+            buffMap["Flask of Poison"] = BuffID.WeaponImbuePoison;
+            buffMap["Flask of Fire"] = BuffID.WeaponImbueFire;
+            buffMap["Flask of Venom"] = BuffID.WeaponImbueVenom;
+            buffMap["Flask of Gold"] = BuffID.WeaponImbueGold;
+            buffMap["Flask of Ichor"] = BuffID.WeaponImbueIchor;
+            buffMap["Flask of Cursed Flames"] = BuffID.WeaponImbueCursedFlames;
+            buffMap["Flask of Nanites"] = BuffID.WeaponImbueNanites;
+            buffMap["Flask of Party"] = BuffID.WeaponImbueConfetti;
 
-                // --- Food & Drink Items (Buffs: Well Fed, Plenty Satisfied, Exquisitely Stuffed) ---
-                { "Ale", Terraria.ID.BuffID.Tipsy },
-                { "Apple Pie", Terraria.ID.BuffID.WellFed3 },
-                { "Bacon", Terraria.ID.BuffID.WellFed3 },
-                { "Banana Split", Terraria.ID.BuffID.WellFed3 },
-                { "BBQ Ribs", Terraria.ID.BuffID.WellFed3 },
-                { "Bowl of Soup", Terraria.ID.BuffID.WellFed },
-                { "Bunny Stew", Terraria.ID.BuffID.WellFed },
-                { "Burger", Terraria.ID.BuffID.WellFed2 },
-                { "Carton of Milk", Terraria.ID.BuffID.WellFed },
-                { "Chicken Nugget", Terraria.ID.BuffID.WellFed },
-                { "Chocolate Chip Cookie", Terraria.ID.BuffID.WellFed },
-                { "Christmas Pudding", Terraria.ID.BuffID.WellFed3 },
-                { "Coffee", Terraria.ID.BuffID.WellFed },
-                { "Cooked Marshmallow", Terraria.ID.BuffID.WellFed },
-                { "Cream Soda", Terraria.ID.BuffID.WellFed },
-                { "Escargot", Terraria.ID.BuffID.WellFed3 },
-                { "Fried Egg", Terraria.ID.BuffID.WellFed },
-                { "Fries", Terraria.ID.BuffID.WellFed },
-                { "Froggle Bunwich", Terraria.ID.BuffID.WellFed2 },
-                { "Apple", Terraria.ID.BuffID.WellFed },
-                { "Apricot", Terraria.ID.BuffID.WellFed },
-                { "Banana", Terraria.ID.BuffID.WellFed },
-                { "Blackcurrant", Terraria.ID.BuffID.WellFed },
-                { "Blood Orange", Terraria.ID.BuffID.WellFed },
-                { "Cherry", Terraria.ID.BuffID.WellFed },
-                { "Coconut", Terraria.ID.BuffID.WellFed },
-                { "Dragon Fruit", Terraria.ID.BuffID.WellFed },
-                { "Elderberry", Terraria.ID.BuffID.WellFed },
-                { "Grapefruit", Terraria.ID.BuffID.WellFed },
-                { "Lemon", Terraria.ID.BuffID.WellFed },
-                { "Mango", Terraria.ID.BuffID.WellFed },
-                { "Peach", Terraria.ID.BuffID.WellFed },
-                { "Pineapple", Terraria.ID.BuffID.WellFed },
-                { "Plum", Terraria.ID.BuffID.WellFed },
-                { "Pomegranate", Terraria.ID.BuffID.WellFed },
-                { "Rambutan", Terraria.ID.BuffID.WellFed },
-                { "Spicy Pepper", Terraria.ID.BuffID.WellFed },
-                { "Star Fruit", Terraria.ID.BuffID.WellFed },
-                { "Fruit Juice", Terraria.ID.BuffID.WellFed2 },
-                { "Fruit Salad", Terraria.ID.BuffID.WellFed2 },
-                { "Apple Juice", Terraria.ID.BuffID.WellFed },
-                { "Bloody Moscato", Terraria.ID.BuffID.WellFed3 },
-                { "Frozen Banana Daiquiri", Terraria.ID.BuffID.WellFed3 },
-                { "Lemonade", Terraria.ID.BuffID.WellFed },
-                { "Peach Sangria", Terraria.ID.BuffID.WellFed3 },
-                { "Piña Colada", Terraria.ID.BuffID.WellFed3 },
-                { "Prismatic Punch", Terraria.ID.BuffID.WellFed3 },
-                { "Smoothie of Darkness", Terraria.ID.BuffID.WellFed3 },
-                { "Tropical Smoothie", Terraria.ID.BuffID.WellFed3 },
-                { "Gingerbread Cookie", Terraria.ID.BuffID.WellFed },
-                { "Golden Delight", Terraria.ID.BuffID.WellFed3 },
-                { "Grapes", Terraria.ID.BuffID.WellFed },
-                { "Grape Juice", Terraria.ID.BuffID.WellFed },
-                { "Grilled Squirrel", Terraria.ID.BuffID.WellFed },
-                { "Grub Soup", Terraria.ID.BuffID.WellFed2 },
-                { "Hotdog", Terraria.ID.BuffID.WellFed2 },
-                { "Ice Cream", Terraria.ID.BuffID.WellFed },
-                { "Joja Cola", Terraria.ID.BuffID.WellFed },
-                { "Milkshake", Terraria.ID.BuffID.WellFed2 },
-                { "Monster Lasagna", Terraria.ID.BuffID.WellFed },
-                { "Nachos", Terraria.ID.BuffID.WellFed2 },
-                { "Pad Thai", Terraria.ID.BuffID.WellFed2 },
-                { "Pizza", Terraria.ID.BuffID.WellFed3 },
-                { "Pho", Terraria.ID.BuffID.WellFed3 },
-                { "Potato Chips", Terraria.ID.BuffID.WellFed },
-                { "Pumpkin Pie", Terraria.ID.BuffID.WellFed2 },
-                { "Roasted Bird", Terraria.ID.BuffID.WellFed },
-                { "Roasted Duck", Terraria.ID.BuffID.WellFed2 },
-                { "Sake", Terraria.ID.BuffID.Tipsy },
-                { "Sauteed Frog Legs", Terraria.ID.BuffID.WellFed2 },
-                { "Shrimp Po' Boy", Terraria.ID.BuffID.WellFed2 },
-                { "Shucked Oyster", Terraria.ID.BuffID.WellFed },
-                { "Spaghetti", Terraria.ID.BuffID.WellFed2 },
-                { "Steak", Terraria.ID.BuffID.WellFed2 },
-                { "Sugar Cookie", Terraria.ID.BuffID.WellFed },
-                { "Teacup", Terraria.ID.BuffID.WellFed },
-            };
+            // Foods and Drinks (80+)
+            // These give Well Fed, Plenty Satisfied, or Exquisitely Stuffed
+            buffMap["Ale"] = BuffID.Tipsy;
+            buffMap["Apple Pie"] = BuffID.ExquisitelyStuffed;
+            buffMap["Bacon"] = BuffID.ExquisitelyStuffed;
+            buffMap["Banana Split"] = BuffID.ExquisitelyStuffed;
+            buffMap["BBQ Ribs"] = BuffID.ExquisitelyStuffed;
+            buffMap["Bowl of Soup"] = BuffID.WellFed;
+            buffMap["Bunny Stew"] = BuffID.PlentySatisfied;
+            buffMap["Burger"] = BuffID.ExquisitelyStuffed;
+            buffMap["Carton of Milk"] = BuffID.WellFed;
+            buffMap["Chicken Nugget"] = BuffID.PlentySatisfied;
+            buffMap["Chocolate Chip Cookie"] = BuffID.WellFed;
+            buffMap["Christmas Pudding"] = BuffID.ExquisitelyStuffed;
+            buffMap["Coffee"] = BuffID.WellFed;
+            buffMap["Cooked Marshmallow"] = BuffID.WellFed;
+            buffMap["Cream Soda"] = BuffID.WellFed;
+            buffMap["Escargot"] = BuffID.PlentySatisfied;
+            buffMap["Fried Egg"] = BuffID.WellFed;
+            buffMap["Fries"] = BuffID.WellFed;
+            buffMap["Froggle Bunwich"] = BuffID.PlentySatisfied;
+            buffMap["Apple"] = BuffID.WellFed;
+            buffMap["Apricot"] = BuffID.WellFed;
+            buffMap["Banana"] = BuffID.WellFed;
+            buffMap["Blackcurrant"] = BuffID.WellFed;
+            buffMap["Blood Orange"] = BuffID.WellFed;
+            buffMap["Cherry"] = BuffID.WellFed;
+            buffMap["Coconut"] = BuffID.WellFed;
+            buffMap["Dragon Fruit"] = BuffID.WellFed;
+            buffMap["Elderberry"] = BuffID.WellFed;
+            buffMap["Grapefruit"] = BuffID.WellFed;
+            buffMap["Lemon"] = BuffID.WellFed;
+            buffMap["Mango"] = BuffID.WellFed;
+            buffMap["Peach"] = BuffID.WellFed;
+            buffMap["Pineapple"] = BuffID.WellFed;
+            buffMap["Plum"] = BuffID.WellFed;
+            buffMap["Pomegranate"] = BuffID.WellFed;
+            buffMap["Rambutan"] = BuffID.WellFed;
+            buffMap["Spicy Pepper"] = BuffID.WellFed;
+            buffMap["Star Fruit"] = BuffID.WellFed;
+            buffMap["Fruit Juice"] = BuffID.PlentySatisfied;
+            buffMap["Fruit Salad"] = BuffID.PlentySatisfied;
+            buffMap["Apple Juice"] = BuffID.PlentySatisfied;
+            buffMap["Bloody Moscato"] = BuffID.PlentySatisfied;
+            buffMap["Frozen Banana Daiquiri"] = BuffID.PlentySatisfied;
+            buffMap["Lemonade"] = BuffID.PlentySatisfied;
+            buffMap["Peach Sangria"] = BuffID.PlentySatisfied;
+            buffMap["Piña Colada"] = BuffID.PlentySatisfied;
+            buffMap["Prismatic Punch"] = BuffID.PlentySatisfied;
+            buffMap["Smoothie of Darkness"] = BuffID.PlentySatisfied;
+            buffMap["Tropical Smoothie"] = BuffID.PlentySatisfied;
+            buffMap["Gingerbread Cookie"] = BuffID.PlentySatisfied;
+            buffMap["Golden Delight"] = BuffID.ExquisitelyStuffed;
+            buffMap["Grapes"] = BuffID.WellFed;
+            buffMap["Grape Juice"] = BuffID.PlentySatisfied;
+            buffMap["Grilled Squirrel"] = BuffID.PlentySatisfied;
+            buffMap["Grub Soup"] = BuffID.PlentySatisfied;
+            buffMap["Hotdog"] = BuffID.PlentySatisfied;
+            buffMap["Ice Cream"] = BuffID.PlentySatisfied;
+            buffMap["Joja Cola"] = BuffID.WellFed;
+            buffMap["Milkshake"] = BuffID.PlentySatisfied;
+            buffMap["Monster Lasagna"] = BuffID.PlentySatisfied;
+            buffMap["Nachos"] = BuffID.PlentySatisfied;
+            buffMap["Pad Thai"] = BuffID.PlentySatisfied;
+            buffMap["Pizza"] = BuffID.PlentySatisfied;
+            buffMap["Pho"] = BuffID.PlentySatisfied;
+            buffMap["Potato Chips"] = BuffID.PlentySatisfied;
+            buffMap["Pumpkin Pie"] = BuffID.PlentySatisfied;
+            buffMap["Roasted Bird"] = BuffID.PlentySatisfied;
+            buffMap["Roasted Duck"] = BuffID.PlentySatisfied;
+            buffMap["Sake"] = BuffID.Tipsy;
+            buffMap["Sauteed Frog Legs"] = BuffID.PlentySatisfied;
+            buffMap["Shrimp Po' Boy"] = BuffID.PlentySatisfied;
+            buffMap["Shucked Oyster"] = BuffID.PlentySatisfied;
+            buffMap["Spaghetti"] = BuffID.PlentySatisfied;
+            buffMap["Steak"] = BuffID.PlentySatisfied;
+            buffMap["Sugar Cookie"] = BuffID.PlentySatisfied;
+            buffMap["Teacup"] = BuffID.PlentySatisfied;
         }
     }
 }
