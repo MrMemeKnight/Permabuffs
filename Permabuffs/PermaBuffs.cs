@@ -60,20 +60,22 @@ namespace Permabuffs
                 int userId = tsPlayer.Index;
 
                 if (!EnabledUsers.TryGetValue(userId, out bool enabled) || !enabled)
+                    continue;
 
                 var buffsToApply = Potions.GetBuffsFromPiggyBank(player);
 
                 if (buffsToApply.Count == 0)
                 {
                     TShock.Log.ConsoleInfo($"[Permabuffs] No eligible items found in piggy bank for {tsPlayer.Name}.");
+                    continue;
                 }
 
                 foreach (int buffID in buffsToApply)
                 {
-                    if (player.HasBuff(buffID))
+                    if (!player.HasBuff(buffID))
                     {
                         player.AddBuff(buffID, 1800); // 30 seconds
-                        NetMessage.SendData(55, -1, -1, null, player.whoAmI, buffID); // correct buff sync
+                        NetMessage.SendData(55, -1, -1, null, player.whoAmI, buffID);
 
                         TShock.Log.ConsoleInfo($"[Permabuffs] Applied buff ID {buffID} to {tsPlayer.Name}.");
                     }
