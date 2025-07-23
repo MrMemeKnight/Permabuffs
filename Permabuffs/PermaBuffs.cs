@@ -102,3 +102,7 @@ namespace Permabuffs
         PlayerBuffs[player.Index] = applicableBuffs;
     }
 }
+
+}
+
+}
