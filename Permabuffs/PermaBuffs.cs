@@ -56,7 +56,7 @@ namespace Permabuffs
         {
             foreach (TSPlayer tsPlayer in TShock.Players)
             {
-                if (tsPlayer == null || !tsPlayer.Active || !tsPlayer.TPlayer.active)
+                if (tsPlayer == null || !tsPlayer.Active || tsPlayer.TPlayer == null || !tsPlayer.TPlayer.active)
                     continue;
 
                 if (!EnabledUsers.TryGetValue(tsPlayer.Index, out bool enabled) || !enabled)
@@ -64,7 +64,6 @@ namespace Permabuffs
 
                 Player player = tsPlayer.TPlayer;
 
-                // Apply buffs once every 5 seconds
                 if (!LastBuffApplied.TryGetValue(tsPlayer.Index, out DateTime last) || (DateTime.UtcNow - last).TotalSeconds >= 5)
                 {
                     LastBuffApplied[tsPlayer.Index] = DateTime.UtcNow;
@@ -73,21 +72,26 @@ namespace Permabuffs
 
                     if (buffsToApply.Count == 0)
                     {
-                        TShock.Log.ConsoleInfo($"[PB] No valid buffs found in Piggy Bank for {tsPlayer.Name}.");
+                        if ((DateTime.UtcNow - lastLogTime).TotalSeconds > 2)
+                        {
+                            TShock.Log.ConsoleInfo($"[PB] No valid buffs found in Piggy Bank for {tsPlayer.Name}.");
+                            lastLogTime = DateTime.UtcNow;
+                        }
                         continue;
                     }
 
                     foreach (int buffID in buffsToApply)
                     {
-                        if (!player.TPlayer.HasBuff(buffID))
+                        if (!player.HasBuff(buffID))
                         {
-                            player.AddBuff(buffID, 3600, true); // 30 seconds
-                            NetMessage.SendData(55, -1, -1, null, player.Index, buffID);
+                            player.AddBuff(buffID, 3600, true); // 60 seconds
+                            NetMessage.SendData(55, -1, -1, null, tsPlayer.Index, buffID);
+
                             if ((DateTime.UtcNow - lastLogTime).TotalSeconds > 2)
-                           {
-                            TShock.Log.ConsoleInfo($"[PB] Applied buff {buffID} to {tsPlayer.Name}");
-                            lastLogTime = DateTime.UtcNow;
-                           }
+                            {
+                                TShock.Log.ConsoleInfo($"[PB] Applied buff {buffID} to {tsPlayer.Name}");
+                                lastLogTime = DateTime.UtcNow;
+                            }
                         }
                     }
                 }
