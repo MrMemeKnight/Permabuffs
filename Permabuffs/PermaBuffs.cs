@@ -63,10 +63,8 @@ namespace Permabuffs
     var buffs = Potions.GetBuffsFromPiggyBank(player.TPlayer);
     foreach (int buffID in buffs)
     {
-        if (!player.TPlayer.HasBuff(buffID))
-        {
-            player.TPlayer.AddBuff(buffID, 1800); // 30 seconds
-        }
+        player.TPlayer.AddBuff(buffID, 1800);
+NetMessage.SendData(55, -1, -1, null, player.Index, buffID);
     }
 
     // Force the buffs to be updated
