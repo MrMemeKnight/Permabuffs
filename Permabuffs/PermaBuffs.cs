@@ -60,10 +60,6 @@ namespace Permabuffs
                 int userId = tsPlayer.Index;
 
                 if (!EnabledUsers.TryGetValue(userId, out bool enabled) || !enabled)
-                {
-                    TShock.Log.ConsoleInfo($"[Permabuffs] Skipping player {tsPlayer.Name}: permabuffs disabled.");
-                    continue;
-                }
 
                 var buffsToApply = Potions.GetBuffsFromPiggyBank(player);
 
@@ -74,7 +70,7 @@ namespace Permabuffs
 
                 foreach (int buffID in buffsToApply)
                 {
-                    if (player.FindBuffIndex(buffID) == -1)
+                    if (player.HasBuff(buffID))
                     {
                         player.AddBuff(buffID, 1800); // 30 seconds
                         NetMessage.SendData(55, -1, -1, null, player.whoAmI, buffID); // correct buff sync
