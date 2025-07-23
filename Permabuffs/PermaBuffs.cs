@@ -1,10 +1,11 @@
-using Microsoft.Xna.Framework;
 using OTAPI;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
+using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Permabuffs
 {
@@ -12,15 +13,13 @@ namespace Permabuffs
     public class Permabuffs : TerrariaPlugin
     {
         public override string Name => "Permabuffs";
-        public override Version Version => new Version(1, 0);
-        public override string Author => "SyntaxVoid (fixed for ARM64 by user)";
-        public override string Description => "Automatically gives players buffs if they have 30+ of the related item in their piggy bank.";
+        public override string Author => "Myoni (SyntaxVoid)";
+        public override string Description => "Automatically grants buffs from potions in piggy bank";
+        public override Version Version => new Version(1, 0, 0);
 
-        private Dictionary<int, bool> enabledPlayers = new Dictionary<int, bool>();
+        private Dictionary<int, bool> toggledPlayers = new Dictionary<int, bool>();
 
-        public Permabuffs(Main game) : base(game)
-        {
-        }
+        public Permabuffs(Main game) : base(game) { }
 
         public override void Initialize()
         {
@@ -39,54 +38,58 @@ namespace Permabuffs
 
         private void TogglePermabuffs(CommandArgs args)
         {
-            var player = args.Player;
-            if (!enabledPlayers.ContainsKey(player.Index))
-            {
-                enabledPlayers[player.Index] = false;
-            }
+            int plr = args.Player.Index;
 
-            if (args.Message == "/pbenable")
+            if (!toggledPlayers.ContainsKey(plr))
+                toggledPlayers[plr] = false;
+
+            if (args.Message.Contains("pbenable"))
             {
-                enabledPlayers[player.Index] = true;
-                player.SendSuccessMessage("Permabuffs enabled.");
+                toggledPlayers[plr] = true;
+                args.Player.SendSuccessMessage("Permabuffs enabled!");
             }
-            else if (args.Message == "/pbdisable")
+            else if (args.Message.Contains("pbdisable"))
             {
-                enabledPlayers[player.Index] = false;
-                player.SendSuccessMessage("Permabuffs disabled.");
+                toggledPlayers[plr] = false;
+                args.Player.SendSuccessMessage("Permabuffs disabled!");
             }
         }
 
         private void OnUpdate(EventArgs args)
         {
-            foreach (var player in TShock.Players)
+            foreach (TSPlayer tsPlayer in TShock.Players)
             {
-                if (player == null || !player.Active || !player.ConnectionAlive || !player.RealPlayer)
+                if (tsPlayer == null || !tsPlayer.Active || tsPlayer.TPlayer.dead || tsPlayer.TPlayer.inventory == null)
                     continue;
 
-                if (!enabledPlayers.TryGetValue(player.Index, out bool enabled) || !enabled)
+                int plr = tsPlayer.Index;
+                if (!toggledPlayers.ContainsKey(plr) || !toggledPlayers[plr])
                     continue;
 
-                var tsPlayer = player;
-                var terrariaPlayer = Main.player[tsPlayer.Index];
+                Player player = tsPlayer.TPlayer;
 
-                var buffMap = Potions.BuffMap;
-                HashSet<int> appliedBuffs = new HashSet<int>();
+                // Check piggy bank for qualifying potions
+                Dictionary<int, int> buffCounts = new Dictionary<int, int>();
 
-                foreach (var item in terrariaPlayer.bank.item)
+                foreach (Item item in player.bank.item)
                 {
-                    if (item == null || item.stack < 30 || string.IsNullOrEmpty(item.Name))
+                    if (item == null || string.IsNullOrWhiteSpace(item.Name))
                         continue;
 
-                    if (buffMap.TryGetValue(item.Name, out int buffId))
+                    string name = item.Name.ToLowerInvariant();
+                    if (item.stack >= 30 && Potions.BuffMap.TryGetValue(name, out int buffID))
                     {
-                        if (!appliedBuffs.Contains(buffId))
-                        {
-                            terrariaPlayer.AddBuff(buffId, 60 * 60); // Apply for 60 seconds
-                            appliedBuffs.Add(buffId);
-                            TShock.Log.Info($"[PB] Applied buff {buffId} to {tsPlayer.Name}");
-                        }
+                        if (!buffCounts.ContainsKey(buffID))
+                            buffCounts[buffID] = item.stack;
                     }
+                }
+
+                foreach (var kvp in buffCounts)
+                {
+                    int buffID = kvp.Key;
+
+                    // Apply buff using same method as /buff
+                    tsPlayer.SetBuff(buffID, 3600, true); // 3600 ticks = 60 seconds
                 }
             }
         }
