@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
@@ -50,21 +49,27 @@ namespace Permabuffs
             }
         }
 
-        private void Update()
+        private void OnUpdate(EventArgs args)
         {
             foreach (TSPlayer tsPlayer in TShock.Players)
             {
-                if (tsPlayer == null || !tsPlayer.Active || !enabledUsers.Contains(tsPlayer.Name))
+                if (tsPlayer == null || !tsPlayer.Active || !tsPlayer.TPlayer.active)
                     continue;
 
-                Player player = Main.player[tsPlayer.Index];
+                if (!EnabledUsers.TryGetValue(tsPlayer.Index, out bool enabled) || !enabled)
+                    continue;
 
-                List<int> buffsToApply = Potions.GetBuffsFromPiggyBank(player);
+                Player player = tsPlayer.TPlayer;
+
+                var buffsToApply = Potions.GetBuffsFromPiggyBank(player);
 
                 foreach (int buffID in buffsToApply)
                 {
-                    if (!player.HasBuff(buffID))
+                    if (player.FindBuffIndex(buffID) == -1) // equivalent of HasBuff()
+                    {
                         player.AddBuff(buffID, 1800); // 30 seconds
+                        NetMessage.SendData(55, -1, -1, null, tsPlayer.Index, buffID);
+                    }
                 }
             }
         }
