@@ -50,22 +50,22 @@ namespace Permabuffs
             }
         }
 
-        private void OnUpdate(EventArgs args)
+        private void Update()
         {
-            foreach (TSPlayer player in TShock.Players)
+            foreach (TSPlayer tsPlayer in TShock.Players)
             {
-                if (player == null || !player.Active || !player.TPlayer.active)
+                if (tsPlayer == null || !tsPlayer.Active || !enabledUsers.Contains(tsPlayer.Name))
                     continue;
 
-                if (!EnabledUsers.TryGetValue(player.Index, out bool enabled) || !enabled)
-                    continue;
+                Player player = Main.player[tsPlayer.Index];
 
-                var buffs = Potions.GetBuffsFromPiggyBank(player.TPlayer);
+                List<int> buffsToApply = Potions.GetBuffsFromPiggyBank(player);
 
-                foreach (int buffID in buffs)
+                foreach (int buffID in buffsToApply)
                 {
-                     player.TPlayer.AddBuff(buffID, 600); // Server-side apply
-                     NetMessage.SendData(50, -1, -1, null, player.Index, buffID, 600f); // Sync with client
+                    if (!player.HasBuff(buffID))
+                        player.AddBuff(buffID, 1800); // 30 seconds
+                }
             }
         }
     }
