@@ -15,7 +15,10 @@
       <HintPath>../lib/OTAPI.dll</HintPath>
     </Reference>
     <Reference Include="TerrariaServer">
-      <HintPath>../lib/TerrariaServer.dll</HintPath>
+      <HintPath>../lib/TerrariaServer.exe</HintPath>
+    </Reference>
+    <Reference Include="ServerAPI">
+      <HintPath>../lib/ServerAPI.dll</HintPath>
     </Reference>
   </ItemGroup>
 
