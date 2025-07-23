@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Timers;
-using TShockAPI;
 using Terraria;
+using TShockAPI;
 using TerrariaApi.Server;
 
 namespace Permabuffs
@@ -11,98 +9,64 @@ namespace Permabuffs
     [ApiVersion(2, 1)]
     public class Permabuffs : TerrariaPlugin
     {
-        private static Dictionary<int, List<int>> PlayerBuffs = new();
-        private static Dictionary<int, bool> Enabled = new();
-        private static Dictionary<int, System.Timers.Timer> PlayerTimers = new(); // Disambiguated here
-        private static System.Timers.Timer GlobalTimer; // Disambiguated here
-
-        public override string Author => "Myoni";
-        public override string Description => "Enables players to permanently gain potion buffs by storing 30 of the potion in their Piggy Bank.";
+        public override string Author => "SyntaxVoid, updated by you";
+        public override string Description => "Applies permanent buffs if 30 of the potion are in piggy bank";
         public override string Name => "Permabuffs";
-        public override Version Version => new(1, 0, 0, 0);
+        public override Version Version => new Version(1, 0);
+
+        private static Dictionary<int, bool> EnabledForPlayers = new Dictionary<int, bool>();
 
         public Permabuffs(Main game) : base(game) { }
 
         public override void Initialize()
         {
-            ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
-            ServerApi.Hooks.ServerJoin.Register(this, OnJoin);
-            ServerApi.Hooks.ServerLeave.Register(this, OnLeave);
+            ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
+            Commands.ChatCommands.Add(new Command("permabuffs.toggle", TogglePermabuff, "pbenable", "pbdisable"));
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
-                ServerApi.Hooks.ServerJoin.Deregister(this, OnJoin);
-                ServerApi.Hooks.ServerLeave.Deregister(this, OnLeave);
+                ServerApi.Hooks.GameUpdate.Deregister(this, OnUpdate);
             }
             base.Dispose(disposing);
         }
 
-        private void OnInitialize(EventArgs args)
+        private void TogglePermabuff(CommandArgs args)
         {
-            Commands.ChatCommands.Add(new Command("permabuffs.toggle", ToggleBuffs, "pbenable", "pbdisable"));
-            GlobalTimer = new System.Timers.Timer(5000);
-            GlobalTimer.Elapsed += CheckBuffs;
-            GlobalTimer.AutoReset = true;
-            GlobalTimer.Start();
+            int id = args.Player.Index;
+
+            if (!EnabledForPlayers.ContainsKey(id))
+                EnabledForPlayers[id] = false;
+
+            EnabledForPlayers[id] = !EnabledForPlayers[id];
+            args.Player.SendSuccessMessage($"Permabuffs {(EnabledForPlayers[id] ? "enabled" : "disabled")}.");
         }
 
-        private void ToggleBuffs(CommandArgs args)
+        private void OnUpdate(EventArgs args)
         {
-            int playerIndex = args.Player.Index;
-            if (!Enabled.ContainsKey(playerIndex))
-                Enabled[playerIndex] = false;
-
-            Enabled[playerIndex] = !Enabled[playerIndex];
-            string status = Enabled[playerIndex] ? "enabled" : "disabled";
-            args.Player.SendSuccessMessage($"Permabuffs {status}.");
-        }
-
-        private void OnJoin(JoinEventArgs args)
-        {
-            int playerIndex = args.Who;
-            PlayerBuffs[playerIndex] = new List<int>();
-            Enabled[playerIndex] = true;
-        }
-
-        private void OnLeave(LeaveEventArgs args)
-        {
-            int playerIndex = args.Who;
-            PlayerBuffs.Remove(playerIndex);
-            Enabled.Remove(playerIndex);
-        }
-
-        private void CheckBuffs(object sender, ElapsedEventArgs e)
-{
-    foreach (TSPlayer player in TShock.Players.Where(p => p != null && p.Active))
-    {
-        if (!Enabled.TryGetValue(player.Index, out bool isEnabled) || !isEnabled)
-            continue;
-
-        List<int> applicableBuffs = new();
-        Item[] piggyBank = player.TPlayer.bank.item;
-
-        foreach (var pair in Potions.buffMap)
-        {
-            string itemName = pair.Key;
-            int buffID = pair.Value;
-
-            int itemType = TShock.Utils.GetItemByName(itemName).FirstOrDefault()?.type ?? 0;
-            if (itemType == 0)
-                continue;
-
-            int totalStack = piggyBank.Where(i => i != null && i.type == itemType).Sum(i => i.stack);
-
-            if (totalStack >= 30 && !player.HasBuff(buffID))
+            foreach (TSPlayer player in TShock.Players)
             {
-                player.SetBuff(buffID, 60 * 30); // Apply for 30 seconds
-                applicableBuffs.Add(buffID);
+                if (player?.Active != true || !player.TPlayer.active)
+                    continue;
+
+                int id = player.Index;
+
+                if (!EnabledForPlayers.ContainsKey(id) || !EnabledForPlayers[id])
+                    continue;
+
+                Player tPlayer = player.TPlayer;
+                List<int> buffs = Potions.GetBuffsFromPiggyBank(tPlayer);
+
+                foreach (int buffID in buffs)
+                {
+                    if (!tPlayer.HasBuff(buffID))
+                    {
+                        tPlayer.AddBuff(buffID, 60 * 2); // 2 seconds, constantly refreshed
+                    }
+                }
             }
         }
-
-        PlayerBuffs[player.Index] = applicableBuffs;
     }
 }
