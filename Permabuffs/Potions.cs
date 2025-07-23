@@ -159,12 +159,16 @@ namespace Permabuffs
 
             foreach (Item item in player.bank.item)
             {
-                if (item != null && !item.IsAir && item.stack >= 30 && buffMap.ContainsKey(item.Name))
+                if (item != null && !item.IsAir && item.stack >= 30)
                 {
-                    int buffID = buffMap[item.Name];
-                    if (buffID > 0 && !buffs.Contains(buffID))
+                    string name = Lang.GetItemNameValue(item.type);
+                    if (buffMap.ContainsKey(name))
                     {
-                        buffs.Add(buffID);
+                        int buffID = buffMap[item.Name];
+                        if (buffID > 0 && !buffs.Contains(buffID))
+                        {
+                            buffs.Add(buffID);
+                        }
                     }
                 }
             }
