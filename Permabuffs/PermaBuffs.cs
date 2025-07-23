@@ -3,119 +3,106 @@ using System.Collections.Generic;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
+using Microsoft.Xna.Framework;
 
 namespace Permabuffs
 {
     [ApiVersion(2, 1)]
-    public class PermaBuffs : TerrariaPlugin
+    public class Permabuffs : TerrariaPlugin
     {
-        public override string Name => "PermaBuffs";
-        public override string Author => "SyntaxVoid + updated by Gian";
-        public override string Description => "Applies permanent buffs if 30+ buff items are in Piggy Bank";
-        public override Version Version => new Version(1, 0, 0, 0);
+        public override string Author => "SyntaxVoid, updated for OTAPI by you";
+        public override string Description => "Applies permanent potion buffs from piggy bank items";
+        public override string Name => "Permabuffs";
+        public override Version Version => new Version(1, 0);
 
-        private static DateTime lastLogTime = DateTime.MinValue;
+        private Dictionary<int, DateTime> EnabledPlayers = new Dictionary<int, DateTime>();
+        private Potions potions;
 
-        private static Dictionary<int, bool> EnabledUsers = new();
-        private static Dictionary<int, DateTime> LastBuffApplied = new();
-
-        public PermaBuffs(Main game) : base(game) { }
+        public Permabuffs(Main game) : base(game)
+        {
+        }
 
         public override void Initialize()
         {
             ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
-            Commands.ChatCommands.Add(new Command("permabuff.toggle", TogglePermaBuffs, "pbenable", "pbdisable"));
+            Commands.ChatCommands.Add(new Command("permabuffs.use", ToggleBuffs, "pbenable", "pbdisable"));
+            potions = new Potions();
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
+            {
                 ServerApi.Hooks.GameUpdate.Deregister(this, OnUpdate);
+            }
             base.Dispose(disposing);
         }
 
-        private void TogglePermaBuffs(CommandArgs args)
+        private void ToggleBuffs(CommandArgs args)
         {
-            int userId = args.Player.Index;
-            if (!EnabledUsers.ContainsKey(userId))
-                EnabledUsers[userId] = false;
+            int playerId = args.Player.Index;
 
-            if (args.Message.Contains("pbenable"))
+            if (args.Message.Trim().ToLower().EndsWith("pbenable"))
             {
-                EnabledUsers[userId] = true;
-                args.Player.SendSuccessMessage("Permabuffs enabled.");
+                if (!EnabledPlayers.ContainsKey(playerId))
+                {
+                    EnabledPlayers[playerId] = DateTime.UtcNow;
+                    args.Player.SendSuccessMessage("Permabuffs enabled.");
+                }
+                else
+                {
+                    args.Player.SendInfoMessage("Permabuffs already enabled.");
+                }
             }
-            else if (args.Message.Contains("pbdisable"))
+            else if (args.Message.Trim().ToLower().EndsWith("pbdisable"))
             {
-                EnabledUsers[userId] = false;
-                args.Player.SendSuccessMessage("Permabuffs disabled.");
+                if (EnabledPlayers.ContainsKey(playerId))
+                {
+                    EnabledPlayers.Remove(playerId);
+                    args.Player.SendSuccessMessage("Permabuffs disabled.");
+                }
+                else
+                {
+                    args.Player.SendInfoMessage("Permabuffs already disabled.");
+                }
             }
         }
+
+        private DateTime lastLogTime = DateTime.UtcNow;
 
         private void OnUpdate(EventArgs args)
         {
             foreach (TSPlayer tsPlayer in TShock.Players)
             {
-                if (tsPlayer == null || !tsPlayer.Active || tsPlayer.TPlayer == null || !tsPlayer.TPlayer.active)
+                if (tsPlayer == null || !tsPlayer.Active || !tsPlayer.RealPlayer)
                     continue;
 
-                if (!EnabledUsers.TryGetValue(tsPlayer.Index, out bool enabled) || !enabled)
+                int playerId = tsPlayer.Index;
+                Player player = Main.player[playerId];
+
+                if (!EnabledPlayers.ContainsKey(playerId))
                     continue;
 
-                Player player = tsPlayer.TPlayer;
-
-                if (!LastBuffApplied.TryGetValue(tsPlayer.Index, out DateTime last) || (DateTime.UtcNow - last).TotalSeconds >= 5)
+                foreach (Item item in player.bank?.item ?? Array.Empty<Item>())
                 {
-                    LastBuffApplied[tsPlayer.Index] = DateTime.UtcNow;
-
-                    var buffsToApply = Potions.GetBuffsFromPiggyBank(player);
-
-                    if (buffsToApply.Count == 0)
-                    {
-                        if ((DateTime.UtcNow - lastLogTime).TotalSeconds > 2)
-                        {
-                            TShock.Log.ConsoleInfo($"[PB] No valid buffs found in Piggy Bank for {tsPlayer.Name}.");
-                            lastLogTime = DateTime.UtcNow;
-                        }
+                    if (item == null || item.stack < 30)
                         continue;
-                    }
 
-                    foreach (int buffID in buffsToApply)
+                    if (potions.TryGetBuffID(item.Name, out int buffID))
                     {
-                        if (!Array.Exists(player.buffType, b => b == buffID))
+                        if (!player.HasBuff(buffID))
                         {
-                            int currentBuffs = 0;
-                            for (int i = 0; i < player.buffType.Length; i++)
+                            tsPlayer.SetBuff(buffID, 1800); // 30 seconds
+
+                            if ((DateTime.UtcNow - lastLogTime).TotalSeconds > 2)
                             {
-                                if (player.buffType[i] > 0)
-                                    currentBuffs++;
-                            }
-
-                            if (currentBuffs < player.buffType.Length)
-                            {
-                                for (int i = 0; i < player.buffType.Length; i++)
-                                {
-                                    if (player.buffType[i] == 0)
-                                    {
-                                        player.buffType[i] = buffID;
-                                        player.buffTime[i] = 3600;
-
-                                        NetMessage.SendData(55, -1, -1, null, tsPlayer.Index, buffID);
-
-                                        if ((DateTime.UtcNow - lastLogTime).TotalSeconds > 2)
-                                        {
-                                            TShock.Log.ConsoleInfo($"[PB] Applied buff {buffID} to {tsPlayer.Name}");
-                                            lastLogTime = DateTime.UtcNow;
-                                        }
-
-                                        break;
-                                        }
-                                    }
-                                }
+                                TShock.Log.ConsoleInfo($"[PB] Applied buff {buffID} to {tsPlayer.Name}");
+                                lastLogTime = DateTime.UtcNow;
                             }
                         }
                     }
-                }                        
+                }
             }
         }
     }
+}
