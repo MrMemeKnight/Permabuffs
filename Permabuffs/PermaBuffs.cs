@@ -80,10 +80,12 @@ namespace Permabuffs
                 if (tsplr == null || !tsplr.Active || tsplr.Account == null)
                     continue;
 
+                Player plr = tsplr.TPlayer;
+
                 if (!enabledPlayers.Contains(tsplr.Account.ID))
                     continue;
 
-                Player plr = tsplr.TPlayer;
+                TSPlayer.Server.SendInfoMessage($"[Permabuffs] Checking {tsplr.Name}'s piggy bank...");
 
                 for (int i = 0; i < plr.bank.item.Length; i++)
                 {
@@ -91,14 +93,19 @@ namespace Permabuffs
                     if (item == null || item.stack < 30)
                         continue;
 
+                    TSPlayer.Server.SendInfoMessage($"[Permabuffs] Found item: {item.Name} x{item.stack}");
+
                     if (buffMap.TryGetValue(item.Name, out int buffID))
                     {
+                        TSPlayer.Server.SendInfoMessage($"[Permabuffs] Item '{item.Name}' maps to BuffID {buffID}");
+
                         bool hasBuff = false;
                         for (int j = 0; j < plr.buffType.Length; j++)
                         {
                             if (plr.buffType[j] == buffID)
                             {
                                 hasBuff = true;
+                                TSPlayer.Server.SendInfoMessage($"[Permabuffs] Player already has buff {buffID}");
                                 break;
                             }
                         }
@@ -106,7 +113,12 @@ namespace Permabuffs
                         if (!hasBuff)
                         {
                             plr.AddBuff(buffID, 60 * 10);
+                            TSPlayer.Server.SendInfoMessage($"[Permabuffs] Applied buff {buffID} to {tsplr.Name}");
                         }
+                    }
+                    else
+                    {
+                        TSPlayer.Server.SendInfoMessage($"[Permabuffs] Item '{item.Name}' not found in buff map");
                     }
                 }
             }
