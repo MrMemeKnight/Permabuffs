@@ -77,11 +77,6 @@ namespace Permabuffs
             // Drinks
             buffMap["Ale"] = BuffID.Tipsy;
             buffMap["Sake"] = BuffID.Tipsy;
-            buffMap["Bloody Moscato"] = BuffID.WellFed;
-            buffMap["Smoothie of Darkness"] = BuffID.WellFed;
-            buffMap["Tropical Smoothie"] = BuffID.WellFed;
-            buffMap["Fruit Juice"] = BuffID.WellFed;
-            buffMap["Grape Juice"] = BuffID.WellFed3;
 
             // Food – Well Fed (Tier 1)
             buffMap["Apple"] = BuffID.WellFed;
@@ -119,6 +114,10 @@ namespace Permabuffs
             buffMap["Fruit Salad"] = BuffID.WellFed;
             buffMap["Frozen Banana Daiquiri"] = BuffID.WellFed;
             buffMap["Apple Juice"] = BuffID.WellFed;
+            buffMap["Fruit Juice"] = BuffID.WellFed;
+            buffMap["Bloody Moscato"] = BuffID.WellFed;
+            buffMap["Smoothie of Darkness"] = BuffID.WellFed;
+            buffMap["Tropical Smoothie"] = BuffID.WellFed;
 
             // Food – Plenty Satisfied (Tier 2)
             buffMap["Bacon"] = BuffID.WellFed2;
