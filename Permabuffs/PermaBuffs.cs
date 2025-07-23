@@ -186,7 +186,7 @@ namespace Permabuffs
                 {
                     if (!player.TPlayer.buffType.Contains(buffId))
                     {
-                        player.SetBuff(buffId, 60 * 10); // Apply buff for 10 seconds
+                        player.SetBuff(buffId, 60 * 30); // Apply buff for 30 seconds
                     }
                 }
             }
