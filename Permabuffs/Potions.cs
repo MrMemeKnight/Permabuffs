@@ -56,101 +56,108 @@ namespace Permabuffs
             buffMap["Spelunker Potion"] = BuffID.Spelunker;
 
             // Fishing
+            buffMap["Crate Potion"] = BuffID.Crate;
             buffMap["Fishing Potion"] = BuffID.Fishing;
             buffMap["Sonar Potion"] = BuffID.Sonar;
-            buffMap["Crate Potion"] = BuffID.Crate;
 
             // Other
             buffMap["Builder Potion"] = BuffID.Builder;
             buffMap["Mining Potion"] = BuffID.Mining;
 
-            // Foods and Drinks
-            buffMap["Ale"] = BuffID.Tipsy;
-            buffMap["Apple Pie"] = BuffID.WellFed3;
-            buffMap["Bacon"] = BuffID.WellFed3;
-            buffMap["Banana Split"] = BuffID.WellFed3;
-            buffMap["BBQ Ribs"] = BuffID.WellFed3;
-            buffMap["Bowl of Soup"] = BuffID.WellFed;
-            buffMap["Bunny Stew"] = BuffID.WellFed;
-            buffMap["Burger"] = BuffID.WellFed3;
-            buffMap["Carton of Milk"] = BuffID.WellFed;
-            buffMap["Chicken Nugget"] = BuffID.WellFed;
-            buffMap["Chocolate Chip Cookie"] = BuffID.WellFed2;
-            buffMap["Christmas Pudding"] = BuffID.WellFed2;
-            buffMap["Coffee"] = BuffID.WellFed;
-            buffMap["Cooked Marshmallow"] = BuffID.WellFed;
-            buffMap["Cream Soda"] = BuffID.WellFed;
-            buffMap["Escargot"] = BuffID.WellFed3;
-            buffMap["Fried Egg"] = BuffID.WellFed;
-            buffMap["Fries"] = BuffID.WellFed;
-            buffMap["Froggle Bunwich"] = BuffID.WellFed2;
-            buffMap["Apple"] = BuffID.WellFed;
-            buffMap["Apricot"] = BuffID.WellFed;
-            buffMap["Banana"] = BuffID.WellFed;
-            buffMap["Blackcurrant"] = BuffID.WellFed;
-            buffMap["Blood Orange"] = BuffID.WellFed;
-            buffMap["Cherry"] = BuffID.WellFed;
-            buffMap["Coconut"] = BuffID.WellFed;
-            buffMap["Dragon Fruit"] = BuffID.WellFed;
-            buffMap["Elderberry"] = BuffID.WellFed;
-            buffMap["Grapefruit"] = BuffID.WellFed;
-            buffMap["Lemon"] = BuffID.WellFed;
-            buffMap["Mango"] = BuffID.WellFed;
-            buffMap["Peach"] = BuffID.WellFed;
-            buffMap["Pineapple"] = BuffID.WellFed;
-            buffMap["Plum"] = BuffID.WellFed;
-            buffMap["Pomegranate"] = BuffID.WellFed;
-            buffMap["Rambutan"] = BuffID.WellFed;
-            buffMap["Spicy Pepper"] = BuffID.WellFed;
-            buffMap["Star Fruit"] = BuffID.WellFed;
-            buffMap["Fruit Juice"] = BuffID.WellFed;
-            buffMap["Fruit Salad"] = BuffID.WellFed2;
-            buffMap["Apple Juice"] = BuffID.WellFed;
-            buffMap["Bloody Moscato"] = BuffID.WellFed2;
-            buffMap["Frozen Banana Daiquiri"] = BuffID.WellFed2;
-            buffMap["Lemonade"] = BuffID.WellFed;
-            buffMap["Peach Sangria"] = BuffID.WellFed2;
-            buffMap["Piña Colada"] = BuffID.WellFed2;
-            buffMap["Prismatic Punch"] = BuffID.WellFed2;
-            buffMap["Smoothie of Darkness"] = BuffID.WellFed2;
-            buffMap["Tropical Smoothie"] = BuffID.WellFed2;
-            buffMap["Gingerbread Cookie"] = BuffID.WellFed;
-            buffMap["Golden Delight"] = BuffID.WellFed3;
-            buffMap["Grapes"] = BuffID.WellFed;
-            buffMap["Grape Juice"] = BuffID.WellFed;
-            buffMap["Grilled Squirrel"] = BuffID.WellFed;
-            buffMap["Grub Soup"] = BuffID.WellFed;
-            buffMap["Hotdog"] = BuffID.WellFed;
-            buffMap["Ice Cream"] = BuffID.WellFed2;
-            buffMap["Joja Cola"] = BuffID.WellFed;
-            buffMap["Milkshake"] = BuffID.WellFed2;
-            buffMap["Monster Lasagna"] = BuffID.WellFed2;
-            buffMap["Nachos"] = BuffID.WellFed2;
-            buffMap["Pad Thai"] = BuffID.WellFed2;
-            buffMap["Pizza"] = BuffID.WellFed3;
-            buffMap["Pho"] = BuffID.WellFed2;
-            buffMap["Potato Chips"] = BuffID.WellFed;
-            buffMap["Pumpkin Pie"] = BuffID.WellFed2;
-            buffMap["Roasted Bird"] = BuffID.WellFed2;
-            buffMap["Roasted Duck"] = BuffID.WellFed3;
-            buffMap["Sake"] = BuffID.Tipsy;
-            buffMap["Sauteed Frog Legs"] = BuffID.WellFed2;
-            buffMap["Shrimp Po' Boy"] = BuffID.WellFed3;
-            buffMap["Shucked Oyster"] = BuffID.WellFed2;
-            buffMap["Spaghetti"] = BuffID.WellFed3;
-            buffMap["Steak"] = BuffID.WellFed3;
-            buffMap["Sugar Cookie"] = BuffID.WellFed;
-            buffMap["Teacup"] = BuffID.WellFed;
+            // Luck
+            buffMap["Luck Potion"] = BuffID.Luck;
+            buffMap["Greater Luck Potion"] = BuffID.Luck2;
+            buffMap["Potion of Luck"] = BuffID.Luck3;
 
             // Flasks
             buffMap["Flask of Poison"] = BuffID.WeaponImbuePoison;
             buffMap["Flask of Fire"] = BuffID.WeaponImbueFire;
-            buffMap["Flask of Venom"] = BuffID.WeaponImbueVenom;
             buffMap["Flask of Gold"] = BuffID.WeaponImbueGold;
             buffMap["Flask of Ichor"] = BuffID.WeaponImbueIchor;
             buffMap["Flask of Cursed Flames"] = BuffID.WeaponImbueCursedFlames;
             buffMap["Flask of Nanites"] = BuffID.WeaponImbueNanites;
             buffMap["Flask of Party"] = BuffID.WeaponImbueConfetti;
+            buffMap["Flask of Venom"] = BuffID.WeaponImbueVenom;
+
+            // Drinks
+            buffMap["Ale"] = BuffID.Tipsy;
+            buffMap["Sake"] = BuffID.Tipsy;
+            buffMap["Wine"] = BuffID.Tipsy;
+            buffMap["Bloody Moscato"] = BuffID.Vampire;
+            buffMap["Smoothie of Darkness"] = BuffID.ShadowDodge;
+            buffMap["Prismatic Punch"] = BuffID.Lovestruck;
+            buffMap["Tropical Smoothie"] = BuffID.Sunflower;
+            buffMap["Peach Sangria"] = BuffID.Campfire;
+            buffMap["Fruit Juice"] = BuffID.Honey;
+            buffMap["Grape Juice"] = BuffID.Honey;
+            buffMap["Apple Juice"] = BuffID.Honey;
+            buffMap["Carton of Milk"] = BuffID.WellFed;
+
+            // Food – Well Fed (Tier 1)
+            buffMap["Apple"] = BuffID.WellFed;
+            buffMap["Apricot"] = BuffID.WellFed;
+            buffMap["Banana"] = BuffID.WellFed;
+            buffMap["Blackcurrant"] = BuffID.WellFed;
+            buffMap["Blood Orange"] = BuffID.WellFed;
+            buffMap["Bowl of Soup"] = BuffID.WellFed;
+            buffMap["Bunny Stew"] = BuffID.WellFed;
+            buffMap["Cherry"] = BuffID.WellFed;
+            buffMap["Coconut"] = BuffID.WellFed;
+            buffMap["Cooked Marshmallow"] = BuffID.WellFed;
+            buffMap["Cream Soda"] = BuffID.WellFed;
+            buffMap["Dragon Fruit"] = BuffID.WellFed;
+            buffMap["Elderberry"] = BuffID.WellFed;
+            buffMap["Escargot"] = BuffID.WellFed;
+            buffMap["Fried Egg"] = BuffID.WellFed;
+            buffMap["Fries"] = BuffID.WellFed;
+            buffMap["Grapefruit"] = BuffID.WellFed;
+            buffMap["Grapes"] = BuffID.WellFed;
+            buffMap["Grilled Squirrel"] = BuffID.WellFed;
+            buffMap["Grub Soup"] = BuffID.WellFed;
+            buffMap["Hotdog"] = BuffID.WellFed;
+            buffMap["Joja Cola"] = BuffID.WellFed;
+            buffMap["Lemon"] = BuffID.WellFed;
+            buffMap["Lemonade"] = BuffID.WellFed;
+            buffMap["Mango"] = BuffID.WellFed;
+            buffMap["Marshmallow"] = BuffID.WellFed;
+            buffMap["Milkshake"] = BuffID.WellFed;
+            buffMap["Nachos"] = BuffID.WellFed;
+            buffMap["Pad Thai"] = BuffID.WellFed;
+            buffMap["Peach"] = BuffID.WellFed;
+            buffMap["Pho"] = BuffID.WellFed;
+            buffMap["Pineapple"] = BuffID.WellFed;
+            buffMap["Pizza"] = BuffID.WellFed;
+            buffMap["Plum"] = BuffID.WellFed;
+            buffMap["Pomegranate"] = BuffID.WellFed;
+            buffMap["Potato Chips"] = BuffID.WellFed;
+            buffMap["Pumpkin Pie"] = BuffID.WellFed;
+            buffMap["Rambutan"] = BuffID.WellFed;
+            buffMap["Roasted Bird"] = BuffID.WellFed;
+            buffMap["Roasted Duck"] = BuffID.WellFed;
+            buffMap["Sautéed Frog Legs"] = BuffID.WellFed;
+            buffMap["Shrimp Po' Boy"] = BuffID.WellFed;
+            buffMap["Shucked Oyster"] = BuffID.WellFed;
+            buffMap["Spicy Pepper"] = BuffID.WellFed;
+            buffMap["Star Fruit"] = BuffID.WellFed;
+            buffMap["Steak"] = BuffID.WellFed;
+            buffMap["Sugar Cookie"] = BuffID.WellFed;
+            buffMap["Teacup"] = BuffID.WellFed;
+
+            // Food – Plenty Satisfied (Tier 2)
+            buffMap["Bacon"] = BuffID.WellFed2;
+            buffMap["BBQ Ribs"] = BuffID.WellFed2;
+            buffMap["Burger"] = BuffID.WellFed2;
+            buffMap["Christmas Pudding"] = BuffID.WellFed2;
+            buffMap["Chocolate Chip Cookie"] = BuffID.WellFed2;
+            buffMap["Chicken Nugget"] = BuffID.WellFed2;
+            buffMap["Froggle Bunwich"] = BuffID.WellFed2;
+            buffMap["Ice Cream"] = BuffID.WellFed2;
+            buffMap["Monster Lasagna"] = BuffID.WellFed2;
+
+            // Food – Exquisitely Stuffed (Tier 3)
+            buffMap["Apple Pie"] = BuffID.WellFed3;
+            buffMap["Golden Delight"] = BuffID.WellFed3;
+
         }
 
         public static List<int> GetBuffsFromPiggyBank(Player player)
