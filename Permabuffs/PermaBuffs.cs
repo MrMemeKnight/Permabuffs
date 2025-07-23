@@ -84,24 +84,39 @@ namespace Permabuffs
                     {
                         if (!Array.Exists(player.buffType, b => b == buffID))
                         {
-                            if (player.buffCount < player.buffType.Length)
+                            int currentBuffs = 0;
+                            for (int i = 0; i < player.buffType.Length; i++)
                             {
-                                player.buffType[player.buffCount] = buffID;
-                                player.buffTime[player.buffCount] = 3600;
-                                player.buffCount++;
+                                if (player.buffType[i] > 0)
+                                    currentBuffs++;
+                            }
 
-                                NetMessage.SendData(55, -1, -1, null, tsPlayer.Index, buffID);
-
-                                if ((DateTime.UtcNow - lastLogTime).TotalSeconds > 2)
+                            if (currentBuffs < player.buffType.Length)
+                            {
+                                for (int i = 0; i < player.buffType.Length; i++)
                                 {
-                                    TShock.Log.ConsoleInfo($"[PB] Applied buff {buffID} to {tsPlayer.Name}");
-                                    lastLogTime = DateTime.UtcNow;
+                                    if (player.buffType[i] == 0)
+                                    {
+                                        player.buffType[i] = buffID;
+                                        player.buffTime[i] = 3600;
+
+                                        NetMessage.SendData(55, -1, -1, null, tsPlayer.Index, buffID);
+
+                                        if ((DateTime.UtcNow - lastLogTime).TotalSeconds > 2)
+                                        {
+                                            TShock.Log.ConsoleInfo($"[PB] Applied buff {buffID} to {tsPlayer.Name}");
+                                            lastLogTime = DateTime.UtcNow;
+                                        }
+
+                                        break;
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
-                }
+                }                        
             }
-        } // 👈 MISSING BRACE FIXED
-    }     // 👈 MISSING BRACE FIXED
+        }
+    }
 }
