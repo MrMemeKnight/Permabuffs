@@ -56,19 +56,35 @@ namespace Permabuffs
                 if (tsPlayer == null || !tsPlayer.Active || !tsPlayer.TPlayer.active)
                     continue;
 
-                if (!EnabledUsers.TryGetValue(tsPlayer.Index, out bool enabled) || !enabled)
-                    continue;
-
                 Player player = tsPlayer.TPlayer;
+                int userId = tsPlayer.Index;
+
+                if (!EnabledUsers.TryGetValue(userId, out bool enabled) || !enabled)
+                {
+                    TShock.Log.ConsoleInfo($"[Permabuffs] Skipping player {tsPlayer.Name}: permabuffs disabled.");
+                    continue;
+                }
+
+                TShock.Log.ConsoleInfo($"[Permabuffs] Checking buffs for player {tsPlayer.Name}...");
 
                 var buffsToApply = Potions.GetBuffsFromPiggyBank(player);
 
+                if (buffsToApply.Count == 0)
+                {
+                    TShock.Log.ConsoleInfo($"[Permabuffs] No eligible items found in piggy bank for {tsPlayer.Name}.");
+                }
+
                 foreach (int buffID in buffsToApply)
                 {
-                    if (player.FindBuffIndex(buffID) == -1) // equivalent of HasBuff()
+                    if (player.FindBuffIndex(buffID) == -1)
                     {
+                        TShock.Log.ConsoleInfo($"[Permabuffs] Applying buff ID {buffID} to {tsPlayer.Name}.");
                         player.AddBuff(buffID, 1800); // 30 seconds
-                        NetMessage.SendData(55, -1, -1, null, tsPlayer.Index, buffID);
+                        NetMessage.SendData(55, -1, -1, null, userId, buffID);
+                    }
+                    else
+                    {
+                        TShock.Log.ConsoleInfo($"[Permabuffs] {tsPlayer.Name} already has buff {buffID}, skipping.");
                     }
                 }
             }
