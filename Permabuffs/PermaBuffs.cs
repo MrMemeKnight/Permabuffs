@@ -62,6 +62,15 @@ namespace Permabuffs
                 if (tsPlayer == null || !tsPlayer.Active || tsPlayer.TPlayer.dead || tsPlayer.TPlayer.inventory == null)
                     continue;
 
+                if (lastScanTime.TryGetValue(tsPlayer.Index, out DateTime lastTime))
+                {
+                    if (DateTime.UtcNow - lastTime < scanInterval)
+                        continue; // Skip this player; not enough time has passed
+                }
+
+                // Record the current time for next interval
+                lastScanTime[tsPlayer.Index] = DateTime.UtcNow;
+
                 int plr = tsPlayer.Index;
                 if (!toggledPlayers.ContainsKey(plr) || !toggledPlayers[plr])
                     continue;
