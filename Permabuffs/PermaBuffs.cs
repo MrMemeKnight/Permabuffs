@@ -138,7 +138,7 @@ namespace Permabuffs
                 // Remove permabuffs no longer in storage
                 foreach (int oldBuff in currentlyApplied)
                 {
-                    if (!newApplied.Contains(oldBuff) && player.HasBuff(oldBuff))
+                    if (!newApplied.Contains(oldBuff) && player.buffType.Contains(oldBuff))
                     {
                         player.ClearBuff(oldBuff); // only clear buffs we previously applied
                     }
