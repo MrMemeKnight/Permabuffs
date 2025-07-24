@@ -89,7 +89,7 @@ namespace Permabuffs
                     int buffID = kvp.Key;
 
                     // Skip if the player already has the buff
-                    if (player.HasBuff(buffID))
+                    if (!player.buffType.Contains(buffID))
                     continue;
 
                     // Apply buff using same method as /buff
