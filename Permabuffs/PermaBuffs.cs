@@ -126,7 +126,7 @@ namespace Permabuffs
                         // Manually apply invisible buff (no timer shown)
                         bool alreadyHasBuff = false;
 
-                        for (int i = 0; i < Player.MaxBuffs; i++)
+                        for (int i = 0; i < player.buffType.Length; i++)
                         {
                              if (player.buffType[i] == buffID)
                              {
@@ -138,7 +138,7 @@ namespace Permabuffs
 
                         if (!alreadyHasBuff)
                         {
-                            for (int i = 0; i < Player.MaxBuffs; i++)
+                            for (int i = 0; i < player.buffType.Length; i++)
                             {
                                 if (player.buffType[i] == 0)
                                 {
