@@ -126,7 +126,7 @@ namespace Permabuffs
 
                     int duration = BuffDurations.TryGetValue(sourceName, out int valDuration)
                         ? valDuration
-                        : 3600;
+                        : 3900;
 
                     tsPlayer.SetBuff(buffID, duration, true);
                     newApplied.Add(buffID);
