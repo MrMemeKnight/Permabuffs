@@ -19,6 +19,10 @@ namespace Permabuffs
 
         private Dictionary<int, bool> toggledPlayers = new Dictionary<int, bool>();
 
+        private Dictionary<int, DateTime> lastScanTime = new Dictionary<int, DateTime>();
+        private readonly TimeSpan scanInterval = TimeSpan.FromSeconds(5);
+
+
         public Permabuffs(Main game) : base(game) { }
 
         public override void Initialize()
