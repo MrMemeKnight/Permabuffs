@@ -61,9 +61,9 @@ namespace Permabuffs
             buffMap["Sonar Potion"] = BuffID.Sonar;
 
             // Luck
-            buffMap["Lucky Potion"] = BuffID.Lucky;
-            buffMap["Greater Luck Potion"] = BuffID.Lucky;
             buffMap["Luck Potion"] = BuffID.Lucky;
+            buffMap["Lesser Luck Potion"] = BuffID.Lucky;
+            buffMap["Greater Luck Potion"] = BuffID.Lucky;
 
             // Other
             buffMap["Builder Potion"] = BuffID.Builder;
