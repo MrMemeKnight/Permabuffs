@@ -51,19 +51,30 @@ namespace Permabuffs
         {
             int plr = args.Player.Index;
 
-            if (!toggledPlayers.ContainsKey(plr))
-                toggledPlayers[plr] = false;
+            // Validate parameters
+            if (args.Parameters.Count == 0)
+            {
+                args.Player.SendErrorMessage("Usage: /pbenable or /pbdisable");
+                return;
+            }
 
-            if (args.Parameters[0].Equals("pbenable", StringComparison.OrdinalIgnoreCase))
+            string param = args.Parameters[0].ToLowerInvariant();
+
+            if (param == "pbenable")
             {
                 toggledPlayers[plr] = true;
                 args.Player.SendSuccessMessage("Permabuffs enabled!");
             }
-            else if (args.Message.Contains("pbdisable"))
+            else if (param == "pbdisable")
             {
                 toggledPlayers[plr] = false;
                 args.Player.SendSuccessMessage("Permabuffs disabled!");
             }
+            else
+            {
+                args.Player.SendErrorMessage("Unknown option. Use /pbenable or /pbdisable");
+            }
+
         }
 
         private void OnUpdate(EventArgs args)
