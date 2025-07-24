@@ -22,7 +22,7 @@ namespace Permabuffs
         private Dictionary<int, DateTime> lastScanTime = new Dictionary<int, DateTime>();
         private readonly TimeSpan scanInterval = TimeSpan.FromSeconds(5);
 
-        private readonly Dictionary<string, int> BuffDurations = new. Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+        private readonly Dictionary<string, int> BuffDurations = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
        {
             { "Lesser Luck Potion", 18000 }, // 5 minutes
             { "Luck Potion", 36000 },        // 10 minutes
@@ -91,6 +91,8 @@ namespace Permabuffs
                 // Check piggy bank + safe + forge + void vault for qualifying potions
                 Dictionary<int, int> buffCounts = new Dictionary<int, int>();
 
+                Dictionary<int, string> buffNames = new Dictionary<int, string>();
+
                 foreach (Item item in EnumerateStorageItems(player))
                 {
                     if (item == null || string.IsNullOrWhiteSpace(item.Name))
@@ -101,6 +103,8 @@ namespace Permabuffs
                     {
                         if (!buffCounts.ContainsKey(buffID))
                             buffCounts[buffID] = item.stack;
+
+                        buffNames[buffID] = name; // Track the name that triggered this buff
                     }
                 }
 
@@ -113,7 +117,12 @@ namespace Permabuffs
                     continue;
 
                     // Apply buff using same method as /buff
-                    tsPlayer.SetBuff(buffID, 54000, true); // 54000 ticks = 15 minutes
+                    string sourceName = buffNames.TryGetValue(buffID, out string val) ? val : "";
+                    int duration = BuffDurations.TryGetValue(sourceName, out int customDuration)
+                        ? customDuration
+                        : 54000; // fallback to 15 mins if not listed
+
+                    tsPlayer.SetBuff(buffID, duration, true);
                 }
             }
         }
