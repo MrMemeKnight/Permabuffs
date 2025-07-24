@@ -21,7 +21,7 @@ namespace Permabuffs
         private Dictionary<int, DateTime> lastScanTime = new Dictionary<int, DateTime>();
 
        private readonly string configPath = Path.Combine(TShock.SavePath, "permabuffs_enabled.txt");
-       private HashSet<string> enabledAccounts = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+       private HashSet<string> enabledUUIDs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         private readonly TimeSpan scanInterval = TimeSpan.FromSeconds(5);
 
@@ -53,8 +53,8 @@ namespace Permabuffs
 
         private void TogglePermabuffs(CommandArgs args)
         {
-            string account = args.Player.Account?.Name;
-            if (account == null)
+            string uuid = args.Player.Account?.UUID;
+            if (uuid == null)
             {
                 args.Player.SendErrorMessage("You must be logged in to use this command.");
                 return;
@@ -62,12 +62,12 @@ namespace Permabuffs
 
             if (args.Message.StartsWith("pbenable", StringComparison.OrdinalIgnoreCase))
             {
-                enabledAccounts.Add(account);
+                enabledUUIDs.Add(uuid);
                 args.Player.SendSuccessMessage("Permabuffs enabled!");
             }
             else if (args.Message.StartsWith("pbdisable", StringComparison.OrdinalIgnoreCase))
             {
-                enabledAccounts.Remove(account);
+                enabledUUIDs.Remove(uuid);
                 args.Player.SendSuccessMessage("Permabuffs disabled!");
             }
 
@@ -90,8 +90,8 @@ namespace Permabuffs
                 // Record the current time for next interval
                 lastScanTime[tsPlayer.Index] = DateTime.UtcNow;
 
-                string account = tsPlayer.Account?.Name;
-                if (account == null || !enabledAccounts.Contains(account))
+                string uuid = tsPlayer.Account?.UUID;
+                if (uuid == null || !enabledUUIDs.Contains(uuid))
                 continue;
 
                 Player player = tsPlayer.TPlayer;
@@ -145,7 +145,7 @@ namespace Permabuffs
         {
             if (File.Exists(configPath))
             {
-                 enabledAccounts = new HashSet<string>(
+                 enabledUUIDs = new HashSet<string>(
                      File.ReadAllLines(configPath)
                          .Where(line => !string.IsNullOrWhiteSpace(line)),
                      StringComparer.OrdinalIgnoreCase
@@ -155,7 +155,7 @@ namespace Permabuffs
 
         private void SaveEnabledAccounts()
         {
-        File.WriteAllLines(configPath, enabledAccounts);
+        File.WriteAllLines(configPath, enabledUUIDs);
         }
     }
 }
