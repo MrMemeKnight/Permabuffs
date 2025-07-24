@@ -110,16 +110,6 @@ namespace Permabuffs
                              buffNames[buffID] = name;
                     }
                 }
-
-                // Get current set or create new
-                if (!appliedBuffs.ContainsKey(plr))
-                    appliedBuffs[plr] = new HashSet<int>();
-
-                var currentlyApplied = appliedBuffs[plr];
-                var newApplied = new HashSet<int>();
-
-                // Apply new or refresh existing permabuffs
-                foreach (var kvp in buffCounts)
                 {
                     int buffID = kvp.Key;
                     string sourceName = buffNames.TryGetValue(buffID, out string val) ? val : "";
@@ -129,7 +119,6 @@ namespace Permabuffs
                         : 3900;
 
                     tsPlayer.SetBuff(buffID, duration, true);
-                    newApplied.Add(buffID);
                 }
             }
         }
