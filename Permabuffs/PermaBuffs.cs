@@ -35,8 +35,7 @@ namespace Permabuffs
         public override void Initialize()
         {
             ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
-            Commands.ChatCommands.Add(new Command("permabuffs.toggle", EnablePermabuffs, "pbenable"));
-            Commands.ChatCommands.Add(new Command("permabuffs.toggle", DisablePermabuffs, "pbdisable"));
+            Commands.ChatCommands.Add(new Command("permabuffs.toggle", TogglePermabuffs, "pbenable", "pbdisable"));
         }
 
         protected override void Dispose(bool disposing)
@@ -48,18 +47,23 @@ namespace Permabuffs
             base.Dispose(disposing);
         }
 
-        private void EnablePermabuffs(CommandArgs args)
+        private void TogglePermabuffs(CommandArgs args)
         {
             int plr = args.Player.Index;
-            toggledPlayers[plr] = true;
-            args.Player.SendSuccessMessage("Permabuffs enabled!");
-        }
 
-        private void DisablePermabuffs(CommandArgs args)
-        {
-            int plr = args.Player.Index;
-            toggledPlayers[plr] = false;
-            args.Player.SendSuccessMessage("Permabuffs disabled!");
+            if (!toggledPlayers.ContainsKey(plr))
+                toggledPlayers[plr] = false;
+
+            if (args.Parameters[0].Equals("pbenable", StringComparison.OrdinalIgnoreCase))
+            {
+                toggledPlayers[plr] = true;
+                args.Player.SendSuccessMessage("Permabuffs enabled!");
+            }
+            else if (args.Message.Contains("pbdisable"))
+            {
+                toggledPlayers[plr] = false;
+                args.Player.SendSuccessMessage("Permabuffs disabled!");
+            }
         }
 
         private void OnUpdate(EventArgs args)
@@ -110,21 +114,18 @@ namespace Permabuffs
                 foreach (var kvp in buffCounts)
                 {
                     int buffID = kvp.Key;
+
+                    // Skip if the player already has the buff
+                    if (player.buffType.Contains(buffID))
+                        continue;
+
                     string sourceName = buffNames.TryGetValue(buffID, out string val) ? val : "";
 
-                    bool isLuck = BuffDurations.TryGetValue(sourceName, out int duration);
-                    if (!isLuck)
-                        duration = int.MaxValue;
+                    int duration = BuffDurations.TryGetValue(sourceName, out int valDuration)
+                        ? valDuration
+                        : 3600; // 1 minute default duration
 
-                    if (isLuck)
-                    {
-                        // Show duration for Luck potions
-                        tsPlayer.SetBuff(buffID, duration, true);
-                    }
-                    else
-                    {
-                        player.AddBuff(buffID, int.MaxValue - 1, quiet: true);
-                    }
+                    tsPlayer.SetBuff(buffID, duration, true);
                 }
             }
         }
