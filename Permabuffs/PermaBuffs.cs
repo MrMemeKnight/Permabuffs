@@ -110,14 +110,45 @@ namespace Permabuffs
                 foreach (var kvp in buffCounts)
                 {
                     int buffID = kvp.Key;
-
                     string sourceName = buffNames.TryGetValue(buffID, out string val) ? val : "";
 
                     bool isLuck = BuffDurations.TryGetValue(sourceName, out int duration);
                     if (!isLuck)
                         duration = int.MaxValue;
 
-                    tsPlayer.SetBuff(buffID, duration, isLuck); // Only Luck potions show timer
+                    if (isLuck)
+                    {
+                        // Show duration for Luck potions
+                        tsPlayer.SetBuff(buffID, duration, true);
+                    }
+                    else
+                    {
+                        // Manually apply invisible buff (no timer shown)
+                        bool alreadyHasBuff = false;
+
+                        for (int i = 0; i < Player.MaxBuffs; i++)
+                        {
+                             if (player.buffType[i] == buffID)
+                             {
+                                 player.buffTime[i] = 0; // No visible timer
+                                 alreadyHasBuff = true;
+                                 break;
+                             }
+                        }
+
+                        if (!alreadyHasBuff)
+                        {
+                            for (int i = 0; i < Player.MaxBuffs; i++)
+                            {
+                                if (player.buffType[i] == 0)
+                                {
+                                    player.buffType[i] = buffID;
+                                    player.buffTime[i] = 0; // No timer, permanent-looking
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
