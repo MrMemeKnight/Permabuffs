@@ -110,6 +110,8 @@ namespace Permabuffs
                              buffNames[buffID] = name;
                     }
                 }
+
+                foreach (var kvp in buffCounts)
                 {
                     int buffID = kvp.Key;
                     string sourceName = buffNames.TryGetValue(buffID, out string val) ? val : "";
