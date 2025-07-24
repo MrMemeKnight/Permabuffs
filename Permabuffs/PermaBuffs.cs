@@ -35,7 +35,8 @@ namespace Permabuffs
         public override void Initialize()
         {
             ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
-            Commands.ChatCommands.Add(new Command("permabuffs.toggle", TogglePermabuffs, "pbenable", "pbdisable"));
+            Commands.ChatCommands.Add(new Command("permabuffs.toggle", EnablePermabuffs, "pbenable"));
+            Commands.ChatCommands.Add(new Command("permabuffs.toggle", DisablePermabuffs, "pbdisable"));
         }
 
         protected override void Dispose(bool disposing)
