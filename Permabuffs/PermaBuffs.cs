@@ -138,14 +138,22 @@ namespace Permabuffs
                 // Remove permabuffs no longer in storage
                 foreach (int oldBuff in currentlyApplied)
                 {
-                    if (!newApplied.Contains(oldBuff) && player.buffType.Contains(oldBuff))
+                    if (!newApplied.Contains(oldBuff))
                     {
-                        player.ClearBuff(oldBuff); // only clear buffs we previously applied
+                        for (int i = 0; i < Player.MaxBuffs; i++)
+                        {
+                            if (player.buffType[i] == oldBuff)
+                            {
+                                player.DelBuff(i);
+                                break;
+                            }
+                        }
                     }
                 }
 
                 // Update tracking set
-                appliedBuffs[plr] = newApplied;
+                appliedBuffs[plr].Clear();
+                appliedBuffs[plr].UnionWith(newApplied);
             }
         }
 
