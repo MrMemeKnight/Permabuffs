@@ -14,7 +14,7 @@ namespace Permabuffs
     {
         public override string Name => "Permabuffs";
         public override string Author => "Myoni (SyntaxVoid) Scuffed update by MK and ChatGPT";
-        public override string Description => "Automatically grants buffs from potions in piggy bank, safe, forge and void vault";
+        public override string Description => "Automatically grants buffs from potions, flasks, foods drinks in piggy bank, safe, forge and void vault";
         public override Version Version => new Version(1, 0, 0);
 
         private Dictionary<int, bool> toggledPlayers = new Dictionary<int, bool>();
