@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 namespace Permabuffs
 {
@@ -17,9 +18,11 @@ namespace Permabuffs
         public override string Description => "Automatically grants buffs from potions, flasks, foods drinks in piggy bank, safe, forge and void vault";
         public override Version Version => new Version(1, 0, 0);
 
-        private Dictionary<int, bool> toggledPlayers = new Dictionary<int, bool>();
-
         private Dictionary<int, DateTime> lastScanTime = new Dictionary<int, DateTime>();
+
+       private readonly string configPath = Path.Combine(TShock.SavePath, "permabuffs_enabled.txt");
+       private HashSet<string> enabledAccounts = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         private readonly TimeSpan scanInterval = TimeSpan.FromSeconds(5);
 
         private readonly Dictionary<string, int> BuffDurations = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
@@ -36,6 +39,7 @@ namespace Permabuffs
         {
             ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
             Commands.ChatCommands.Add(new Command("permabuffs.toggle", TogglePermabuffs, "pbenable", "pbdisable"));
+            LoadEnabledAccounts();
         }
 
         protected override void Dispose(bool disposing)
@@ -48,23 +52,27 @@ namespace Permabuffs
         }
 
         private void TogglePermabuffs(CommandArgs args)
-       {
-            int plr = args.Player.Index;
-
-            if (!toggledPlayers.ContainsKey(plr))
-            toggledPlayers[plr] = false;
+        {
+            string account = args.Player.Account?.Name;
+            if (account == null)
+            {
+                args.Player.SendErrorMessage("You must be logged in to use this command.");
+                return;
+            }
 
             if (args.Message.StartsWith("pbenable", StringComparison.OrdinalIgnoreCase))
             {
-                toggledPlayers[plr] = true;
+                enabledAccounts.Add(account);
                 args.Player.SendSuccessMessage("Permabuffs enabled!");
             }
             else if (args.Message.StartsWith("pbdisable", StringComparison.OrdinalIgnoreCase))
             {
-                toggledPlayers[plr] = false;
+                enabledAccounts.Remove(account);
                 args.Player.SendSuccessMessage("Permabuffs disabled!");
             }
-       }
+
+            SaveEnabledAccounts();
+        }
 
         private void OnUpdate(EventArgs args)
         {
@@ -82,9 +90,9 @@ namespace Permabuffs
                 // Record the current time for next interval
                 lastScanTime[tsPlayer.Index] = DateTime.UtcNow;
 
-                int plr = tsPlayer.Index;
-                if (!toggledPlayers.ContainsKey(plr) || !toggledPlayers[plr])
-                    continue;
+                string account = tsPlayer.Account?.Name;
+                if (account == null || !enabledAccounts.Contains(account))
+                continue;
 
                 Player player = tsPlayer.TPlayer;
 
@@ -131,6 +139,23 @@ namespace Permabuffs
             foreach (var item in player.bank2?.item ?? Array.Empty<Item>()) yield return item;
             foreach (var item in player.bank3?.item ?? Array.Empty<Item>()) yield return item;
             foreach (var item in player.bank4?.item ?? Array.Empty<Item>()) yield return item;
+        }
+
+        private void LoadEnabledAccounts()
+        {
+            if (File.Exists(configPath))
+            {
+                 enabledAccounts = new HashSet<string>(
+                     File.ReadAllLines(configPath)
+                         .Where(line => !string.IsNullOrWhiteSpace(line)),
+                     StringComparer.OrdinalIgnoreCase
+                 );
+            }
+        }
+
+        private void SaveEnabledAccounts()
+        {
+        File.WriteAllLines(configPath, enabledAccounts);
         }
     }
 }
