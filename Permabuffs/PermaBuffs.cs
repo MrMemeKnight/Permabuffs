@@ -22,6 +22,13 @@ namespace Permabuffs
         private Dictionary<int, DateTime> lastScanTime = new Dictionary<int, DateTime>();
         private readonly TimeSpan scanInterval = TimeSpan.FromSeconds(5);
 
+        private readonly Dictionary<string, int> BuffDurations = new. Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+       {
+            { "Lesser Luck Potion", 18000 }, // 5 minutes
+            { "Luck Potion", 36000 },        // 10 minutes
+            { "Greater Luck Potion", 54000 } // 15 minutes
+       };
+
 
         public Permabuffs(Main game) : base(game) { }
 
