@@ -88,21 +88,10 @@ namespace Permabuffs
                 {
                     int buffID = kvp.Key;
 
-                    if (!player.buffType.Contains(buffID))
-                    {
-                        // Apply full duration server-side
-                        player.AddBuff(buffID, 54000, true);
-
-                        // Find index of the applied buff
-                        int index = player.FindBuffIndex(buffID);
-                        if (index != -1)
-                        {
-                            // Send it to clients with only 1-tick duration to hide timer
-                            NetMessage.SendData((int)PacketTypes.PlayerBuff, -1, -1, null, tsPlayer.Index, player.buffType[index], 1);
-                            }
-                        }
-                    }
+                    // Apply buff using same method as /buff
+                    tsPlayer.SetBuff(buffID, 54000, true); // 3600 ticks = 60 seconds
                 }
             }
         }
     }
+}
