@@ -111,12 +111,8 @@ namespace Permabuffs
                 {
                     int buffID = kvp.Key;
 
-                    // Skip if the player already has the buff
-                    if (player.buffType.Contains(buffID))
-                        continue;
-
                     string sourceName = buffNames.TryGetValue(buffID, out string val) ? val : "";
-                    
+
                     // Only Luck potions show duration, others get hidden (0 duration)
                     int duration = BuffDurations.ContainsKey(sourceName)
                         ? BuffDurations[sourceName]
