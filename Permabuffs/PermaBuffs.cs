@@ -123,31 +123,7 @@ namespace Permabuffs
                     }
                     else
                     {
-                        // Manually apply invisible buff (no timer shown)
-                        bool alreadyHasBuff = false;
-
-                        for (int i = 0; i < player.buffType.Length; i++)
-                        {
-                             if (player.buffType[i] == buffID)
-                             {
-                                 player.buffTime[i] = 0; // No visible timer
-                                 alreadyHasBuff = true;
-                                 break;
-                             }
-                        }
-
-                        if (!alreadyHasBuff)
-                        {
-                            for (int i = 0; i < player.buffType.Length; i++)
-                            {
-                                if (player.buffType[i] == 0)
-                                {
-                                    player.buffType[i] = buffID;
-                                    player.buffTime[i] = 0; // No timer, permanent-looking
-                                    break;
-                                }
-                            }
-                        }
+                        player.AddBuff(buffID, int.MaxValue - 1, quiet: true);
                     }
                 }
             }
