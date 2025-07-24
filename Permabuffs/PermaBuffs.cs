@@ -57,12 +57,12 @@ namespace Permabuffs
             if (!toggledPlayers.ContainsKey(plr))
             toggledPlayers[plr] = false;
 
-            if (args.Message.StartsWith("/pbenable", StringComparison.OrdinalIgnoreCase))
+            if (args.Message.StartsWith("pbenable", StringComparison.OrdinalIgnoreCase))
             {
                 toggledPlayers[plr] = true;
                 args.Player.SendSuccessMessage("Permabuffs enabled!");
             }
-            else if (args.Message.StartsWith("/pbdisable", StringComparison.OrdinalIgnoreCase))
+            else if (args.Message.StartsWith("pbdisable", StringComparison.OrdinalIgnoreCase))
             {
                 toggledPlayers[plr] = false;
                 args.Player.SendSuccessMessage("Permabuffs disabled!");
