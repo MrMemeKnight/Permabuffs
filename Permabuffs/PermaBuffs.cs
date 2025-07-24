@@ -106,7 +106,8 @@ namespace Permabuffs
 
                         buffCounts.TryAdd(buffID, item.stack);
 
-                        buffCounts.TryAdd(buffID, name;
+                        if (!buffNames.ContainsKey(buffID))
+                             buffNames[buffID] = name;
                     }
                 }
 
