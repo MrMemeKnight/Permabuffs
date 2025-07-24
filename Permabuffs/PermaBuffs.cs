@@ -54,7 +54,7 @@ namespace Permabuffs
             if (!toggledPlayers.ContainsKey(plr))
                 toggledPlayers[plr] = false;
 
-            if (args.Message.Contains("pbenable"))
+            if (args.Parameters[0].Equals("pbenable", StringComparison.OrdinalIgnoreCase))
             {
                 toggledPlayers[plr] = true;
                 args.Player.SendSuccessMessage("Permabuffs enabled!");
@@ -101,11 +101,12 @@ namespace Permabuffs
                     string name = Lang.GetItemNameValue(item.type);
                     if (item.stack >= 30 && Potions.BuffMap.TryGetValue(name, out int buffID))
                     {
-                        if (!buffCounts.ContainsKey(buffID))
-                            buffCounts[buffID] = item.stack;
 
-                        if (!buffNames.ContainsKey(buffID))
-                            buffNames[buffID] = name; // Track the name that triggered this buff
+                        if (buffID <= 0) continue;
+
+                        buffCounts.TryAdd(buffID, item.stack);
+
+                        buffCounts.TryAdd(buffID, name;
                     }
                 }
 
