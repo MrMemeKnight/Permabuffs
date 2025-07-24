@@ -115,10 +115,6 @@ namespace Permabuffs
                 {
                     int buffID = kvp.Key;
 
-                    // Skip if the player already has the buff
-                    if (player.buffType.Contains(buffID))
-                        continue;
-
                     string sourceName = buffNames.TryGetValue(buffID, out string val) ? val : "";
 
                     int duration = BuffDurations.TryGetValue(sourceName, out int valDuration)
