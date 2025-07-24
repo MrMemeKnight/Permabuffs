@@ -22,9 +22,6 @@ namespace Permabuffs
         private Dictionary<int, DateTime> lastScanTime = new Dictionary<int, DateTime>();
         private readonly TimeSpan scanInterval = TimeSpan.FromSeconds(5);
 
-        // Tracks which buffs this plugin applied per player
-        private Dictionary<int, HashSet<int>> appliedBuffs = new Dictionary<int, HashSet<int>>();
-
         private readonly Dictionary<string, int> BuffDurations = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
        {
             { "Lesser Luck Potion", 18000 }, // 5 minutes
@@ -134,26 +131,6 @@ namespace Permabuffs
                     tsPlayer.SetBuff(buffID, duration, true);
                     newApplied.Add(buffID);
                 }
-
-                // Remove permabuffs no longer in storage
-                foreach (int oldBuff in currentlyApplied)
-                {
-                    if (!newApplied.Contains(oldBuff))
-                    {
-                        for (int i = 0; i < 22; i++)
-                        {
-                            if (player.buffType[i] == oldBuff)
-                            {
-                                player.DelBuff(i);
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                // Update tracking set
-                appliedBuffs[plr].Clear();
-                appliedBuffs[plr].UnionWith(newApplied);
             }
         }
 
