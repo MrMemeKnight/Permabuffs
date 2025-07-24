@@ -140,7 +140,7 @@ namespace Permabuffs
                 {
                     if (!newApplied.Contains(oldBuff))
                     {
-                        for (int i = 0; i < Player.MaxBuffs; i++)
+                        for (int i = 0; i < 22; i++)
                         {
                             if (player.buffType[i] == oldBuff)
                             {
