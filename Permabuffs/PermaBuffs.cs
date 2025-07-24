@@ -116,7 +116,7 @@ namespace Permabuffs
                     // Only Luck potions show duration, others get hidden (0 duration)
                     int duration = BuffDurations.ContainsKey(sourceName)
                         ? BuffDurations[sourceName]
-                        : 0;
+                        : 54000;
 
                     // Apply buff with optional visible or hidden timer using same method as /buff
                     tsPlayer.SetBuff(buffID, duration, true);
