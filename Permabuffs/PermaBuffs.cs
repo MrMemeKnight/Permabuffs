@@ -68,10 +68,10 @@ namespace Permabuffs
 
                 Player player = tsPlayer.TPlayer;
 
-                // Check piggy bank for qualifying potions
+                // Check piggy bank + safe + forge + void vault for qualifying potions
                 Dictionary<int, int> buffCounts = new Dictionary<int, int>();
 
-                foreach (Item item in player.bank.item)
+                foreach (Item item in EnumerateStorageItems(player))
                 {
                     if (item == null || string.IsNullOrWhiteSpace(item.Name))
                         continue;
@@ -89,9 +89,17 @@ namespace Permabuffs
                     int buffID = kvp.Key;
 
                     // Apply buff using same method as /buff
-                    tsPlayer.SetBuff(buffID, 54000, true); // 3600 ticks = 60 seconds
+                    tsPlayer.SetBuff(buffID, 54000, true); // 54000 ticks = 15 minutes
                 }
             }
+        }
+
+        private IEnumerable<Item> EnumerateStorageItems(Player player)
+        {
+            foreach (var item in player.bank?.item ?? Array.Empty<Item>()) yield return item;
+            foreach (var item in player.bank2?.item ?? Array.Empty<Item>()) yield return item;
+            foreach (var item in player.bank3?.item ?? Array.Empty<Item>()) yield return item;
+            foreach (var item in player.bank4?.item ?? Array.Empty<Item>()) yield return item;
         }
     }
 }
