@@ -88,7 +88,7 @@ namespace Permabuffs
                 {
                     int buffID = kvp.Key;
 
-                    if (!player.HasBuff(buffID))
+                    if (!player.buffType.Contains(buffID))
                     {
                         // Apply full duration server-side
                         player.AddBuff(buffID, 54000, true);
