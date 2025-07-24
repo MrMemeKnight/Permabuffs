@@ -22,6 +22,9 @@ namespace Permabuffs
         private Dictionary<int, DateTime> lastScanTime = new Dictionary<int, DateTime>();
         private readonly TimeSpan scanInterval = TimeSpan.FromSeconds(5);
 
+        // Tracks which buffs this plugin applied per player
+        private Dictionary<int, HashSet<int>> appliedBuffs = new Dictionary<int, HashSet<int>>();
+
         private readonly Dictionary<string, int> BuffDurations = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
        {
             { "Lesser Luck Potion", 18000 }, // 5 minutes
@@ -111,18 +114,38 @@ namespace Permabuffs
                     }
                 }
 
+                // Get current set or create new
+                if (!appliedBuffs.ContainsKey(plr))
+                    appliedBuffs[plr] = new HashSet<int>();
+
+                var currentlyApplied = appliedBuffs[plr];
+                var newApplied = new HashSet<int>();
+
+                // Apply new or refresh existing permabuffs
                 foreach (var kvp in buffCounts)
                 {
                     int buffID = kvp.Key;
-
                     string sourceName = buffNames.TryGetValue(buffID, out string val) ? val : "";
 
                     int duration = BuffDurations.TryGetValue(sourceName, out int valDuration)
                         ? valDuration
-                        : 3600; // 1 minute default duration
+                        : 3600;
 
                     tsPlayer.SetBuff(buffID, duration, true);
+                    newApplied.Add(buffID);
                 }
+
+                // Remove permabuffs no longer in storage
+                foreach (int oldBuff in currentlyApplied)
+                {
+                    if (!newApplied.Contains(oldBuff) && player.HasBuff(oldBuff))
+                    {
+                        player.ClearBuff(oldBuff); // only clear buffs we previously applied
+                    }
+                }
+
+                // Update tracking set
+                appliedBuffs[plr] = newApplied;
             }
         }
 
