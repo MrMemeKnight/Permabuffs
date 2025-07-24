@@ -104,7 +104,8 @@ namespace Permabuffs
                         if (!buffCounts.ContainsKey(buffID))
                             buffCounts[buffID] = item.stack;
 
-                        buffNames[buffID] = name; // Track the name that triggered this buff
+                        if (!buffNames.ContainsKey(buffID))
+                            buffNames[buffID] = name; // Track the name that triggered this buff
                     }
                 }
 
@@ -113,15 +114,15 @@ namespace Permabuffs
                     int buffID = kvp.Key;
 
                     // Skip if the player already has the buff
-                    if (!player.buffType.Contains(buffID))
-                    continue;
+                    if (player.buffType.Contains(buffID))
+                        continue;
 
-                    // Apply buff using same method as /buff
                     string sourceName = buffNames.TryGetValue(buffID, out string val) ? val : "";
                     int duration = BuffDurations.TryGetValue(sourceName, out int customDuration)
                         ? customDuration
                         : 54000; // fallback to 15 mins if not listed
 
+                    // Apply buff using same method as /buff
                     tsPlayer.SetBuff(buffID, duration, true);
                 }
             }
