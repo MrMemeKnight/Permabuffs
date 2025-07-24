@@ -13,8 +13,8 @@ namespace Permabuffs
     public class Permabuffs : TerrariaPlugin
     {
         public override string Name => "Permabuffs";
-        public override string Author => "Myoni (SyntaxVoid)";
-        public override string Description => "Automatically grants buffs from potions in piggy bank";
+        public override string Author => "Myoni (SyntaxVoid) Scuffed update by MK and ChatGPT";
+        public override string Description => "Automatically grants buffs from potions in piggy bank, safe, forge and void vault";
         public override Version Version => new Version(1, 0, 0);
 
         private Dictionary<int, bool> toggledPlayers = new Dictionary<int, bool>();
@@ -87,6 +87,10 @@ namespace Permabuffs
                 foreach (var kvp in buffCounts)
                 {
                     int buffID = kvp.Key;
+
+                    // Skip if the player already has the buff
+                    if (player.HasBuff(buffID))
+                    continue;
 
                     // Apply buff using same method as /buff
                     tsPlayer.SetBuff(buffID, 54000, true); // 54000 ticks = 15 minutes
